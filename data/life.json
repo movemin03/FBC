@@ -1,0 +1,15 @@
+[
+  {
+    "id": "lf00001",
+    "title_kor": "성수동 카페 투어: 인더스트리얼 감성",
+    "title_en": "Seongsu Cafe Tour: Industrial Vibes",
+    "desc_kor": "공장에서 갤러리로 변신한 카페들",
+    "desc_en": "Cafes transformed from factories to galleries",
+    "category": "Life",
+    "district": "seongsu",
+    "image": "img/life/lf00001.jpg",
+    "tags": ["cafe", "seongsu", "industrial"],
+    "date": "2025-10-09",
+    "author": "Park Ji-won"
+  }
+]

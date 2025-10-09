@@ -1,0 +1,81 @@
+[
+  {
+    "id": "by00001",
+    "title_kor": "내추럴 글로우 메이크업",
+    "title_en": "Natural Glow Makeup",
+    "desc_kor": "피부 본연의 빛을 살리는 메이크업",
+    "desc_en": "Makeup that highlights skin's natural glow",
+    "category": "Beauty Trend",
+    "district": null,
+    "image": "img/beauty/by00001.jpg",
+    "tags": ["makeup", "glow", "natural"],
+    "date": "2025-10-09",
+    "author": "Lee Ji-hye"
+  },
+  {
+    "id": "by00002",
+    "title_kor": "성수동 감성 네일샵 탐방",
+    "title_en": "Seongsu's Aesthetic Nail Salons",
+    "desc_kor": "인더스트리얼 공간에서 만나는 네일 아트",
+    "desc_en": "Nail art meets industrial space",
+    "category": "Beauty Spot",
+    "district": "seongsu",
+    "image": "img/beauty/by00002.jpg",
+    "tags": ["nail", "salon", "seongsu"],
+    "date": "2025-10-08",
+    "author": "Park Soo-jin"
+  },
+  {
+    "id": "by00003",
+    "title_kor": "여름에서 가을로, 스킨케어 전환",
+    "title_en": "Transitioning Skincare: Summer to Fall",
+    "desc_kor": "계절 변화에 맞는 피부 관리",
+    "desc_en": "Skin care for seasonal changes",
+    "category": "Beauty Item",
+    "district": null,
+    "image": "img/beauty/by00003.jpg",
+    "tags": ["skincare", "fall", "transition"],
+    "date": "2025-10-07",
+    "author": "Choi Min-ah"
+  },
+  {
+    "id": "by00004",
+    "title_kor": "미니멀 헤어스타일의 부활",
+    "title_en": "The Return of Minimal Hairstyles",
+    "desc_kor": "심플함 속에 담긴 세련미",
+    "desc_en": "Sophistication in simplicity",
+    "category": "Beauty Trend",
+    "district": null,
+    "image": "img/beauty/by00004.jpg",
+    "tags": ["hair", "minimal", "trend"],
+    "date": "2025-10-06",
+    "author": "Jung Hye-won"
+  },
+  {
+    "id": "by00005",
+    "title_kor": "K-뷰티 루틴: 외국인이 알아야 할 10단계",
+    "title_en": "K-Beauty Routine: 10 Steps Foreigners Should Know",
+    "desc_kor": "한국식 뷰티의 문화적 배경",
+    "desc_en": "Cultural background of Korean beauty",
+    "category": "Beauty Guide",
+    "district": null,
+    "image": "img/beauty/by00005.jpg",
+    "tags": ["k-beauty", "routine", "guide"],
+    "cultural_translation": true,
+    "date": "2025-10-05",
+    "author": "Kim Yu-na"
+  },
+  {
+    "id": "by00006",
+    "title_kor": "가을 메이크업 트렌드: 자연스러운 광채",
+    "title_en": "Fall Makeup Trends: Natural Glow",
+    "desc_kor": "따뜻한 톤의 가을 메이크업",
+    "desc_en": "Warm-toned fall makeup",
+    "category": "Beauty Trend",
+    "district": null,
+    "image": "img/beauty/by00006.jpg",
+    "tags": ["makeup", "fall", "trend"],
+    "date": "2025-10-04",
+    "author": "Lee Seo-yeon"
+  }
+]

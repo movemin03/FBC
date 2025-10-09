@@ -1,0 +1,72 @@
+[
+  {
+    "id": "seongsu",
+    "name_kor": "성수동",
+    "name_en": "Seongsu-dong",
+    "title_kor": "Are You in Seongsu?",
+    "title_en": "Are You in Seongsu?",
+    "desc_kor": "성수동의 인더스트리얼 감성과 아티스트 문화가 만나는 곳. 오래된 공장과 신선한 창의성이 공존하는 서울의 브루클린.",
+    "desc_en": "Where Seongsu's industrial aesthetic meets artist culture. Seoul's Brooklyn where old factories coexist with fresh creativity.",
+    "tagline_kor": "Industrial Chic & Artist Culture",
+    "tagline_en": "Industrial Chic & Artist Culture",
+    "featured_stories": [
+      {
+        "id": "ds00001",
+        "title_kor": "무신사 본사 방문 가이드",
+        "title_en": "Musinsa HQ Visit Guide",
+        "category": "Fashion Guide",
+        "image": "img/headlines/hdl00002.jpg"
+      },
+      {
+        "id": "ds00002",
+        "title_kor": "성수동 카페 투어: 공장에서 갤러리로",
+        "title_en": "Seongsu Cafe Tour: From Factory to Gallery",
+        "category": "Culture",
+        "image": "img/districts/seongsu-cafe-01.jpg"
+      },
+      {
+        "id": "ds00003",
+        "title_kor": "성수 스트리트 패션 스냅",
+        "title_en": "Seongsu Street Fashion Snap",
+        "category": "Street Style",
+        "image": "img/districts/seongsu-street-01.jpg"
+      }
+    ]
+  },
+  {
+    "id": "hannam",
+    "name_kor": "한남동",
+    "name_en": "Hannam-dong",
+    "title_kor": "Are You in Hannam?",
+    "title_en": "Are You in Hannam?",
+    "desc_kor": "한남동은 세련된 큐레이션 문화와 MZ세대의 취향이 만나는 곳. 숨겨진 갤러리와 프리미엄 라이프스타일이 공존합니다.",
+    "desc_en": "Hannam-dong is where sophisticated curation culture meets MZ generation taste. Hidden galleries and premium lifestyle coexist.",
+    "tagline_kor": "Sophisticated MZ Curation",
+    "tagline_en": "Sophisticated MZ Curation",
+    "featured_stories": []
+  },
+  {
+    "id": "hongdae",
+    "name_kor": "홍대",
+    "name_en": "Hongdae",
+    "title_kor": "Are You in Hongdae?",
+    "title_en": "Are You in Hongdae?",
+    "desc_kor": "홍대는 젊음과 자유로운 표현의 중심지. 스트리트 패션과 인디 문화가 살아 숨쉬는 창의성의 거리입니다.",
+    "desc_en": "Hongdae is the center of youth and free expression. A street of creativity where street fashion and indie culture thrive.",
+    "tagline_kor": "Youth Street Culture",
+    "tagline_en": "Youth Street Culture",
+    "featured_stories": []
+  },
+  {
+    "id": "myeongdong",
+    "name_kor": "명동",
+    "name_en": "Myeongdong",
+    "title_kor": "Are You in Myeongdong?",
+    "title_en": "Are You in Myeongdong?",
+    "desc_kor": "명동은 K-뷰티와 관광의 메카. 전통과 현대가 교차하는 서울의 대표적인 쇼핑 중심지입니다.",
+    "desc_en": "Myeongdong is the mecca of K-beauty and tourism. Seoul's representative shopping center where tradition and modernity intersect.",
+    "tagline_kor": "K-Beauty & Tourism Hub",
+    "tagline_en": "K-Beauty & Tourism Hub",
+    "featured_stories": []
+  }
+]

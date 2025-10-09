@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBC Creators Magazine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .hero-image {
+            background-size: cover;
+            background-position: center;
+            min-height: 70vh;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            display: inline-block;
+            padding-bottom: 8px;
+            margin-bottom: 24px;
+        }
+        .article-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+        }
+        .article-card img {
+            transition: transform 0.5s ease;
+        }
+        .article-card:hover img {
+            transform: scale(1.05);
+        }
+        .district-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.95);
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .cultural-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 10px;
+            font-size: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+        .swiper-container {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .swiper-container::-webkit-scrollbar {
+            display: none;
+        }
+        .swiper-slide {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        .location-hero {
+            background: linear-gradient(to bottom, #f9fafb 0%, #f3f4f6 100%);
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .location-hero h2 {
+            color: #111827;
+        }
+        .location-hero p {
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Top Bar -->
+            <div class="flex items-center justify-between py-3 border-b">
+                <div class="flex items-center space-x-4 text-xs">
+                    <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
+                        <span id="lang-text">EN</span>
+                    </button>
+                </div>
+                <a href="index.html"><h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1></a>
+                <div class="flex items-center space-x-4 text-xs">
+                    <a href="#" class="hover:text-gray-600">SUBSCRIBE</a>
+                </div>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="py-4">
+                <ul class="flex items-center justify-center space-x-8 text-sm font-medium">
+                    <li><a href="index.html" class="hover:text-gray-600 transition font-bold">HOME</a></li>
+                    <li><a href="fashion.html" class="hover:text-gray-600 transition">FASHION</a></li>
+                    <li><a href="beauty.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
+                    <li><a href="life.html" class="hover:text-gray-600 transition">LIFE</a></li>
+                    <li><a href="districts.html" class="hover:text-gray-600 transition relative">
+                        DISTRICTS
+                        <span class="absolute -top-1 -right-3 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</span>
+                    </a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-image flex items-center justify-center text-white" id="hero-section">
+        <div class="text-center px-4">
+            <h2 class="text-5xl md:text-7xl font-serif font-bold mb-4" id="hero-title"></h2>
+            <p class="text-lg md:text-xl opacity-90" id="hero-subtitle"></p>
+            <div class="mt-8">
+                <svg class="w-6 h-6 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Are You In? Location-Based Section -->
+    <section class="location-hero py-16 mb-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4" id="location-title"></h2>
+                <p class="text-lg max-w-2xl mx-auto" id="location-desc"></p>
+                <button id="change-location" class="mt-4 px-6 py-2 bg-black text-white font-semibold rounded hover:bg-gray-800 transition">
+                    📍 Change Location
+                </button>
+            </div>
+
+            <!-- Location Quick Stories -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="location-stories">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Fashion Recommendations for Location -->
+    <section class="max-w-7xl mx-auto px-4 mb-16">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="section-title" id="fashion-location-title">Fashion for Seongsu</h2>
+            <a href="fashion.html" class="text-sm hover:underline">View All →</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="fashion-grid">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Beauty Recommendations for Location -->
+    <section class="max-w-7xl mx-auto px-4 mb-16">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="section-title" id="beauty-location-title">Beauty for Seongsu</h2>
+            <a href="beauty.html" class="text-sm hover:underline">View All →</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="beauty-grid">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Today's Stories -->
+    <section class="max-w-7xl mx-auto px-4 mb-16">
+        <h2 class="section-title">Today's Stories</h2>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6" id="today-stories">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Best Stories -->
+    <section class="max-w-7xl mx-auto px-4 mb-16">
+        <h2 class="section-title">Best Stories</h2>
+        <div class="swiper-container flex gap-6 pb-4" id="best-stories">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Must Read -->
+    <section class="max-w-7xl mx-auto px-4 mb-16">
+        <h2 class="section-title">Must Read</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="must-read">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Latest Stories -->
+    <section class="max-w-7xl mx-auto px-4 mb-16">
+        <h2 class="section-title">Latest Stories</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="latest-stories">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="font-serif text-2xl font-bold mb-4">FBC</h3>
+                    <p class="text-sm text-gray-400">Fashion, Beauty, Culture<br>with Cultural Translation</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3 text-sm">CATEGORIES</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="fashion.html" class="hover:text-white">Fashion</a></li>
+                        <li><a href="beauty.html" class="hover:text-white">Beauty</a></li>
+                        <li><a href="life.html" class="hover:text-white">Life & Culture</a></li>
+                        <li><a href="districts.html" class="hover:text-white">Districts</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3 text-sm">ABOUT</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">About FBC</a></li>
+                        <li><a href="#" class="hover:text-white">Cultural Translation</a></li>
+                        <li><a href="#" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3 text-sm">NEWSLETTER</h4>
+                    <p class="text-sm text-gray-400 mb-3">Get weekly K-fashion insights</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-3 py-2 bg-gray-800 text-sm flex-1 focus:outline-none">
+                        <button class="px-4 py-2 bg-white text-black text-sm font-medium">→</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-6 text-center text-xs text-gray-500">
+                © 2025 FBC Creators. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Location Change Modal -->
+    <div id="location-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-xl font-bold mb-4">Select Your Location</h3>
+                <div class="space-y-3" id="location-options">
+                    <!-- Dynamically loaded -->
+                </div>
+                <button id="close-location-modal" class="mt-4 w-full py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Global State
+        let currentLang = 'kor';
+        let currentDistrict = 'seongsu';
+        let data = {
+            hero: null,
+            headlines: [],
+            fashion: [],
+            beauty: [],
+            life: [],
+            districts: []
+        };
+
+        // Load All Data
+        async function loadData() {
+            try {
+                const [heroRes, headlinesRes, fashionRes, beautyRes, lifeRes, districtsRes] = await Promise.all([
+                    fetch('data/hero.json'),
+                    fetch('data/headlines.json'),
+                    fetch('data/fashion.json'),
+                    fetch('data/beauty.json'),
+                    fetch('data/life.json'),
+                    fetch('data/districts.json')
+                ]);
+
+                data.hero = await heroRes.json();
+                data.headlines = await headlinesRes.json();
+                data.fashion = await fashionRes.json();
+                data.beauty = await beautyRes.json();
+                data.life = await lifeRes.json();
+                data.districts = await districtsRes.json();
+
+                initializePage();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        // Initialize Page
+        function initializePage() {
+            renderHero();
+            renderLocationSection();
+            renderFashionSection();
+            renderBeautySection();
+            renderTodayStories();
+            renderBestStories();
+            renderMustRead();
+            renderLatestStories();
+            renderLocationModal();
+        }
+
+        // Render Hero
+        function renderHero() {
+            const heroSection = document.getElementById('hero-section');
+            const heroTitle = document.getElementById('hero-title');
+            const heroSubtitle = document.getElementById('hero-subtitle');
+
+            heroSection.style.background = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${data.hero.image}')`;
+            heroSection.style.backgroundSize = 'cover';
+            heroSection.style.backgroundPosition = 'center';
+
+            heroTitle.textContent = data.hero.title_kor;
+            heroSubtitle.textContent = data.hero.subtitle_kor;
+        }
+
+        // Render Location Section
+        function renderLocationSection() {
+            const district = data.districts.find(d => d.id === currentDistrict);
+            if (!district) return;
+
+            document.getElementById('location-title').textContent = currentLang === 'kor' ? district.title_kor : district.title_en;
+            document.getElementById('location-desc').textContent = currentLang === 'kor' ? district.desc_kor : district.desc_en;
+
+            const storiesContainer = document.getElementById('location-stories');
+            storiesContainer.innerHTML = district.featured_stories.map(story => `
+                <article class="bg-white border rounded overflow-hidden article-card cursor-pointer shadow-sm hover:shadow-md transition">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${story.image}" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
+                        <h3 class="font-bold text-base leading-tight">
+                            ${currentLang === 'kor' ? story.title_kor : story.title_en}
+                        </h3>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Render Fashion Section
+        function renderFashionSection() {
+            const districtName = data.districts.find(d => d.id === currentDistrict)?.name_en || 'Seongsu';
+            document.getElementById('fashion-location-title').textContent = `Fashion for ${districtName}`;
+
+            const fashionItems = data.fashion.filter(item => item.district === currentDistrict || !item.district).slice(0, 4);
+            const fashionGrid = document.getElementById('fashion-grid');
+
+            fashionGrid.innerHTML = fashionItems.map(item => `
+                <article class="article-card cursor-pointer">
+                    <div class="relative overflow-hidden mb-3 h-64">
+                        ${item.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${item.cultural_badge}</span>` : ''}
+                        <img src="${item.image}" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                    <h4 class="text-base font-bold leading-tight">
+                        ${currentLang === 'kor' ? item.title_kor : item.title_en}
+                    </h4>
+                </article>
+            `).join('');
+        }
+
+        // Render Beauty Section
+        function renderBeautySection() {
+            const districtName = data.districts.find(d => d.id === currentDistrict)?.name_en || 'Seongsu';
+            document.getElementById('beauty-location-title').textContent = `Beauty for ${districtName}`;
+
+            const beautyItems = data.beauty.filter(item => item.district === currentDistrict || !item.district).slice(0, 4);
+            const beautyGrid = document.getElementById('beauty-grid');
+
+            beautyGrid.innerHTML = beautyItems.map(item => `
+                <article class="article-card cursor-pointer">
+                    <div class="relative overflow-hidden mb-3 h-64">
+                        <img src="${item.image}" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                    <h4 class="text-base font-bold leading-tight">
+                        ${currentLang === 'kor' ? item.title_kor : item.title_en}
+                    </h4>
+                </article>
+            `).join('');
+        }
+
+        // Render Today's Stories
+        function renderTodayStories() {
+            const stories = data.headlines.slice(0, 4);
+            const container = document.getElementById('today-stories');
+
+            const featured = stories[0];
+            const small = stories.slice(1);
+
+            container.innerHTML = `
+                <div class="md:col-span-5">
+                    <article class="article-card h-full cursor-pointer">
+                        <div class="relative overflow-hidden mb-4 h-96">
+                            ${featured.district ? `<span class="district-tag">${featured.district}</span>` : ''}
+                            ${featured.cultural_translation ? `<span class="cultural-badge absolute top-12 left-12">Cultural Translation</span>` : ''}
+                            <img src="${featured.image}" alt="" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2 uppercase tracking-wide">${featured.category}</div>
+                        <h3 class="text-2xl font-bold mb-2 leading-tight">
+                            ${currentLang === 'kor' ? featured.title_kor : featured.title_en}
+                        </h3>
+                    </article>
+                </div>
+                <div class="md:col-span-7 grid grid-cols-2 gap-4">
+                    ${small.map(story => `
+                        <article class="article-card cursor-pointer">
+                            <div class="relative overflow-hidden mb-3 h-48">
+                                ${story.district ? `<span class="district-tag">${story.district}</span>` : ''}
+                                ${story.cultural_translation ? `<span class="cultural-badge absolute top-3 left-3">Cultural Translation</span>` : ''}
+                                <img src="${story.image}" alt="" class="w-full h-full object-cover">
+                            </div>
+                            <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
+                            <h4 class="text-sm font-bold leading-tight">
+                                ${currentLang === 'kor' ? story.title_kor : story.title_en}
+                            </h4>
+                        </article>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Render Best Stories
+        function renderBestStories() {
+            const stories = data.headlines.slice(4, 9);
+            const container = document.getElementById('best-stories');
+
+            container.innerHTML = stories.map(story => `
+                <div class="swiper-slide w-72">
+                    <article class="article-card cursor-pointer">
+                        <div class="relative overflow-hidden mb-3 h-48">
+                            ${story.district ? `<span class="district-tag">${story.district}</span>` : ''}
+                            ${story.cultural_translation ? `<span class="cultural-badge absolute top-3 left-3">Cultural Translation</span>` : ''}
+                            <img src="${story.image}" alt="" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
+                        <h4 class="text-base font-bold leading-tight">
+                            ${currentLang === 'kor' ? story.title_kor : story.title_en}
+                        </h4>
+                    </article>
+                </div>
+            `).join('');
+        }
+
+        // Render Must Read
+        function renderMustRead() {
+            const mixed = [
+                ...data.headlines.slice(2, 3),
+                ...data.fashion.slice(4, 6),
+                ...data.beauty.slice(4, 5)
+            ];
+
+            const container = document.getElementById('must-read');
+            container.innerHTML = mixed.map(item => `
+                <article class="article-card cursor-pointer">
+                    <div class="relative overflow-hidden mb-3 h-56">
+                        ${item.district ? `<span class="district-tag">${item.district}</span>` : ''}
+                        ${item.cultural_translation ? `<span class="cultural-badge absolute top-3 left-3">Cultural Translation</span>` : ''}
+                        <img src="${item.image}" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                    <h4 class="text-base font-bold leading-tight mb-2">
+                        ${currentLang === 'kor' ? item.title_kor : item.title_en}
+                    </h4>
+                    <p class="text-xs text-gray-600">${currentLang === 'kor' ? item.desc_kor : item.desc_en}</p>
+                </article>
+            `).join('');
+        }
+
+        // Render Latest Stories
+        function renderLatestStories() {
+            const latest = [
+                data.life[0],
+                data.beauty[5],
+                data.fashion[6]
+            ].filter(Boolean);
+
+            const container = document.getElementById('latest-stories');
+            container.innerHTML = latest.map(item => `
+                <article class="flex gap-4 cursor-pointer">
+                    <div class="w-32 h-32 flex-shrink-0 overflow-hidden">
+                        <img src="${item.image}" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                        <h4 class="text-sm font-bold leading-tight mb-2">
+                            ${currentLang === 'kor' ? item.title_kor : item.title_en}
+                        </h4>
+                        <p class="text-xs text-gray-600">${item.date}</p>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Render Location Modal
+        function renderLocationModal() {
+            const container = document.getElementById('location-options');
+            container.innerHTML = data.districts.map(district => `
+                <button class="location-option w-full text-left p-4 border rounded hover:bg-gray-50 transition" data-location="${district.id}">
+                    <div class="font-bold">📍 ${district.name_en}</div>
+                    <div class="text-sm text-gray-600">${district.tagline_en}</div>
+                </button>
+            `).join('');
+
+            // Add event listeners
+            document.querySelectorAll('.location-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentDistrict = btn.getAttribute('data-location');
+                    renderLocationSection();
+                    renderFashionSection();
+                    renderBeautySection();
+                    document.getElementById('location-modal').classList.add('hidden');
+                });
+            });
+        }
+
+        // Language Toggle
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            currentLang = currentLang === 'kor' ? 'en' : 'kor';
+            document.getElementById('lang-text').textContent = currentLang === 'kor' ? 'EN' : 'KO';
+            
+            // Update Hero
+            document.getElementById('hero-title').textContent = currentLang === 'kor' ? data.hero.title_kor : data.hero.title_en;
+            document.getElementById('hero-subtitle').textContent = currentLang === 'kor' ? data.hero.subtitle_kor : data.hero.subtitle_en;
+            
+            // Re-render all sections
+            renderLocationSection();
+            renderFashionSection();
+            renderBeautySection();
+            renderTodayStories();
+            renderBestStories();
+            renderMustRead();
+            renderLatestStories();
+        });
+
+        // Location Modal
+        document.getElementById('change-location').addEventListener('click', () => {
+            document.getElementById('location-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-location-modal').addEventListener('click', () => {
+            document.getElementById('location-modal').classList.add('hidden');
+        });
+
+        document.getElementById('location-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'location-modal') {
+                document.getElementById('location-modal').classList.add('hidden');
+            }
+        });
+
+        // Smooth scroll for hero
+        document.querySelector('.animate-bounce').parentElement.addEventListener('click', () => {
+            window.scrollTo({
+                top: window.innerHeight,
+                behavior: 'smooth'
+            });
+        });
+
+        // Load data on page load
+        loadData();
+    </script>
+
+</body>
+</html>
