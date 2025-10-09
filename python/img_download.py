@@ -1,169 +1,235 @@
 import os
+import json
 import requests
-from urllib.parse import quote
 import time
+from pathlib import Path
 
-# 이미지 다운로드 설정
-IMAGE_LIST = [
-    # Hero Section
-    {"filename": "hero-main.jpg", "folder": "img/hero",
-     "keyword": "ballet dancer artistic photography dark background elegant"},
+# Pexels API Key
+API_KEY = "QbZ7FqndljpYDP3H993N5DTooL3RLDCmqdodjTT35JjmrybXF8XJV6DW"
 
-    # Headlines Section
-    {"filename": "hdl00001.jpg", "folder": "img/headlines",
-     "keyword": "myeongdong seoul street shopping tourism korea"},
-    {"filename": "hdl00003.jpg", "folder": "img/headlines", "keyword": "korean drama filming location cheongju city"},
-    {"filename": "hdl00004.jpg", "folder": "img/headlines", "keyword": "olive young store k-beauty products korea"},
-    {"filename": "hdl00005.jpg", "folder": "img/headlines", "keyword": "seongsu industrial fashion aesthetic korea"},
-    {"filename": "hdl00007.jpg", "folder": "img/headlines", "keyword": "hongdae street fashion young people seoul"},
-    {"filename": "hdl00008.jpg", "folder": "img/headlines", "keyword": "seoul night market street food korea"},
-    {"filename": "hdl00009.jpg", "folder": "img/headlines", "keyword": "korean medical spa wellness nature"},
-    {"filename": "hdl00010.jpg", "folder": "img/headlines", "keyword": "k-drama location fan pilgrimage korea"},
-    {"filename": "hdl00011.jpg", "folder": "img/headlines", "keyword": "korean fashion export global trend"},
+# Base directory
+BASE_DIR = r"C:\Users\movemin\Desktop\새 폴더\FBC"
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
-    # Districts Section
-    {"filename": "seongsu-cafe-01.jpg", "folder": "img/districts",
-     "keyword": "seongsu cafe industrial interior seoul korea"},
-    {"filename": "seongsu-street-01.jpg", "folder": "img/districts",
-     "keyword": "seongsu dong street fashion photography seoul"},
-
-    # Fashion Section
-    {"filename": "fs00001.jpg", "folder": "img/fashion", "keyword": "workwear fashion industrial aesthetic"},
-    {"filename": "fs00002.jpg", "folder": "img/fashion", "keyword": "minimal leather bag fashion accessory"},
-    {"filename": "fs00003.jpg", "folder": "img/fashion", "keyword": "vintage denim jeans fashion style"},
-    {"filename": "fs00004.jpg", "folder": "img/fashion", "keyword": "white sneakers street fashion"},
-    {"filename": "fs00005.jpg", "folder": "img/fashion", "keyword": "seoul fashion week runway model"},
-    {"filename": "fs00006.jpg", "folder": "img/fashion", "keyword": "hongdae street style young fashion seoul"},
-    {"filename": "fs00007.jpg", "folder": "img/fashion", "keyword": "fall knitwear sweater styling"},
-
-    # Beauty Section
-    {"filename": "by00001.jpg", "folder": "img/beauty", "keyword": "natural glow makeup korean beauty"},
-    {"filename": "by00002.jpg", "folder": "img/beauty", "keyword": "aesthetic nail salon interior minimal"},
-    {"filename": "by00003.jpg", "folder": "img/beauty", "keyword": "fall skincare products autumn beauty"},
-    {"filename": "by00004.jpg", "folder": "img/beauty", "keyword": "minimal hairstyle short hair trend"},
-    {"filename": "by00005.jpg", "folder": "img/beauty", "keyword": "korean beauty routine skincare steps"},
-    {"filename": "by00006.jpg", "folder": "img/beauty", "keyword": "fall makeup warm tone cosmetics"},
-
-    # Life Section
-    {"filename": "lf00001.jpg", "folder": "img/life", "keyword": "seongsu cafe industrial design interior seoul"},
+# JSON files to process
+JSON_FILES = [
+    "hero.json",
+    "headlines.json",
+    "fashion.json",
+    "beauty.json",
+    "life.json",
+    "districts.json"
 ]
+
+# Search keywords mapping (based on content type)
+KEYWORDS_MAP = {
+    "hero": "seoul city architecture culture",
+    "headlines": "fashion lifestyle culture seoul",
+    "fashion": "fashion model clothing style",
+    "beauty": "beauty makeup skincare cosmetics",
+    "life": "lifestyle cafe culture seoul",
+    "districts": "seoul district street culture"
+}
 
 
 def create_folders():
-    """필요한 폴더 구조 생성"""
-    folders = set([item['folder'] for item in IMAGE_LIST])
+    """Create necessary folder structure"""
+    folders = [
+        "img/hero",
+        "img/headlines",
+        "img/fashion",
+        "img/beauty",
+        "img/life",
+        "img/districts"
+    ]
     for folder in folders:
-        os.makedirs(folder, exist_ok=True)
-        print(f"✓ Created folder: {folder}")
+        full_path = os.path.join(BASE_DIR, folder)
+        os.makedirs(full_path, exist_ok=True)
+        print(f"✓ Folder ready: {full_path}")
 
 
-
-
-def download_from_pexels(keyword, save_path):
-    """Pexels API를 사용한 이미지 다운로드"""
-    # Pexels API 키 (무료, https://www.pexels.com/api/ 에서 발급)
-    API_KEY = "QbZ7FqndljpYDP3H993N5DTooL3RLDCmqdodjTT35JjmrybXF8XJV6DW"  # 여기에 본인의 키 입력
-
+def download_from_pexels(keyword, save_path, orientation="landscape"):
+    """Download image from Pexels API"""
     url = "https://api.pexels.com/v1/search"
     headers = {"Authorization": API_KEY}
     params = {
         "query": keyword,
         "per_page": 1,
-        "orientation": "landscape"
+        "orientation": orientation,
+        "size": "large"
     }
 
     try:
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(url, headers=headers, params=params, timeout=10)
         if response.status_code == 200:
             data = response.json()
             if data['photos']:
                 image_url = data['photos'][0]['src']['large']
 
-                # 이미지 다운로드
-                img_response = requests.get(image_url)
-                with open(save_path, 'wb') as f:
-                    f.write(img_response.content)
-                return True
-        print(f"  ✗ Failed to fetch from Pexels: {response.status_code}")
+                # Download image
+                img_response = requests.get(image_url, timeout=10)
+                if img_response.status_code == 200:
+                    with open(save_path, 'wb') as f:
+                        f.write(img_response.content)
+                    return True
         return False
     except Exception as e:
         print(f"  ✗ Error: {e}")
         return False
 
 
-def download_placeholder(save_path, width=1920, height=1080):
-    """플레이스홀더 이미지 다운로드 (API 없이 사용 가능)"""
-    url = f"https://placehold.co/{width}x{height}/e5e7eb/9ca3af?text=FBC+Placeholder"
+def extract_images_from_json(json_file):
+    """Extract image paths from JSON file"""
+    file_path = os.path.join(DATA_DIR, json_file)
+
+    if not os.path.exists(file_path):
+        print(f"⚠ File not found: {file_path}")
+        return []
+
     try:
-        response = requests.get(url)
-        with open(save_path, 'wb') as f:
-            f.write(response.content)
-        return True
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        images = []
+
+        # Handle different JSON structures
+        if isinstance(data, list):
+            for item in data:
+                # Direct image field
+                if 'image' in item:
+                    images.append(item['image'])
+                # Featured stories (for districts.json)
+                if 'featured_stories' in item:
+                    for story in item['featured_stories']:
+                        if 'image' in story:
+                            images.append(story['image'])
+        elif isinstance(data, dict):
+            # Single object with image
+            if 'image' in data:
+                images.append(data['image'])
+
+        return images
     except Exception as e:
-        print(f"  ✗ Error downloading placeholder: {e}")
-        return False
+        print(f"✗ Error reading {json_file}: {e}")
+        return []
+
+
+def get_keyword_for_image(image_path, json_file):
+    """Generate keyword based on image path and JSON file"""
+    base_name = os.path.basename(image_path)
+    file_type = json_file.replace('.json', '')
+
+    # Get base keyword from map
+    base_keyword = KEYWORDS_MAP.get(file_type, "korea fashion lifestyle")
+
+    # Add specific keywords based on path
+    if 'seongsu' in image_path:
+        base_keyword += " industrial factory aesthetic"
+    elif 'hannam' in image_path:
+        base_keyword += " luxury sophisticated premium"
+    elif 'hongdae' in image_path:
+        base_keyword += " street youth trendy"
+    elif 'myeongdong' in image_path:
+        base_keyword += " shopping tourism beauty"
+
+    if 'cafe' in image_path:
+        base_keyword += " cafe coffee interior"
+    elif 'street' in image_path:
+        base_keyword += " street urban city"
+    elif 'gallery' in image_path:
+        base_keyword += " gallery art exhibition"
+    elif 'nail' in image_path:
+        base_keyword += " nail art manicure salon"
+    elif 'hair' in image_path:
+        base_keyword += " hair salon hairstyle"
+    elif 'food' in image_path or 'restaurant' in image_path:
+        base_keyword += " food restaurant dining"
+
+    return base_keyword
 
 
 def main():
-    print("=" * 60)
-    print("FBC Creators Image Download Script")
-    print("=" * 60)
+    print("=" * 70)
+    print("FBC Creators Image Download Script (Pexels API)")
+    print("=" * 70)
     print()
 
-    # 1. 폴더 생성
+    # Step 1: Create folders
     print("Step 1: Creating folder structure...")
     create_folders()
     print()
 
-    # 2. 이미지 다운로드
-    print("Step 2: Downloading images...")
+    # Step 2: Collect all image paths from JSON files
+    print("Step 2: Collecting image paths from JSON files...")
+    all_images = {}
+
+    for json_file in JSON_FILES:
+        images = extract_images_from_json(json_file)
+        if images:
+            all_images[json_file] = images
+            print(f"  ✓ {json_file}: {len(images)} images found")
+
+    total_images = sum(len(imgs) for imgs in all_images.values())
+    print(f"\nTotal images to download: {total_images}")
+    print()
+
+    # Step 3: Download images
+    print("Step 3: Downloading images from Pexels...")
     print()
 
     success_count = 0
+    skip_count = 0
     fail_count = 0
+    download_count = 0
 
-    for idx, item in enumerate(IMAGE_LIST, 1):
-        filename = item['filename']
-        folder = item['folder']
-        keyword = item['keyword']
-        save_path = os.path.join(folder, filename)
+    for json_file, image_paths in all_images.items():
+        print(f"\n📁 Processing {json_file}...")
 
-        # 이미 존재하는 파일 스킵
-        if os.path.exists(save_path):
-            print(f"[{idx}/{len(IMAGE_LIST)}] ⊙ Skipped (already exists): {save_path}")
-            success_count += 1
-            continue
+        for idx, image_path in enumerate(image_paths, 1):
+            full_path = os.path.join(BASE_DIR, image_path)
 
-        print(f"[{idx}/{len(IMAGE_LIST)}] Downloading: {filename}")
-        print(f"  Keyword: {keyword}")
-
-        # Unsplash 시도
-        # Pexels 시도
-        if download_from_pexels(keyword, save_path):
-            print(f"  ✓ Downloaded from Pexels: {save_path}")
-            success_count += 1
-        # 플레이스홀더 사용
-        else:
-            if download_placeholder(save_path):
-                print(f"  ⚠ Using placeholder: {save_path}")
+            # Skip if file already exists
+            if os.path.exists(full_path):
+                print(f"  [{idx}/{len(image_paths)}] ⊙ Skip (exists): {image_path}")
+                skip_count += 1
                 success_count += 1
+                continue
+
+            # Create directory if not exists
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+            # Generate keyword
+            keyword = get_keyword_for_image(image_path, json_file)
+
+            print(f"  [{idx}/{len(image_paths)}] Downloading: {image_path}")
+            print(f"    Keyword: {keyword}")
+
+            # Download image
+            if download_from_pexels(keyword, full_path):
+                print(f"    ✓ Downloaded successfully")
+                success_count += 1
+                download_count += 1
             else:
-                print(f"  ✗ Failed: {save_path}")
+                print(f"    ✗ Download failed")
                 fail_count += 1
 
-        # API 호출 제한 방지
-        time.sleep(1)
-        print()
+            # API rate limit: Wait 1 second between requests
+            time.sleep(1.2)
 
-    # 3. 결과 요약
-    print("=" * 60)
+    # Step 4: Summary
+    print()
+    print("=" * 70)
     print("Download Summary")
-    print("=" * 60)
-    print(f"Total: {len(IMAGE_LIST)}")
-    print(f"Success: {success_count}")
+    print("=" * 70)
+    print(f"Total: {total_images}")
+    print(f"Success: {success_count} (New: {download_count}, Skipped: {skip_count})")
     print(f"Failed: {fail_count}")
     print()
-    print("✓ Image download complete!")
+
+    if fail_count > 0:
+        print("⚠ Some images failed to download. Please check your API key and internet connection.")
+    else:
+        print("✓ All images downloaded successfully!")
 
 
 if __name__ == "__main__":

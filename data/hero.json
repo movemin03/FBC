@@ -1,7 +1,242 @@
-{
-  "title_kor": "사유의 발레",
-  "title_en": "The Ballet of Contemplation",
-  "subtitle_kor": "Cultural Translation",
-  "subtitle_en": "Discover Korea through Cultural Translation",
-  "image": "img/hero/hero-main.jpg"
-}
+[
+  {
+    "id": "hero01",
+    "title_kor": "사유의 발레",
+    "title_en": "The Ballet of Contemplation",
+    "subtitle_kor": "Cultural Translation",
+    "subtitle_en": "Discover Korea through Cultural Translation",
+    "image": "img/hero/hero-main.jpg"
+  },
+  {
+    "id": "hero02",
+    "title_kor": "서울의 숨겨진 패션 DNA",
+    "title_en": "Seoul's Hidden Fashion DNA",
+    "subtitle_kor": "지역마다 다른 스타일의 발견",
+    "subtitle_en": "Discovering Different Styles in Each District",
+    "image": "img/hero/hero-02.jpg"
+  },
+  {
+    "id": "hero03",
+    "title_kor": "K-뷰티의 문화적 뿌리",
+    "title_en": "The Cultural Roots of K-Beauty",
+    "subtitle_kor": "전통에서 찾은 현대의 아름다움",
+    "subtitle_en": "Modern Beauty Found in Tradition",
+    "image": "img/hero/hero-03.jpg"
+  },
+  {
+    "id": "hero04",
+    "title_kor": "성수동: 산업에서 예술로",
+    "title_en": "Seongsu-dong: From Industry to Art",
+    "subtitle_kor": "공장이 갤러리가 되는 순간",
+    "subtitle_en": "When Factories Become Galleries",
+    "image": "img/hero/hero-04.jpg"
+  },
+  {
+    "id": "hero05",
+    "title_kor": "한남동의 큐레이션 문화",
+    "title_en": "Hannam-dong's Curation Culture",
+    "subtitle_kor": "MZ세대가 선택한 세련됨",
+    "subtitle_en": "Sophistication Chosen by MZ Generation",
+    "image": "img/hero/hero-05.jpg"
+  },
+  {
+    "id": "hero06",
+    "title_kor": "홍대: 젊음의 실험실",
+    "title_en": "Hongdae: Laboratory of Youth",
+    "subtitle_kor": "거리에서 시작되는 트렌드",
+    "subtitle_en": "Trends Starting from the Streets",
+    "image": "img/hero/hero-06.jpg"
+  },
+  {
+    "id": "hero07",
+    "title_kor": "전통과 현대의 대화",
+    "title_en": "Dialogue Between Tradition and Modernity",
+    "subtitle_kor": "한복의 현대적 재해석",
+    "subtitle_en": "Modern Reinterpretation of Hanbok",
+    "image": "img/hero/hero-07.jpg"
+  },
+  {
+    "id": "hero08",
+    "title_kor": "서울의 밤, 새로운 문화",
+    "title_en": "Seoul's Night, New Culture",
+    "subtitle_kor": "야간관광의 재발견",
+    "subtitle_en": "Rediscovering Night Tourism",
+    "image": "img/hero/hero-08.jpg"
+  },
+  {
+    "id": "hero09",
+    "title_kor": "K-드라마가 만든 여행지",
+    "title_en": "Travel Destinations Created by K-Dramas",
+    "subtitle_kor": "팬덤이 선택한 성지순례",
+    "subtitle_en": "Pilgrimage Sites Chosen by Fandom",
+    "image": "img/hero/hero-09.jpg"
+  },
+  {
+    "id": "hero10",
+    "title_kor": "무신사 현상: K-패션의 민주화",
+    "title_en": "Musinsa Phenomenon: Democratization of K-Fashion",
+    "subtitle_kor": "모두를 위한 패션 플랫폼",
+    "subtitle_en": "Fashion Platform for Everyone",
+    "image": "img/hero/hero-10.jpg"
+  },
+  {
+    "id": "hero11",
+    "title_kor": "올리브영: K-뷰티의 관문",
+    "title_en": "Olive Young: Gateway to K-Beauty",
+    "subtitle_kor": "외국인이 가장 먼저 찾는 곳",
+    "subtitle_en": "The First Place Foreigners Visit",
+    "image": "img/hero/hero-11.jpg"
+  },
+  {
+    "id": "hero12",
+    "title_kor": "서울 패션 위크의 진화",
+    "title_en": "Evolution of Seoul Fashion Week",
+    "subtitle_kor": "글로벌 무대로의 도약",
+    "subtitle_en": "Leap to the Global Stage",
+    "image": "img/hero/hero-12.jpg"
+  },
+  {
+    "id": "hero13",
+    "title_kor": "스트리트 패션의 성지",
+    "title_en": "Sacred Place of Street Fashion",
+    "subtitle_kor": "홍대에서 태어난 스타일",
+    "subtitle_en": "Styles Born in Hongdae",
+    "image": "img/hero/hero-13.jpg"
+  },
+  {
+    "id": "hero14",
+    "title_kor": "한강의 네 가지 얼굴",
+    "title_en": "Four Faces of Han River",
+    "subtitle_kor": "계절마다 다른 서울의 풍경",
+    "subtitle_en": "Different Seoul Scenery Each Season",
+    "image": "img/hero/hero-14.jpg"
+  },
+  {
+    "id": "hero15",
+    "title_kor": "익선동: 한옥의 재탄생",
+    "title_en": "Ikseon-dong: Rebirth of Hanok",
+    "subtitle_kor": "오래된 것의 새로운 가치",
+    "subtitle_en": "New Value of Old Things",
+    "image": "img/hero/hero-15.jpg"
+  },
+  {
+    "id": "hero16",
+    "title_kor": "명동: K-뷰티 쇼핑의 중심",
+    "title_en": "Myeongdong: Center of K-Beauty Shopping",
+    "subtitle_kor": "전 세계 관광객의 필수 코스",
+    "subtitle_en": "Must-Visit for Global Tourists",
+    "image": "img/hero/hero-16.jpg"
+  },
+  {
+    "id": "hero17",
+    "title_kor": "북촌: 시간이 멈춘 서울",
+    "title_en": "Bukchon: Seoul Where Time Stopped",
+    "subtitle_kor": "600년 역사 속 한옥마을",
+    "subtitle_en": "Hanok Village in 600 Years of History",
+    "image": "img/hero/hero-17.jpg"
+  },
+  {
+    "id": "hero18",
+    "title_kor": "DDP: 미래형 디자인의 상징",
+    "title_en": "DDP: Symbol of Futuristic Design",
+    "subtitle_kor": "자하 하디드의 건축 유산",
+    "subtitle_en": "Zaha Hadid's Architectural Legacy",
+    "image": "img/hero/hero-18.jpg"
+  },
+  {
+    "id": "hero19",
+    "title_kor": "연남동 로스터리 카페 문화",
+    "title_en": "Yeonnam-dong Roastery Cafe Culture",
+    "subtitle_kor": "커피 애호가의 성지",
+    "subtitle_en": "Sanctuary for Coffee Lovers",
+    "image": "img/hero/hero-19.jpg"
+  },
+  {
+    "id": "hero20",
+    "title_kor": "광장시장: 전통의 맛",
+    "title_en": "Gwangjang Market: Taste of Tradition",
+    "subtitle_kor": "100년 역사의 먹거리 천국",
+    "subtitle_en": "Food Paradise with 100 Years of History",
+    "image": "img/hero/hero-20.jpg"
+  },
+  {
+    "id": "hero21",
+    "title_kor": "가로수길: 브런치 문화의 메카",
+    "title_en": "Garosu-gil: Mecca of Brunch Culture",
+    "subtitle_kor": "주말의 여유를 찾아서",
+    "subtitle_en": "Seeking Weekend Leisure",
+    "image": "img/hero/hero-21.jpg"
+  },
+  {
+    "id": "hero22",
+    "title_kor": "을지로 레트로 부흥",
+    "title_en": "Euljiro Retro Revival",
+    "subtitle_kor": "오래된 것이 힙해지는 거리",
+    "subtitle_en": "Street Where Old Becomes Hip",
+    "image": "img/hero/hero-22.jpg"
+  },
+  {
+    "id": "hero23",
+    "title_kor": "이태원: 다문화 서울의 얼굴",
+    "title_en": "Itaewon: Face of Multicultural Seoul",
+    "subtitle_kor": "세계의 맛이 모이는 곳",
+    "subtitle_en": "Where World Flavors Gather",
+    "image": "img/hero/hero-23.jpg"
+  },
+  {
+    "id": "hero24",
+    "title_kor": "삼청동 갤러리 거리",
+    "title_en": "Samcheong-dong Gallery Street",
+    "subtitle_kor": "예술과 카페의 조화",
+    "subtitle_en": "Harmony of Art and Cafes",
+    "image": "img/hero/hero-24.jpg"
+  },
+  {
+    "id": "hero25",
+    "title_kor": "청담동 럭셔리의 정의",
+    "title_en": "Cheongdam-dong's Definition of Luxury",
+    "subtitle_kor": "글로벌 명품의 집결지",
+    "subtitle_en": "Hub of Global Luxury Brands",
+    "image": "img/hero/hero-25.jpg"
+  },
+  {
+    "id": "hero26",
+    "title_kor": "경복궁: 조선의 심장",
+    "title_en": "Gyeongbokgung: Heart of Joseon",
+    "subtitle_kor": "왕조의 역사가 살아있는 궁",
+    "subtitle_en": "Palace Where Dynasty History Lives",
+    "image": "img/hero/hero-26.jpg"
+  },
+  {
+    "id": "hero27",
+    "title_kor": "남산 서울타워의 야경",
+    "title_en": "Namsan Seoul Tower Night View",
+    "subtitle_kor": "서울을 한눈에 담다",
+    "subtitle_en": "Capturing Seoul at a Glance",
+    "image": "img/hero/hero-27.jpg"
+  },
+  {
+    "id": "hero28",
+    "title_kor": "창덕궁 후원의 사계",
+    "title_en": "Four Seasons of Changdeokgung Secret Garden",
+    "subtitle_kor": "왕실의 비밀정원",
+    "subtitle_en": "Royal Secret Garden",
+    "image": "img/hero/hero-28.jpg"
+  },
+  {
+    "id": "hero29",
+    "title_kor": "망원시장: 로컬의 진심",
+    "title_en": "Mangwon Market: Sincerity of Locals",
+    "subtitle_kor": "서울 사람들의 장바구니",
+    "subtitle_en": "Shopping Basket of Seoul People",
+    "image": "img/hero/hero-29.jpg"
+  },
+  {
+    "id": "hero30",
+    "title_kor": "서울숲: 도심 속 자연",
+    "title_en": "Seoul Forest: Nature in the City",
+    "subtitle_kor": "계절의 변화를 느끼는 공원",
+    "subtitle_en": "Park to Feel the Change of Seasons",
+    "image": "img/hero/hero-30.jpg"
+  }
+]

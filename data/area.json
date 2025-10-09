@@ -1,0 +1,30 @@
+[
+  {
+    "id": "seongsu",
+    "name_kor": "성수동",
+    "name_en": "Seongsu-dong",
+    "latitude": 37.5447,
+    "longitude": 127.0557
+  },
+  {
+    "id": "hannam",
+    "name_kor": "한남동",
+    "name_en": "Hannam-dong",
+    "latitude": 37.5347,
+    "longitude": 127.0026
+  },
+  {
+    "id": "hongdae",
+    "name_kor": "홍대",
+    "name_en": "Hongdae",
+    "latitude": 37.5565,
+    "longitude": 126.9240
+  },
+  {
+    "id": "myeongdong",
+    "name_kor": "명동",
+    "name_en": "Myeongdong",
+    "latitude": 37.5636,
+    "longitude": 126.9826
+  }
+]

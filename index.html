@@ -19,6 +19,7 @@
             background-size: cover;
             background-position: center;
             min-height: 70vh;
+            transition: background-image 1s ease-in-out;
         }
         .section-title {
             font-size: 14px;
@@ -89,6 +90,9 @@
         .location-hero p {
             color: #4b5563;
         }
+        .hero-title {
+            transition: opacity 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-white">
@@ -129,10 +133,10 @@
     <!-- Hero Section -->
     <section class="hero-image flex items-center justify-center text-white" id="hero-section">
         <div class="text-center px-4">
-            <h2 class="text-5xl md:text-7xl font-serif font-bold mb-4" id="hero-title"></h2>
-            <p class="text-lg md:text-xl opacity-90" id="hero-subtitle"></p>
+            <h2 class="text-5xl md:text-7xl font-serif font-bold mb-4 hero-title" id="hero-title"></h2>
+            <p class="text-lg md:text-xl opacity-90 hero-title" id="hero-subtitle"></p>
             <div class="mt-8">
-                <svg class="w-6 h-6 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 mx-auto animate-bounce cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="scroll-arrow">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
                 </svg>
             </div>
@@ -269,25 +273,29 @@
         // Global State
         let currentLang = 'kor';
         let currentDistrict = 'seongsu';
+        let currentHeroIndex = 0;
+        let heroInterval;
         let data = {
-            hero: null,
+            hero: [],
             headlines: [],
             fashion: [],
             beauty: [],
             life: [],
-            districts: []
+            districts: [],
+            areas: []
         };
 
         // Load All Data
         async function loadData() {
             try {
-                const [heroRes, headlinesRes, fashionRes, beautyRes, lifeRes, districtsRes] = await Promise.all([
+                const [heroRes, headlinesRes, fashionRes, beautyRes, lifeRes, districtsRes, areasRes] = await Promise.all([
                     fetch('data/hero.json'),
                     fetch('data/headlines.json'),
                     fetch('data/fashion.json'),
                     fetch('data/beauty.json'),
                     fetch('data/life.json'),
-                    fetch('data/districts.json')
+                    fetch('data/districts.json'),
+                    fetch('data/areas.json')
                 ]);
 
                 data.hero = await heroRes.json();
@@ -296,6 +304,7 @@
                 data.beauty = await beautyRes.json();
                 data.life = await lifeRes.json();
                 data.districts = await districtsRes.json();
+                data.areas = await areasRes.json();
 
                 initializePage();
             } catch (error) {
@@ -306,6 +315,7 @@
         // Initialize Page
         function initializePage() {
             renderHero();
+            startHeroRotation();
             renderLocationSection();
             renderFashionSection();
             renderBeautySection();
@@ -316,18 +326,75 @@
             renderLocationModal();
         }
 
-        // Render Hero
+        // Calculate Distance (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Auto Detect Location
+        function autoDetectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLon = position.coords.longitude;
+                        
+                        let closestDistrict = data.areas[0];
+                        let minDistance = Infinity;
+
+                        data.areas.forEach(area => {
+                            const distance = calculateDistance(userLat, userLon, area.latitude, area.longitude);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestDistrict = area;
+                            }
+                        });
+
+                        currentDistrict = closestDistrict.id;
+                        renderLocationSection();
+                        renderFashionSection();
+                        renderBeautySection();
+                        alert(`${currentLang === 'kor' ? '현재 위치' : 'Current location'}: ${currentLang === 'kor' ? closestDistrict.name_kor : closestDistrict.name_en}`);
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        alert(currentLang === 'kor' ? '위치 정보를 가져올 수 없습니다.' : 'Unable to get location information.');
+                    }
+                );
+            } else {
+                alert(currentLang === 'kor' ? '브라우저가 위치 정보를 지원하지 않습니다.' : 'Browser does not support geolocation.');
+            }
+        }
+
+        // Render Hero with rotation
         function renderHero() {
             const heroSection = document.getElementById('hero-section');
             const heroTitle = document.getElementById('hero-title');
             const heroSubtitle = document.getElementById('hero-subtitle');
 
-            heroSection.style.background = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${data.hero.image}')`;
+            const hero = data.hero[currentHeroIndex];
+
+            heroSection.style.background = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')`;
             heroSection.style.backgroundSize = 'cover';
             heroSection.style.backgroundPosition = 'center';
 
-            heroTitle.textContent = data.hero.title_kor;
-            heroSubtitle.textContent = data.hero.subtitle_kor;
+            heroTitle.textContent = currentLang === 'kor' ? hero.title_kor : hero.title_en;
+            heroSubtitle.textContent = currentLang === 'kor' ? hero.subtitle_kor : hero.subtitle_en;
+        }
+
+        // Start Hero Rotation
+        function startHeroRotation() {
+            heroInterval = setInterval(() => {
+                currentHeroIndex = (currentHeroIndex + 1) % data.hero.length;
+                renderHero();
+            }, 5000); // Change every 5 seconds
         }
 
         // Render Location Section
@@ -339,7 +406,7 @@
             document.getElementById('location-desc').textContent = currentLang === 'kor' ? district.desc_kor : district.desc_en;
 
             const storiesContainer = document.getElementById('location-stories');
-            storiesContainer.innerHTML = district.featured_stories.map(story => `
+            storiesContainer.innerHTML = district.featured_stories.slice(0, 3).map(story => `
                 <article class="bg-white border rounded overflow-hidden article-card cursor-pointer shadow-sm hover:shadow-md transition">
                     <div class="relative h-48 overflow-hidden">
                         <img src="${story.image}" alt="" class="w-full h-full object-cover">
@@ -512,20 +579,31 @@
         // Render Location Modal
         function renderLocationModal() {
             const container = document.getElementById('location-options');
-            container.innerHTML = data.districts.map(district => `
-                <button class="location-option w-full text-left p-4 border rounded hover:bg-gray-50 transition" data-location="${district.id}">
-                    <div class="font-bold">📍 ${district.name_en}</div>
-                    <div class="text-sm text-gray-600">${district.tagline_en}</div>
+            container.innerHTML = `
+                <button class="location-option w-full text-left p-4 border rounded hover:bg-gray-50 transition bg-blue-50" data-location="auto">
+                    <div class="font-bold">🎯 Auto Detect</div>
+                    <div class="text-sm text-gray-600">Find nearest district automatically</div>
                 </button>
-            `).join('');
+                ${data.districts.map(district => `
+                    <button class="location-option w-full text-left p-4 border rounded hover:bg-gray-50 transition" data-location="${district.id}">
+                        <div class="font-bold">📍 ${district.name_en}</div>
+                        <div class="text-sm text-gray-600">${district.tagline_en}</div>
+                    </button>
+                `).join('')}
+            `;
 
             // Add event listeners
             document.querySelectorAll('.location-option').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentDistrict = btn.getAttribute('data-location');
-                    renderLocationSection();
-                    renderFashionSection();
-                    renderBeautySection();
+                    const location = btn.getAttribute('data-location');
+                    if (location === 'auto') {
+                        autoDetectLocation();
+                    } else {
+                        currentDistrict = location;
+                        renderLocationSection();
+                        renderFashionSection();
+                        renderBeautySection();
+                    }
                     document.getElementById('location-modal').classList.add('hidden');
                 });
             });
@@ -536,11 +614,7 @@
             currentLang = currentLang === 'kor' ? 'en' : 'kor';
             document.getElementById('lang-text').textContent = currentLang === 'kor' ? 'EN' : 'KO';
             
-            // Update Hero
-            document.getElementById('hero-title').textContent = currentLang === 'kor' ? data.hero.title_kor : data.hero.title_en;
-            document.getElementById('hero-subtitle').textContent = currentLang === 'kor' ? data.hero.subtitle_kor : data.hero.subtitle_en;
-            
-            // Re-render all sections
+            renderHero();
             renderLocationSection();
             renderFashionSection();
             renderBeautySection();
@@ -566,7 +640,7 @@
         });
 
         // Smooth scroll for hero
-        document.querySelector('.animate-bounce').parentElement.addEventListener('click', () => {
+        document.getElementById('scroll-arrow').addEventListener('click', () => {
             window.scrollTo({
                 top: window.innerHeight,
                 behavior: 'smooth'
