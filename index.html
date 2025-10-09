@@ -359,14 +359,14 @@
             return R * c;
         }
 
-        // Auto Detect Location
+        // Auto Detect Location (수정됨)
         function autoDetectLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const userLat = position.coords.latitude;
                         const userLon = position.coords.longitude;
-                        
+
                         let closestDistrict = data.areas[0];
                         let minDistance = Infinity;
 
@@ -380,22 +380,44 @@
 
                         currentDistrict = closestDistrict.id;
                         console.log('Auto-detected district:', currentDistrict);
-                        
+
                         renderLocationSection();
                         renderFashionSection();
                         renderBeautySection();
-                        
+
                         alert(`${currentLang === 'kor' ? '현재 위치' : 'Current location'}: ${currentLang === 'kor' ? closestDistrict.name_kor : closestDistrict.name_en}`);
                     },
                     (error) => {
                         console.error('Geolocation error:', error);
-                        alert(currentLang === 'kor' ? '위치 정보를 가져올 수 없습니다.' : 'Unable to get location information.');
+
+                        // 위치 정보를 가져올 수 없는 경우 성수동을 기본값으로 설정
+                        currentDistrict = 'seongsu';
+                        console.log('Defaulting to Seongsu due to geolocation error');
+
+                        renderLocationSection();
+                        renderFashionSection();
+                        renderBeautySection();
+
+                        alert(currentLang === 'kor'
+                            ? '위치 정보를 가져올 수 없어 성수동으로 설정되었습니다.'
+                            : 'Unable to get location. Defaulting to Seongsu.');
                     }
                 );
             } else {
-                alert(currentLang === 'kor' ? '브라우저가 위치 정보를 지원하지 않습니다.' : 'Browser does not support geolocation.');
+                // 브라우저가 위치 정보를 지원하지 않는 경우에도 성수동으로 설정
+                currentDistrict = 'seongsu';
+                console.log('Geolocation not supported. Defaulting to Seongsu');
+
+                renderLocationSection();
+                renderFashionSection();
+                renderBeautySection();
+
+                alert(currentLang === 'kor'
+                    ? '브라우저가 위치 정보를 지원하지 않아 성수동으로 설정되었습니다.'
+                    : 'Browser does not support geolocation. Defaulting to Seongsu.');
             }
         }
+
 
         // Render Hero with rotation
         function renderHero() {
