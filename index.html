@@ -42,10 +42,14 @@
         .hero-content {
             position: absolute;
             bottom: 60px;
-            left: 40px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 10;
             max-width: 600px;
+            text-align: center;
         }
+
+
         .hero-indicators {
             position: absolute;
             bottom: 30px;
@@ -172,7 +176,7 @@
                     <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
                 </div>
             </div>
-            
+           
             <!-- Main Navigation -->
             <nav class="py-4">
                 <ul class="flex items-center justify-center space-x-6 md:space-x-8 text-sm font-medium">
@@ -194,10 +198,11 @@
         <div id="hero-slides-container"></div>
         
         <!-- Hero Content -->
-        <div class="hero-content text-left px-4">
+        <div class="hero-content text-center px-4">
             <h2 class="text-3xl md:text-4xl font-serif font-bold mb-2" id="hero-title"></h2>
             <p class="text-sm md:text-base opacity-90" id="hero-subtitle"></p>
         </div>
+
         
         <!-- Indicators -->
         <div class="hero-indicators" id="hero-indicators"></div>
