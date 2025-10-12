@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -34,48 +34,17 @@
             background-size: cover;
             background-position: center;
             opacity: 0;
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-            transform: translateX(100%);
+            transition: opacity 0.8s ease-in-out;
         }
         .hero-slide.active {
             opacity: 1;
-            transform: translateX(0);
-        }
-        .hero-slide.prev {
-            opacity: 0;
-            transform: translateX(-100%);
         }
         .hero-content {
-            position: relative;
-            z-index: 10;
-        }
-        .hero-nav-button {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.3);
-            border: none;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            backdrop-filter: blur(5px);
-        }
-        .hero-nav-button:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-        .hero-nav-button.left {
-            left: 20px;
-        }
-        .hero-nav-button.right {
-            right: 20px;
+            bottom: 60px;
+            left: 40px;
+            z-index: 10;
+            max-width: 600px;
         }
         .hero-indicators {
             position: absolute;
@@ -191,7 +160,7 @@
             <div class="header-container py-3 border-b">
                 <div class="header-left flex items-center space-x-4 text-xs">
                     <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
-                        <span id="lang-text">EN</span>
+                        <span id="lang-text">English</span>
                     </button>
                 </div>
                 <div class="header-center">
@@ -200,7 +169,7 @@
                     </a>
                 </div>
                 <div class="header-right flex items-center space-x-4 text-xs">
-                    <a href="#" class="hover:text-gray-600">SUBSCRIBE</a>
+                    <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
                 </div>
             </div>
             
@@ -212,7 +181,7 @@
                     <li><a href="life.html" class="hover:text-gray-600 transition">LIFE</a></li>
                     <li><a href="districts.html" class="hover:text-gray-600 transition relative">
                         DISTRICTS
-                        <span class="absolute -top-1 -right-3 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</span>
+                        <span class="absolute -top-1 -right-10 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</span>
                     </a></li>
                 </ul>
             </nav>
@@ -225,19 +194,10 @@
         <div id="hero-slides-container"></div>
         
         <!-- Hero Content -->
-        <div class="text-center px-4 hero-content">
-            <h2 class="text-5xl md:text-7xl font-serif font-bold mb-4" id="hero-title"></h2>
-            <p class="text-lg md:text-xl opacity-90" id="hero-subtitle"></p>
-            <div class="mt-8">
-                <svg class="w-6 h-6 mx-auto animate-bounce cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="scroll-arrow">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                </svg>
-            </div>
+        <div class="hero-content text-left px-4">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold mb-2" id="hero-title"></h2>
+            <p class="text-sm md:text-base opacity-90" id="hero-subtitle"></p>
         </div>
-        
-        <!-- Navigation Buttons -->
-        <button class="hero-nav-button left" id="hero-prev">‹</button>
-        <button class="hero-nav-button right" id="hero-next">›</button>
         
         <!-- Indicators -->
         <div class="hero-indicators" id="hero-indicators"></div>
@@ -252,11 +212,6 @@
                 <button id="change-location" class="mt-4 px-6 py-2 bg-black text-white font-semibold rounded hover:bg-gray-800 transition">
                     📍 Change Location
                 </button>
-            </div>
-
-            <!-- Location Quick Stories -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="location-stories">
-                <!-- Dynamically loaded -->
             </div>
         </div>
     </section>
@@ -340,12 +295,12 @@
                         <li><a href="#" class="hover:text-white">Contact</a></li>
                     </ul>
                 </div>
-                <div>
+                <div id="newsletter-section">
                     <h4 class="font-bold mb-3 text-sm">NEWSLETTER</h4>
                     <p class="text-sm text-gray-400 mb-3">Get weekly K-fashion insights</p>
                     <div class="flex">
-                        <input type="email" placeholder="Your email" class="px-3 py-2 bg-gray-800 text-sm flex-1 focus:outline-none">
-                        <button class="px-4 py-2 bg-white text-black text-sm font-medium">→</button>
+                        <input type="email" id="newsletter-email" placeholder="Your email" class="px-3 py-2 bg-gray-800 text-sm flex-1 focus:outline-none">
+                        <button id="newsletter-submit" class="px-4 py-2 bg-white text-black text-sm font-medium">→</button>
                     </div>
                 </div>
             </div>
@@ -371,11 +326,14 @@
     <!-- JavaScript -->
     <script>
         // Global State
-        let currentLang = 'kor';
+        let currentLang = 'en';
         let currentDistrict = 'seongsu';
         let currentHeroIndex = 0;
         let heroInterval;
         let heroSlides = [];
+        let autoSelectEnabled = true;
+        let touchStartX = 0;
+        let touchEndX = 0;
         let data = {
             hero: [],
             headlines: [],
@@ -385,6 +343,38 @@
             districts: [],
             areas: []
         };
+
+        // Detect system language
+        function detectSystemLanguage() {
+            const userLang = navigator.language || navigator.userLanguage;
+            if (userLang.toLowerCase().includes('ko')) {
+                currentLang = 'kor';
+                document.getElementById('lang-text').textContent = 'Korean';
+            } else {
+                currentLang = 'en';
+                document.getElementById('lang-text').textContent = 'English';
+            }
+        }
+
+        // Load session storage preferences
+        function loadSessionPreferences() {
+            const storedAutoSelect = sessionStorage.getItem('autoSelectEnabled');
+            const storedDistrict = sessionStorage.getItem('currentDistrict');
+            
+            if (storedAutoSelect !== null) {
+                autoSelectEnabled = storedAutoSelect === 'true';
+            }
+            
+            if (storedDistrict !== null) {
+                currentDistrict = storedDistrict;
+            }
+        }
+
+        // Save session storage preferences
+        function saveSessionPreferences() {
+            sessionStorage.setItem('autoSelectEnabled', autoSelectEnabled);
+            sessionStorage.setItem('currentDistrict', currentDistrict);
+        }
 
         // Load All Data
         async function loadData() {
@@ -416,26 +406,65 @@
 
         // Initialize Page
         function initializePage() {
+            detectSystemLanguage();
+            loadSessionPreferences();
+            
+            if (autoSelectEnabled) {
+                autoDetectLocation();
+            } else {
+                renderLocationSection();
+                renderFashionSection();
+                renderBeautySection();
+            }
+            
             initializeHeroSlides();
             renderHero();
             startHeroRotation();
-            renderLocationSection();
-            renderFashionSection();
-            renderBeautySection();
             renderTodayStories();
             renderBestStories();
             renderMustRead();
             renderLatestStories();
             renderLocationModal();
+            initializeHeroSwipe();
+        }
+
+        // Initialize Hero Swipe Gestures
+        function initializeHeroSwipe() {
+            const heroSection = document.getElementById('hero-section');
+            
+            heroSection.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            heroSection.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+        }
+
+        // Handle Swipe
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                clearInterval(heroInterval);
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    nextSlide();
+                } else {
+                    // Swipe right - previous slide
+                    prevSlide();
+                }
+                startHeroRotation();
+            }
         }
 
         // Initialize Hero Slides
         function initializeHeroSlides() {
-            // 랜덤으로 5개 선택
             const shuffled = [...data.hero].sort(() => 0.5 - Math.random());
             heroSlides = shuffled.slice(0, 5);
             
-            // 슬라이드 생성
             const container = document.getElementById('hero-slides-container');
             container.innerHTML = heroSlides.map((hero, index) => `
                 <div class="hero-slide ${index === 0 ? 'active' : ''}" 
@@ -444,13 +473,11 @@
                 </div>
             `).join('');
             
-            // 인디케이터 생성
             const indicators = document.getElementById('hero-indicators');
             indicators.innerHTML = heroSlides.map((_, index) => `
                 <div class="hero-indicator ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
             `).join('');
             
-            // 인디케이터 클릭 이벤트
             document.querySelectorAll('.hero-indicator').forEach(indicator => {
                 indicator.addEventListener('click', () => {
                     const index = parseInt(indicator.getAttribute('data-index'));
@@ -477,20 +504,13 @@
             const slides = document.querySelectorAll('.hero-slide');
             const indicators = document.querySelectorAll('.hero-indicator');
             
-            // Remove active classes
             slides[currentHeroIndex].classList.remove('active');
-            slides[currentHeroIndex].classList.add('prev');
             indicators[currentHeroIndex].classList.remove('active');
             
-            // Update index
             currentHeroIndex = index;
             
-            // Add active classes
-            setTimeout(() => {
-                slides.forEach(slide => slide.classList.remove('prev'));
-                slides[currentHeroIndex].classList.add('active');
-                indicators[currentHeroIndex].classList.add('active');
-            }, 50);
+            slides[currentHeroIndex].classList.add('active');
+            indicators[currentHeroIndex].classList.add('active');
             
             renderHero();
         }
@@ -511,7 +531,7 @@
         function startHeroRotation() {
             heroInterval = setInterval(() => {
                 nextSlide();
-            }, 15000); // 15초마다 변경
+            }, 5000); // 5초마다 변경
         }
 
         // Calculate Distance (Haversine formula)
@@ -546,40 +566,29 @@
                         });
 
                         currentDistrict = closestDistrict.id;
-                        console.log('Auto-detected district:', currentDistrict);
+                        saveSessionPreferences();
                         
                         renderLocationSection();
                         renderFashionSection();
                         renderBeautySection();
-                        
-                        alert(`${currentLang === 'kor' ? '현재 위치' : 'Current location'}: ${currentLang === 'kor' ? closestDistrict.name_kor : closestDistrict.name_en}`);
                     },
                     (error) => {
                         console.error('Geolocation error:', error);
-                        
                         currentDistrict = 'seongsu';
-                        console.log('Defaulting to Seongsu due to geolocation error');
+                        saveSessionPreferences();
                         
                         renderLocationSection();
                         renderFashionSection();
                         renderBeautySection();
-                        
-                        alert(currentLang === 'kor' 
-                            ? '위치 정보를 가져올 수 없어 성수동으로 설정되었습니다.' 
-                            : 'Unable to get location. Defaulting to Seongsu.');
                     }
                 );
             } else {
                 currentDistrict = 'seongsu';
-                console.log('Geolocation not supported. Defaulting to Seongsu');
+                saveSessionPreferences();
                 
                 renderLocationSection();
                 renderFashionSection();
                 renderBeautySection();
-                
-                alert(currentLang === 'kor' 
-                    ? '브라우저가 위치 정보를 지원하지 않아 성수동으로 설정되었습니다.' 
-                    : 'Browser does not support geolocation. Defaulting to Seongsu.');
             }
         }
 
@@ -591,27 +600,8 @@
                 return;
             }
 
-            console.log('Rendering location section for:', currentDistrict);
-
             document.getElementById('location-title').textContent = currentLang === 'kor' ? district.title_kor : district.title_en;
             document.getElementById('location-desc').textContent = currentLang === 'kor' ? district.desc_kor : district.desc_en;
-
-            const storiesContainer = document.getElementById('location-stories');
-            const stories = district.featured_stories.slice(0, 3);
-            
-            storiesContainer.innerHTML = stories.map(story => `
-                <article class="bg-white border rounded overflow-hidden article-card cursor-pointer shadow-sm hover:shadow-md transition">
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="${story.image}" alt="" class="w-full h-full object-cover bg-gray-200">
-                    </div>
-                    <div class="p-4">
-                        <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
-                        <h3 class="font-bold text-base leading-tight">
-                            ${currentLang === 'kor' ? story.title_kor : story.title_en}
-                        </h3>
-                    </div>
-                </article>
-            `).join('');
         }
 
         // Render Fashion Section
@@ -780,14 +770,16 @@
         // Render Location Modal
         function renderLocationModal() {
             const container = document.getElementById('location-options');
+            const currentSelection = autoSelectEnabled ? 'auto' : currentDistrict;
+            
             container.innerHTML = `
-                <button class="location-option w-full text-left p-4 border-2 border-blue-500 rounded hover:bg-blue-50 transition bg-blue-50" data-location="auto">
-                    <div class="font-bold text-blue-700">🎯 Auto Detect</div>
+                <button class="location-option w-full text-left p-4 border-2 ${currentSelection === 'auto' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'} rounded hover:bg-blue-50 transition" data-location="auto">
+                    <div class="font-bold ${currentSelection === 'auto' ? 'text-blue-700' : ''}">🎯 Auto Detect</div>
                     <div class="text-sm text-gray-600">Find nearest district automatically</div>
                 </button>
                 ${data.districts.map(district => `
-                    <button class="location-option w-full text-left p-4 border rounded hover:bg-gray-50 transition" data-location="${district.id}">
-                        <div class="font-bold">📍 ${district.name_en}</div>
+                    <button class="location-option w-full text-left p-4 border ${currentSelection === district.id ? 'border-2 border-blue-500 bg-blue-50' : 'border-gray-300'} rounded hover:bg-gray-50 transition" data-location="${district.id}">
+                        <div class="font-bold ${currentSelection === district.id ? 'text-blue-700' : ''}">📍 ${district.name_en}</div>
                         <div class="text-sm text-gray-600">${district.tagline_en}</div>
                     </button>
                 `).join('')}
@@ -797,10 +789,13 @@
                 btn.addEventListener('click', () => {
                     const location = btn.getAttribute('data-location');
                     if (location === 'auto') {
+                        autoSelectEnabled = true;
+                        saveSessionPreferences();
                         autoDetectLocation();
                     } else {
+                        autoSelectEnabled = false;
                         currentDistrict = location;
-                        console.log('Manually selected district:', currentDistrict);
+                        saveSessionPreferences();
                         renderLocationSection();
                         renderFashionSection();
                         renderBeautySection();
@@ -810,10 +805,21 @@
             });
         }
 
+        // Email validation
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
         // Language Toggle
         document.getElementById('lang-toggle').addEventListener('click', () => {
-            currentLang = currentLang === 'kor' ? 'en' : 'kor';
-            document.getElementById('lang-text').textContent = currentLang === 'kor' ? 'EN' : 'KO';
+            if (currentLang === 'kor') {
+                currentLang = 'en';
+                document.getElementById('lang-text').textContent = 'English';
+            } else {
+                currentLang = 'kor';
+                document.getElementById('lang-text').textContent = 'Korean';
+            }
             
             renderHero();
             renderLocationSection();
@@ -827,6 +833,7 @@
 
         // Location Modal
         document.getElementById('change-location').addEventListener('click', () => {
+            renderLocationModal();
             document.getElementById('location-modal').classList.remove('hidden');
         });
 
@@ -840,25 +847,21 @@
             }
         });
 
-        // Hero Navigation Buttons
-        document.getElementById('hero-prev').addEventListener('click', () => {
-            clearInterval(heroInterval);
-            prevSlide();
-            startHeroRotation();
+        // Newsletter Submit
+        document.getElementById('newsletter-submit').addEventListener('click', () => {
+            const email = document.getElementById('newsletter-email').value;
+            if (!validateEmail(email)) {
+                alert(currentLang === 'kor' ? '올바른 이메일 주소를 입력해주세요.' : 'Please enter a valid email address.');
+            } else {
+                alert(currentLang === 'kor' ? '뉴스레터 신청이 완료되었습니다!' : 'Newsletter subscription completed!');
+                document.getElementById('newsletter-email').value = '';
+            }
         });
 
-        document.getElementById('hero-next').addEventListener('click', () => {
-            clearInterval(heroInterval);
-            nextSlide();
-            startHeroRotation();
-        });
-
-        // Smooth scroll for hero
-        document.getElementById('scroll-arrow').addEventListener('click', () => {
-            window.scrollTo({
-                top: window.innerHeight,
-                behavior: 'smooth'
-            });
+        // Subscribe button scroll
+        document.querySelector('a[href="#newsletter-section"]').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('newsletter-section').scrollIntoView({ behavior: 'smooth' });
         });
 
         // Load data on page load
