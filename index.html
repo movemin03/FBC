@@ -56,6 +56,17 @@
             overflow-wrap: break-word;
             text-wrap: balance;
         }
+        #location-desc {
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            text-wrap: balance;
+            line-height: 1.6;
+        }
+        /* 마침표와 슬래시 뒤에서 줄바꿈 허용 */
+        #location-desc::after {
+            content: "";
+            display: inline-block;
+        }
 
         @media only screen and (max-width: 768px) {
             .hero-content {
