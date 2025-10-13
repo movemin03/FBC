@@ -458,25 +458,67 @@
         function initializePage() {
             detectSystemLanguage();
             loadSessionPreferences();
-            
-            if (autoSelectEnabled) {
-                autoDetectLocation();
-            } else {
-                renderLocationSection();
-                renderFashionSection();
-                renderBeautySection();
-            }
-            
+
             initializeHeroSlides();
-            renderHero();
             startHeroRotation();
+
+            renderHero();
+            renderLocationSection();
+            renderFashionSection();
+            renderBeautySection();
             renderTodayStories();
             renderBestStories();
             renderMustRead();
             renderLatestStories();
             renderLocationModal();
             initializeHeroSwipe();
+
+            // Geolocation은 나중에 lazy하게 실행
+            if (autoSelectEnabled) {
+                setTimeout(() => {
+                    autoDetectLocationLazy();
+                }, 100);
+            }
         }
+
+
+        // Auto Detect Location (Lazy version)
+        function autoDetectLocationLazy() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLon = position.coords.longitude;
+
+                        let closestDistrict = data.areas[0];
+                        let minDistance = Infinity;
+
+                        data.areas.forEach(area => {
+                            const distance = calculateDistance(userLat, userLon, area.latitude, area.longitude);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestDistrict = area;
+                            }
+                        });
+
+                        // 위치가 변경된 경우만 업데이트
+                        if (currentDistrict !== closestDistrict.id) {
+                            currentDistrict = closestDistrict.id;
+                            saveSessionPreferences();
+
+                            // 위치 관련 섹션만 다시 렌더링
+                            renderLocationSection();
+                            renderFashionSection();
+                            renderBeautySection();
+                        }
+                    },
+                    (error) => {
+                        console.log('Geolocation not available, using default location');
+                    }
+                );
+            }
+        }
+
 
         // Initialize Hero Swipe Gestures
         function initializeHeroSwipe() {
@@ -514,20 +556,23 @@
         function initializeHeroSlides() {
             const shuffled = [...data.hero].sort(() => 0.5 - Math.random());
             heroSlides = shuffled.slice(0, 5);
-            
+
             const container = document.getElementById('hero-slides-container');
+
+            // 첫 번째 슬라이드만 즉시 로드
             container.innerHTML = heroSlides.map((hero, index) => `
-                <div class="hero-slide ${index === 0 ? 'active' : ''}" 
-                    style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')"
-                    data-index="${index}">
+                <div class="hero-slide ${index === 0 ? 'active' : ''}"
+                    style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')` : 'none'}"
+                    data-index="${index}"
+                    data-image="${hero.image}">
                 </div>
             `).join('');
-            
+
             const indicators = document.getElementById('hero-indicators');
             indicators.innerHTML = heroSlides.map((_, index) => `
                 <div class="hero-indicator ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
             `).join('');
-            
+
             document.querySelectorAll('.hero-indicator').forEach(indicator => {
                 indicator.addEventListener('click', () => {
                     const index = parseInt(indicator.getAttribute('data-index'));
@@ -536,7 +581,45 @@
                     startHeroRotation();
                 });
             });
+
+            // 나머지 이미지들을 lazy하게 로드
+            setTimeout(() => {
+                lazyLoadHeroImages();
+            }, 500);
         }
+
+        // Lazy Load Hero Images
+        function lazyLoadHeroImages() {
+            const slides = document.querySelectorAll('.hero-slide');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const slide = entry.target;
+                        const imageUrl = slide.getAttribute('data-image');
+
+                        if (imageUrl && !slide.style.backgroundImage.includes('url')) {
+                            const img = new Image();
+                            img.onload = () => {
+                                slide.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${imageUrl}')`;
+                            };
+                            img.src = imageUrl;
+                        }
+
+                        observer.unobserve(slide);
+                    }
+                });
+            }, {
+                root: document.getElementById('hero-section'),
+                threshold: 0.1
+            });
+
+            slides.forEach((slide, index) => {
+                if (index === 0) return; // 첫 번째는 이미 로드됨
+                observer.observe(slide);
+            });
+        }
+
 
         // Render Hero
         function renderHero() {
