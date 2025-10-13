@@ -7,13 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         }
         .font-serif, .font-serif * {
-            font-family: 'Playfair Display', Georgia, serif !important;
+            font-family: 'Noto Serif KR', Georgia, serif !important;
         }
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -32,7 +32,8 @@
             width: 100%;
             height: 100%;
             background-size: cover;
-            background-position: center;
+            background-position: center center;
+            background-repeat: no-repeat;
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
         }
@@ -45,10 +46,57 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
-            max-width: 600px;
+            width: calc(100% - 16px); /* max-width 대신 width 사용, 좌우 8px씩 여백 */
             text-align: center;
+            padding: 0 8px;
         }
 
+        .hero-content h2 {
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            text-wrap: balance;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .hero-content {
+                width: calc(100% - 16px); /* 좌우 8px씩 = 총 16px 여백 */
+                padding: 0 8px;
+            }
+
+            .hero-content h2 {
+                font-size: 1.75rem;
+                line-height: 1.35;
+            }
+
+            .hero-content p {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            .hero-content {
+                width: calc(100% - 16px); /* 좌우 8px씩 유지 */
+                padding: 0 8px;
+            }
+
+            .hero-content h2 {
+                font-size: 1.5rem;
+                line-height: 1.4;
+            }
+
+            .hero-content p {
+                font-size: 0.8125rem;
+            }
+        }
+
+        /* 데스크톱에서는 적당한 max-width 유지 */
+        @media only screen and (min-width: 1024px) {
+            .hero-content {
+                width: auto;
+                max-width: 800px; /* 데스크톱에서는 너무 넓지 않게 */
+                padding: 0 40px;
+            }
+        }
 
         .hero-indicators {
             position: absolute;
@@ -183,10 +231,7 @@
                     <li><a href="fashion.html" class="hover:text-gray-600 transition">FASHION</a></li>
                     <li><a href="beauty.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
                     <li><a href="life.html" class="hover:text-gray-600 transition">LIFE</a></li>
-                    <li><a href="districts.html" class="hover:text-gray-600 transition relative">
-                        DISTRICTS
-                        <span class="absolute -top-1 -right-10 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</span>
-                    </a></li>
+                    <li><a href="districts.html" class="hover:text-gray-600 transition relative">DISTRICTS</a></li>
                 </ul>
             </nav>
         </div>
@@ -473,8 +518,8 @@
             const container = document.getElementById('hero-slides-container');
             container.innerHTML = heroSlides.map((hero, index) => `
                 <div class="hero-slide ${index === 0 ? 'active' : ''}" 
-                     style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')"
-                     data-index="${index}">
+                    style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')"
+                    data-index="${index}">
                 </div>
             `).join('');
             
