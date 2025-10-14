@@ -1,264 +1,572 @@
 [
   {
-    "id": "seongsu",
-    "name_kor": "성수동",
-    "name_en": "Seongsu-dong",
-    "title_kor": "Are You in Seongsu?",
-    "title_en": "Are You in Seongsu?",
-    "desc_kor": "성수동의 인더스트리얼 감성과 아티스트 문화가 만나는 곳. 오래된 공장과 신선한 창의성이 공존하는 서울의 브루클린.",
-    "desc_en": "Where Seongsu's industrial aesthetic meets artist culture. Seoul's Brooklyn where old factories coexist with fresh creativity.",
-    "tagline_kor": "Industrial Chic & Artist Culture",
-    "tagline_en": "Industrial Chic & Artist Culture",
-    "featured_stories": [
-      {
-        "id": "ds00001",
-        "title_kor": "무신사 본사 방문 가이드",
-        "title_en": "Musinsa HQ Visit Guide",
-        "category": "Fashion Guide",
-        "image": "img/headlines/hdl00002.jpg"
-      },
-      {
-        "id": "ds00002",
-        "title_kor": "성수동 카페 투어: 공장에서 갤러리로",
-        "title_en": "Seongsu Cafe Tour: From Factory to Gallery",
-        "category": "Culture",
-        "image": "img/districts/seongsu-cafe-01.jpg"
-      },
-      {
-        "id": "ds00003",
-        "title_kor": "성수 스트리트 패션 스냅",
-        "title_en": "Seongsu Street Fashion Snap",
-        "category": "Street Style",
-        "image": "img/districts/seongsu-street-01.jpg"
-      },
-      {
-        "id": "ds00004",
-        "title_kor": "성수동 공방 탐방: 수제 신발의 세계",
-        "title_en": "Seongsu Studios: World of Handmade Shoes",
-        "category": "Craft",
-        "image": "img/districts/seongsu-craft-01.jpg"
-      },
-      {
-        "id": "ds00005",
-        "title_kor": "성수동 베이커리 카페 베스트 5",
-        "title_en": "Top 5 Seongsu Bakery Cafes",
-        "category": "Food",
-        "image": "img/districts/seongsu-bakery-01.jpg"
-      },
-      {
-        "id": "ds00006",
-        "title_kor": "성수동 감성 네일샵 가이드",
-        "title_en": "Seongsu Aesthetic Nail Salon Guide",
-        "category": "Beauty",
-        "image": "img/districts/seongsu-nail-01.jpg"
-      },
-      {
-        "id": "ds00007",
-        "title_kor": "성수동 수제 맥주 브루어리 투어",
-        "title_en": "Seongsu Craft Beer Brewery Tour",
-        "category": "Food & Drink",
-        "image": "img/districts/seongsu-beer-01.jpg"
-      },
-      {
-        "id": "ds00008",
-        "title_kor": "성수동 갤러리 아트 워크",
-        "title_en": "Seongsu Gallery Art Walk",
-        "category": "Art",
-        "image": "img/districts/seongsu-gallery-01.jpg"
-      }
-    ]
+    "id": "ds00001",
+    "district_id": "dsm00001",
+    "title_kor": "무신사 본사 방문 가이드",
+    "title_en": "Musinsa HQ Visit Guide",
+    "desc_kor": "무신사는 성수동의 랜드마크로 자리잡은 패션 플랫폼",
+    "desc_en": "Musinsa as a fashion platform landmark in Seongsu",
+    "category": "Fashion Guide",
+    "image": "img/districts/ds00001.jpg",
+    "tags": [
+      "musinsa",
+      "fashion",
+      "seongsu"
+    ],
+    "cultural_badge": "Industrial Chic",
+    "date": "2025-10-09",
+    "author": "Lee Ji-hye",
+    "views": 57517
   },
   {
-    "id": "hannam",
-    "name_kor": "한남동",
-    "name_en": "Hannam-dong",
-    "title_kor": "Are You in Hannam?",
-    "title_en": "Are You in Hannam?",
-    "desc_kor": "한남동은 세련된 큐레이션 문화와 MZ세대의 취향이 만나는 곳. 숨겨진 갤러리와 프리미엄 라이프스타일이 공존합니다.",
-    "desc_en": "Hannam-dong is where sophisticated curation culture meets MZ generation taste. Hidden galleries and premium lifestyle coexist.",
-    "tagline_kor": "Sophisticated MZ Curation",
-    "tagline_en": "Sophisticated MZ Curation",
-    "featured_stories": [
-      {
-        "id": "ds00009",
-        "title_kor": "한남동 프라이빗 갤러리 투어",
-        "title_en": "Hannam Private Gallery Tour",
-        "category": "Art",
-        "image": "img/districts/hannam-gallery-01.jpg"
-      },
-      {
-        "id": "ds00010",
-        "title_kor": "한남동 셀렉트샵 큐레이션",
-        "title_en": "Hannam Select Shop Curation",
-        "category": "Shopping",
-        "image": "img/districts/hannam-shop-01.jpg"
-      },
-      {
-        "id": "ds00011",
-        "title_kor": "한남동 프리미엄 레스토랑 가이드",
-        "title_en": "Hannam Premium Restaurant Guide",
-        "category": "Food",
-        "image": "img/districts/hannam-restaurant-01.jpg"
-      },
-      {
-        "id": "ds00012",
-        "title_kor": "한남동 루프탑 카페 베스트",
-        "title_en": "Best Hannam Rooftop Cafes",
-        "category": "Cafe",
-        "image": "img/districts/hannam-rooftop-01.jpg"
-      },
-      {
-        "id": "ds00013",
-        "title_kor": "한남동 럭셔리 스파 체험",
-        "title_en": "Hannam Luxury Spa Experience",
-        "category": "Wellness",
-        "image": "img/districts/hannam-spa-01.jpg"
-      },
-      {
-        "id": "ds00014",
-        "title_kor": "한남동 부티크 호텔 스테이",
-        "title_en": "Hannam Boutique Hotel Stay",
-        "category": "Travel",
-        "image": "img/districts/hannam-hotel-01.jpg"
-      },
-      {
-        "id": "ds00015",
-        "title_kor": "한남동 숨은 골목길 탐방",
-        "title_en": "Exploring Hannam's Hidden Alleys",
-        "category": "Culture",
-        "image": "img/districts/hannam-alley-01.jpg"
-      }
-    ]
+    "id": "ds00002",
+    "district_id": "dsm00001",
+    "title_kor": "성수동 카페 투어: 공장에서 갤러리로",
+    "title_en": "Seongsu Cafe Tour: From Factory to Gallery",
+    "desc_kor": "오래된 공장이 감성 카페로 재탄생한 성수동의 특별한 공간",
+    "desc_en": "Old factories reborn as aesthetic cafes in Seongsu",
+    "category": "Culture",
+    "image": "img/districts/ds00002.jpg",
+    "tags": [
+      "cafe",
+      "gallery",
+      "seongsu"
+    ],
+    "cultural_badge": null,
+    "date": "2025-10-08",
+    "author": "Park Soo-jin",
+    "views": 47664
   },
   {
-    "id": "hongdae",
-    "name_kor": "홍대",
-    "name_en": "Hongdae",
-    "title_kor": "Are You in Hongdae?",
-    "title_en": "Are You in Hongdae?",
-    "desc_kor": "홍대는 젊음과 자유로운 표현의 중심지. 스트리트 패션과 인디 문화가 살아 숨쉬는 창의성의 거리입니다.",
-    "desc_en": "Hongdae is the center of youth and free expression. A street of creativity where street fashion and indie culture thrive.",
-    "tagline_kor": "Youth Street Culture",
-    "tagline_en": "Youth Street Culture",
-    "featured_stories": [
-      {
-        "id": "ds00016",
-        "title_kor": "홍대 클럽 문화 가이드",
-        "title_en": "Hongdae Club Culture Guide",
-        "category": "Nightlife",
-        "image": "img/districts/hongdae-club-01.jpg"
-      },
-      {
-        "id": "ds00017",
-        "title_kor": "홍대 플리마켓 주말 투어",
-        "title_en": "Hongdae Flea Market Weekend Tour",
-        "category": "Shopping",
-        "image": "img/districts/hongdae-flea-01.jpg"
-      },
-      {
-        "id": "ds00018",
-        "title_kor": "홍대 빈티지샵 베스트 10",
-        "title_en": "Top 10 Hongdae Vintage Shops",
-        "category": "Fashion",
-        "image": "img/districts/hongdae-vintage-01.jpg"
-      },
-      {
-        "id": "ds00019",
-        "title_kor": "홍대 인디 라이브 클럽 투어",
-        "title_en": "Hongdae Indie Live Club Tour",
-        "category": "Music",
-        "image": "img/districts/hongdae-live-01.jpg"
-      },
-      {
-        "id": "ds00020",
-        "title_kor": "홍대 스트리트 푸드 베스트",
-        "title_en": "Best Hongdae Street Food",
-        "category": "Food",
-        "image": "img/districts/hongdae-food-01.jpg"
-      },
-      {
-        "id": "ds00021",
-        "title_kor": "홍대 버스킹 스팟 가이드",
-        "title_en": "Hongdae Busking Spot Guide",
-        "category": "Performance",
-        "image": "img/districts/hongdae-busking-01.jpg"
-      },
-      {
-        "id": "ds00022",
-        "title_kor": "홍대 독립서점 투어",
-        "title_en": "Hongdae Independent Bookstore Tour",
-        "category": "Culture",
-        "image": "img/districts/hongdae-bookstore-01.jpg"
-      },
-      {
-        "id": "ds00023",
-        "title_kor": "홍대 타투샵 문화 탐방",
-        "title_en": "Exploring Hongdae Tattoo Shop Culture",
-        "category": "Art",
-        "image": "img/districts/hongdae-tattoo-01.jpg"
-      }
-    ]
+    "id": "ds00003",
+    "district_id": "dsm00001",
+    "title_kor": "성수 스트리트 패션 스냅",
+    "title_en": "Seongsu Street Fashion Snap",
+    "desc_kor": "성수동 거리에서 포착한 독특한 패션 스타일",
+    "desc_en": "Unique fashion styles captured on Seongsu streets",
+    "category": "Street Style",
+    "image": "img/districts/ds00003.jpg",
+    "tags": [
+      "street",
+      "fashion",
+      "seongsu"
+    ],
+    "cultural_badge": "Industrial Chic",
+    "date": "2025-10-07",
+    "author": "Kim Min-ji",
+    "views": 83421
   },
   {
-    "id": "myeongdong",
-    "name_kor": "명동",
-    "name_en": "Myeongdong",
-    "title_kor": "Are You in Myeongdong?",
-    "title_en": "Are You in Myeongdong?",
-    "desc_kor": "명동은 K-뷰티와 관광의 메카. 전통과 현대가 교차하는 서울의 대표적인 쇼핑 중심지입니다.",
-    "desc_en": "Myeongdong is the mecca of K-beauty and tourism. Seoul's representative shopping center where tradition and modernity intersect.",
-    "tagline_kor": "K-Beauty & Tourism Hub",
-    "tagline_en": "K-Beauty & Tourism Hub",
-    "featured_stories": [
-      {
-        "id": "ds00024",
-        "title_kor": "명동 K-뷰티 쇼핑 완전정복",
-        "title_en": "Complete Myeongdong K-Beauty Shopping",
-        "category": "Beauty",
-        "image": "img/districts/myeongdong-beauty-01.jpg"
-      },
-      {
-        "id": "ds00025",
-        "title_kor": "올리브영 명동점 베스트셀러",
-        "title_en": "Olive Young Myeongdong Bestsellers",
-        "category": "Shopping",
-        "image": "img/districts/myeongdong-oliveyoung-01.jpg"
-      },
-      {
-        "id": "ds00026",
-        "title_kor": "명동 길거리 음식 투어",
-        "title_en": "Myeongdong Street Food Tour",
-        "category": "Food",
-        "image": "img/districts/myeongdong-streetfood-01.jpg"
-      },
-      {
-        "id": "ds00027",
-        "title_kor": "명동 면세점 쇼핑 가이드",
-        "title_en": "Myeongdong Duty-Free Shopping Guide",
-        "category": "Shopping",
-        "image": "img/districts/myeongdong-dutyfree-01.jpg"
-      },
-      {
-        "id": "ds00028",
-        "title_kor": "명동성당과 주변 문화유산",
-        "title_en": "Myeongdong Cathedral and Cultural Heritage",
-        "category": "Culture",
-        "image": "img/districts/myeongdong-cathedral-01.jpg"
-      },
-      {
-        "id": "ds00029",
-        "title_kor": "명동 네일샵 베스트 추천",
-        "title_en": "Best Myeongdong Nail Salons",
-        "category": "Beauty",
-        "image": "img/districts/myeongdong-nail-01.jpg"
-      },
-      {
-        "id": "ds00030",
-        "title_kor": "명동 밤 쇼핑의 매력",
-        "title_en": "Charm of Myeongdong Night Shopping",
-        "category": "Lifestyle",
-        "image": "img/districts/myeongdong-night-01.jpg"
-      }
-    ]
+    "id": "ds00004",
+    "district_id": "dsm00001",
+    "title_kor": "성수동 공방 탐방: 수제 신발의 세계",
+    "title_en": "Seongsu Studios: World of Handmade Shoes",
+    "desc_kor": "장인의 손길이 담긴 성수동 수제 신발 공방",
+    "desc_en": "Handmade shoe studios with artisan craftsmanship in Seongsu",
+    "category": "Craft",
+    "image": "img/districts/ds00004.jpg",
+    "tags": [
+      "craft",
+      "shoes",
+      "seongsu"
+    ],
+    "cultural_badge": null,
+    "date": "2025-10-06",
+    "author": "Choi Young-ho",
+    "views": 69063
+  },
+  {
+    "id": "ds00005",
+    "district_id": "dsm00001",
+    "title_kor": "성수동 베이커리 카페 베스트 5",
+    "title_en": "Top 5 Seongsu Bakery Cafes",
+    "desc_kor": "성수동에서 꼭 가봐야 할 베이커리 카페",
+    "desc_en": "Must-visit bakery cafes in Seongsu",
+    "category": "Food",
+    "image": "img/districts/ds00005.jpg",
+    "tags": [
+      "bakery",
+      "cafe",
+      "seongsu"
+    ],
+    "cultural_badge": null,
+    "date": "2025-10-05",
+    "author": "Lee Hye-jin",
+    "views": 80228
+  },
+  {
+    "id": "ds00006",
+    "district_id": "dsm00001",
+    "title_kor": "성수동 감성 네일샵 가이드",
+    "title_en": "Seongsu Aesthetic Nail Salon Guide",
+    "desc_kor": "인더스트리얼 공간에서 만나는 감성 네일 아트",
+    "desc_en": "Aesthetic nail art in industrial spaces",
+    "category": "Beauty",
+    "image": "img/districts/ds00006.jpg",
+    "tags": [
+      "nail",
+      "beauty",
+      "seongsu"
+    ],
+    "cultural_badge": "Industrial Chic",
+    "date": "2025-10-04",
+    "author": "Park Soo-jin",
+    "views": 90442
+  },
+  {
+    "id": "ds00007",
+    "district_id": "dsm00001",
+    "title_kor": "성수동 수제 맥주 브루어리 투어",
+    "title_en": "Seongsu Craft Beer Brewery Tour",
+    "desc_kor": "성수동의 독특한 수제 맥주 양조장 탐방",
+    "desc_en": "Exploring unique craft beer breweries in Seongsu",
+    "category": "Food & Drink",
+    "image": "img/districts/ds00007.jpg",
+    "tags": [
+      "beer",
+      "brewery",
+      "seongsu"
+    ],
+    "cultural_badge": null,
+    "date": "2025-10-03",
+    "author": "Kim Tae-hyun",
+    "views": 32930
+  },
+  {
+    "id": "ds00008",
+    "district_id": "dsm00001",
+    "title_kor": "성수동 갤러리 아트 워크",
+    "title_en": "Seongsu Gallery Art Walk",
+    "desc_kor": "성수동 갤러리를 따라 떠나는 예술 산책",
+    "desc_en": "Art walk through Seongsu galleries",
+    "category": "Art",
+    "image": "img/districts/ds00008.jpg",
+    "tags": [
+      "gallery",
+      "art",
+      "seongsu"
+    ],
+    "cultural_badge": "Industrial Chic",
+    "date": "2025-10-02",
+    "author": "Jung Soo-young",
+    "views": 84518
+  },
+  {
+    "id": "ds00009",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 프라이빗 갤러리 투어",
+    "title_en": "Hannam Private Gallery Tour",
+    "desc_kor": "한남동 숨겨진 프라이빗 갤러리 탐방",
+    "desc_en": "Exploring hidden private galleries in Hannam",
+    "category": "Art",
+    "image": "img/districts/ds00009.jpg",
+    "tags": [
+      "gallery",
+      "art",
+      "hannam"
+    ],
+    "cultural_badge": "Sophisticated Curation",
+    "date": "2025-10-01",
+    "author": "Lee Min-woo",
+    "views": 33388
+  },
+  {
+    "id": "ds00010",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 셀렉트샵 큐레이션",
+    "title_en": "Hannam Select Shop Curation",
+    "desc_kor": "한남동의 감각적인 셀렉트샵 소개",
+    "desc_en": "Introduction to sophisticated select shops in Hannam",
+    "category": "Shopping",
+    "image": "img/districts/ds00010.jpg",
+    "tags": [
+      "shopping",
+      "select",
+      "hannam"
+    ],
+    "cultural_badge": "Sophisticated Curation",
+    "date": "2025-09-30",
+    "author": "Park Ji-won",
+    "views": 4780
+  },
+  {
+    "id": "ds00011",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 프리미엄 레스토랑 가이드",
+    "title_en": "Hannam Premium Restaurant Guide",
+    "desc_kor": "한남동의 특별한 다이닝 경험",
+    "desc_en": "Special dining experiences in Hannam",
+    "category": "Food",
+    "image": "img/districts/ds00011.jpg",
+    "tags": [
+      "restaurant",
+      "dining",
+      "hannam"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-29",
+    "author": "Kim Soo-hyun",
+    "views": 47534
+  },
+  {
+    "id": "ds00012",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 루프탑 카페 베스트",
+    "title_en": "Best Hannam Rooftop Cafes",
+    "desc_kor": "한강뷰를 즐길 수 있는 루프탑 카페",
+    "desc_en": "Rooftop cafes with Han River views",
+    "category": "Cafe",
+    "image": "img/districts/ds00012.jpg",
+    "tags": [
+      "cafe",
+      "rooftop",
+      "hannam"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-28",
+    "author": "Choi Hye-rin",
+    "views": 34893
+  },
+  {
+    "id": "ds00013",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 럭셔리 스파 체험",
+    "title_en": "Hannam Luxury Spa Experience",
+    "desc_kor": "한남동의 프리미엄 스파에서의 힐링",
+    "desc_en": "Healing at premium spas in Hannam",
+    "category": "Wellness",
+    "image": "img/districts/ds00013.jpg",
+    "tags": [
+      "spa",
+      "wellness",
+      "hannam"
+    ],
+    "cultural_badge": "Sophisticated Curation",
+    "date": "2025-09-27",
+    "author": "Lee Hye-jin",
+    "views": 91925
+  },
+  {
+    "id": "ds00014",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 부티크 호텔 스테이",
+    "title_en": "Hannam Boutique Hotel Stay",
+    "desc_kor": "한남동의 감각적인 부티크 호텔",
+    "desc_en": "Sophisticated boutique hotels in Hannam",
+    "category": "Travel",
+    "image": "img/districts/ds00014.jpg",
+    "tags": [
+      "hotel",
+      "travel",
+      "hannam"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-26",
+    "author": "Park Min-ji",
+    "views": 30199
+  },
+  {
+    "id": "ds00015",
+    "district_id": "dsm00002",
+    "title_kor": "한남동 숨은 골목길 탐방",
+    "title_en": "Exploring Hannam's Hidden Alleys",
+    "desc_kor": "한남동 골목골목 숨겨진 명소 탐방",
+    "desc_en": "Discovering hidden gems in Hannam's alleys",
+    "category": "Culture",
+    "image": "img/districts/ds00015.jpg",
+    "tags": [
+      "alley",
+      "culture",
+      "hannam"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-25",
+    "author": "Jung Woo-jin",
+    "views": 50623
+  },
+  {
+    "id": "ds00016",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 클럽 문화 가이드",
+    "title_en": "Hongdae Club Culture Guide",
+    "desc_kor": "홍대의 역동적인 클럽 문화 소개",
+    "desc_en": "Introduction to Hongdae's dynamic club culture",
+    "category": "Nightlife",
+    "image": "img/districts/ds00016.jpg",
+    "tags": [
+      "club",
+      "nightlife",
+      "hongdae"
+    ],
+    "cultural_badge": "Youth Culture",
+    "date": "2025-09-24",
+    "author": "Kim Tae-yang",
+    "views": 75050
+  },
+  {
+    "id": "ds00017",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 플리마켓 주말 투어",
+    "title_en": "Hongdae Flea Market Weekend Tour",
+    "desc_kor": "주말마다 열리는 홍대 플리마켓 탐방",
+    "desc_en": "Exploring weekend flea markets in Hongdae",
+    "category": "Shopping",
+    "image": "img/districts/ds00017.jpg",
+    "tags": [
+      "flea",
+      "market",
+      "hongdae"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-23",
+    "author": "Lee Soo-bin",
+    "views": 58045
+  },
+  {
+    "id": "ds00018",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 빈티지샵 베스트 10",
+    "title_en": "Top 10 Hongdae Vintage Shops",
+    "desc_kor": "홍대에서 꼭 가봐야 할 빈티지샵",
+    "desc_en": "Must-visit vintage shops in Hongdae",
+    "category": "Fashion",
+    "image": "img/districts/ds00018.jpg",
+    "tags": [
+      "vintage",
+      "fashion",
+      "hongdae"
+    ],
+    "cultural_badge": "Youth Culture",
+    "date": "2025-09-22",
+    "author": "Park Ji-young",
+    "views": 71335
+  },
+  {
+    "id": "ds00019",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 인디 라이브 클럽 투어",
+    "title_en": "Hongdae Indie Live Club Tour",
+    "desc_kor": "인디 음악의 성지, 홍대 라이브 클럽",
+    "desc_en": "Indie music sanctuary, Hongdae live clubs",
+    "category": "Music",
+    "image": "img/districts/ds00019.jpg",
+    "tags": [
+      "indie",
+      "music",
+      "hongdae"
+    ],
+    "cultural_badge": "Youth Culture",
+    "date": "2025-09-21",
+    "author": "Choi Min-ho",
+    "views": 71178
+  },
+  {
+    "id": "ds00020",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 스트리트 푸드 베스트",
+    "title_en": "Best Hongdae Street Food",
+    "desc_kor": "홍대에서 즐기는 길거리 음식 투어",
+    "desc_en": "Street food tour in Hongdae",
+    "category": "Food",
+    "image": "img/districts/ds00020.jpg",
+    "tags": [
+      "street",
+      "food",
+      "hongdae"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-20",
+    "author": "Kim Ji-soo",
+    "views": 50297
+  },
+  {
+    "id": "ds00021",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 그라피티 아트 투어",
+    "title_en": "Hongdae Graffiti Art Tour",
+    "desc_kor": "홍대 골목의 생생한 그라피티 아트",
+    "desc_en": "Vibrant graffiti art in Hongdae alleys",
+    "category": "Art",
+    "image": "img/districts/ds00021.jpg",
+    "tags": [
+      "graffiti",
+      "art",
+      "hongdae"
+    ],
+    "cultural_badge": "Youth Culture",
+    "date": "2025-09-19",
+    "author": "Lee Young-jae",
+    "views": 24525
+  },
+  {
+    "id": "ds00022",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 비건 레스토랑 가이드",
+    "title_en": "Hongdae Vegan Restaurant Guide",
+    "desc_kor": "홍대의 건강하고 맛있는 비건 레스토랑",
+    "desc_en": "Healthy and delicious vegan restaurants in Hongdae",
+    "category": "Food",
+    "image": "img/districts/ds00022.jpg",
+    "tags": [
+      "vegan",
+      "healthy",
+      "hongdae"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-18",
+    "author": "Park Hye-won",
+    "views": 63803
+  },
+  {
+    "id": "ds00023",
+    "district_id": "dsm00003",
+    "title_kor": "홍대 타투샵 가이드",
+    "title_en": "Hongdae Tattoo Shop Guide",
+    "desc_kor": "홍대의 개성 넘치는 타투샵",
+    "desc_en": "Unique tattoo shops in Hongdae",
+    "category": "Culture",
+    "image": "img/districts/ds00023.jpg",
+    "tags": [
+      "tattoo",
+      "art",
+      "hongdae"
+    ],
+    "cultural_badge": "Youth Culture",
+    "date": "2025-09-17",
+    "author": "Choi Se-jin",
+    "views": 63727
+  },
+  {
+    "id": "ds00024",
+    "district_id": "dsm00004",
+    "title_kor": "명동 K-뷰티 쇼핑 가이드",
+    "title_en": "Myeongdong K-Beauty Shopping Guide",
+    "desc_kor": "명동에서 즐기는 K-뷰티 쇼핑",
+    "desc_en": "K-Beauty shopping in Myeongdong",
+    "category": "Beauty",
+    "image": "img/districts/ds00024.jpg",
+    "tags": [
+      "kbeauty",
+      "shopping",
+      "myeongdong"
+    ],
+    "cultural_badge": "K-Beauty Hub",
+    "date": "2025-09-16",
+    "author": "Lee Ji-hye",
+    "views": 74519
+  },
+  {
+    "id": "ds00025",
+    "district_id": "dsm00004",
+    "title_kor": "명동 길거리 음식 투어",
+    "title_en": "Myeongdong Street Food Tour",
+    "desc_kor": "명동의 인기 길거리 음식 맛집",
+    "desc_en": "Popular street food spots in Myeongdong",
+    "category": "Food",
+    "image": "img/districts/ds00025.jpg",
+    "tags": [
+      "street",
+      "food",
+      "myeongdong"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-15",
+    "author": "Park Soo-jin",
+    "views": 3788
+  },
+  {
+    "id": "ds00026",
+    "district_id": "dsm00004",
+    "title_kor": "명동 쇼핑 아케이드 완전정복",
+    "title_en": "Complete Guide to Myeongdong Shopping Arcades",
+    "desc_kor": "명동 쇼핑 아케이드의 모든 것",
+    "desc_en": "Everything about Myeongdong shopping arcades",
+    "category": "Shopping",
+    "image": "img/districts/ds00026.jpg",
+    "tags": [
+      "shopping",
+      "arcade",
+      "myeongdong"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-14",
+    "author": "Kim Min-ji",
+    "views": 23027
+  },
+  {
+    "id": "ds00027",
+    "district_id": "dsm00004",
+    "title_kor": "명동 드럭스토어 필수 아이템",
+    "title_en": "Must-Have Items from Myeongdong Drugstores",
+    "desc_kor": "명동 드럭스토어에서 꼭 사야 할 제품",
+    "desc_en": "Must-buy products from Myeongdong drugstores",
+    "category": "Beauty",
+    "image": "img/districts/ds00027.jpg",
+    "tags": [
+      "drugstore",
+      "beauty",
+      "myeongdong"
+    ],
+    "cultural_badge": "K-Beauty Hub",
+    "date": "2025-09-13",
+    "author": "Choi Young-ho",
+    "views": 66278
+  },
+  {
+    "id": "ds00028",
+    "district_id": "dsm00004",
+    "title_kor": "명동 한국 전통 찻집 투어",
+    "title_en": "Myeongdong Traditional Korean Tea House Tour",
+    "desc_kor": "명동에서 즐기는 전통 차 문화",
+    "desc_en": "Traditional tea culture in Myeongdong",
+    "category": "Culture",
+    "image": "img/districts/ds00028.jpg",
+    "tags": [
+      "tea",
+      "traditional",
+      "myeongdong"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-12",
+    "author": "Lee Hye-jin",
+    "views": 78762
+  },
+  {
+    "id": "ds00029",
+    "district_id": "dsm00004",
+    "title_kor": "명동 메이크업샵 체험 가이드",
+    "title_en": "Myeongdong Makeup Shop Experience Guide",
+    "desc_kor": "명동 메이크업샵에서의 특별한 뷰티 체험",
+    "desc_en": "Special beauty experiences at Myeongdong makeup shops",
+    "category": "Beauty",
+    "image": "img/districts/ds00029.jpg",
+    "tags": [
+      "makeup",
+      "beauty",
+      "myeongdong"
+    ],
+    "cultural_badge": "K-Beauty Hub",
+    "date": "2025-09-11",
+    "author": "Park Min-ji",
+    "views": 69891
+  },
+  {
+    "id": "ds00030",
+    "district_id": "dsm00004",
+    "title_kor": "명동 관광 완벽 가이드",
+    "title_en": "Complete Myeongdong Tourism Guide",
+    "desc_kor": "명동 관광의 모든 것을 담은 완벽 가이드",
+    "desc_en": "Complete guide to Myeongdong tourism",
+    "category": "Travel",
+    "image": "img/districts/ds00030.jpg",
+    "tags": [
+      "tourism",
+      "guide",
+      "myeongdong"
+    ],
+    "cultural_badge": null,
+    "date": "2025-09-10",
+    "author": "Jung Woo-jin",
+    "views": 68010
   }
 ]

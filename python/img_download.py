@@ -13,38 +13,16 @@ PEXELS_API_KEY = "QbZ7FqndljpYDP3H993N5DTooL3RLDCmqdodjTT35JjmrybXF8XJV6DW"
 UNSPLASH_ACCESS_KEY = "cFhxdsT6vbgINEatl0RAQCdaq_4puV6db3YTvlFRYw8"
 
 # Base directory
-BASE_DIR = r"C:\Users\movemin\Desktop\새 폴더\FBC"
+BASE_DIR = r"C:\Users\movemin\Desktop\FBC"
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 # JSON files to process
 JSON_FILES = [
-    "hero.json",
-    "headlines.json",
     "fashion.json",
     "beauty.json",
     "life.json",
     "districts.json"
 ]
-
-# Search keywords mapping
-KEYWORDS_MAP = {
-    "hero": "seoul city architecture culture",
-    "headlines": "fashion lifestyle culture seoul",
-    "fashion": "fashion model clothing style",
-    "beauty": "beauty makeup skincare cosmetics",
-    "life": "lifestyle cafe culture seoul",
-    "districts": "seoul district street culture"
-}
-
-# Alternative keywords for fallback
-FALLBACK_KEYWORDS = {
-    "hero": ["korea skyline", "modern architecture", "urban landscape", "city view"],
-    "headlines": ["korean style", "asian fashion", "street style", "modern culture"],
-    "fashion": ["trendy outfit", "stylish clothing", "fashion photography", "model portrait"],
-    "beauty": ["skincare product", "cosmetics", "beauty portrait", "makeup artist"],
-    "life": ["modern cafe", "urban lifestyle", "city culture", "contemporary living"],
-    "districts": ["city street", "urban neighborhood", "local culture", "street photography"]
-}
 
 # Thread-safe hash tracking
 downloaded_hashes = {}
@@ -96,8 +74,6 @@ def clear_existing_images():
             confirm = input("\n⚠ Are you sure you want to DELETE ALL images? (yes/no): ").strip().lower()
             if confirm == "yes":
                 img_folders = [
-                    os.path.join(BASE_DIR, "img/hero"),
-                    os.path.join(BASE_DIR, "img/headlines"),
                     os.path.join(BASE_DIR, "img/fashion"),
                     os.path.join(BASE_DIR, "img/beauty"),
                     os.path.join(BASE_DIR, "img/life"),
@@ -125,8 +101,6 @@ def clear_existing_images():
 def create_folders():
     """Create necessary folder structure"""
     folders = [
-        "img/hero",
-        "img/headlines",
         "img/fashion",
         "img/beauty",
         "img/life",
@@ -246,7 +220,7 @@ def try_download_from_pexels(keyword, save_path, page=1):
     return False
 
 
-def download_from_dual_sources(keyword, save_path, file_type, attempt=1):
+def download_from_dual_sources(keyword, save_path, fallback_keywords, attempt=1):
     """
     Try to download from both Pexels and Unsplash with multiple fallback strategies
     """
@@ -288,8 +262,7 @@ def download_from_dual_sources(keyword, save_path, file_type, attempt=1):
                             return True, f"{api}-variation"
 
     # Strategy 3: Fallback keywords with both APIs
-    fallback_list = FALLBACK_KEYWORDS.get(file_type, [])
-    for fallback_keyword in fallback_list:
+    for fallback_keyword in fallback_keywords:
         for api in apis:
             for page in range(1, 2):
                 if api == 'pexels':
@@ -342,11 +315,34 @@ def generate_keyword_variations(keyword):
     return variations[:3]
 
 
-def extract_images_from_json(json_file):
-    """Extract image paths from JSON file"""
+def load_district_meta():
+    """Load district_meta.json for district_id mapping"""
+    meta_path = os.path.join(DATA_DIR, "district_meta.json")
+
+    if not os.path.exists(meta_path):
+        return {}
+
+    try:
+        with open(meta_path, 'r', encoding='utf-8') as f:
+            meta_data = json.load(f)
+
+        # Create mapping: district_id -> name_en
+        district_map = {}
+        for district in meta_data:
+            district_map[district['district_id']] = district['name_en'].lower()
+
+        return district_map
+    except Exception as e:
+        print(f"Warning: Could not load district_meta.json: {e}")
+        return {}
+
+
+def extract_images_from_json(json_file, district_map):
+    """Extract image paths and their metadata from JSON file"""
     file_path = os.path.join(DATA_DIR, json_file)
 
     if not os.path.exists(file_path):
+        print(f"  ✗ File not found: {file_path}")
         return []
 
     try:
@@ -358,61 +354,101 @@ def extract_images_from_json(json_file):
         if isinstance(data, list):
             for item in data:
                 if 'image' in item:
-                    images.append(item['image'])
-                if 'featured_stories' in item:
-                    for story in item['featured_stories']:
-                        if 'image' in story:
-                            images.append(story['image'])
-        elif isinstance(data, dict):
-            if 'image' in data:
-                images.append(data['image'])
+                    # Extract district_id if exists
+                    district_id = item.get('district_id')
+                    district_name = district_map.get(district_id, None) if district_id else None
+
+                    images.append({
+                        'path': item['image'],
+                        'district_name': district_name,
+                        'title_en': item.get('title_en', ''),
+                        'desc_en': item.get('desc_en', ''),
+                        'category': item.get('category', '')
+                    })
 
         return images
     except Exception as e:
+        print(f"  ✗ Error reading {json_file}: {e}")
         return []
 
 
-def get_keyword_for_image(image_path, json_file):
-    """Generate keyword based on image path and JSON file"""
+def extract_keywords_from_text(text):
+    """Extract meaningful keywords from text"""
+    # Remove common words
+    stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+                  'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'been', 'be',
+                  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should',
+                  'can', 'could', 'may', 'might', 'must', 'that', 'this', 'these', 'those'}
+
+    # Split and filter
+    words = text.lower().split()
+    keywords = [w.strip('.,!?;:') for w in words if w.lower() not in stop_words and len(w) > 2]
+
+    return ' '.join(keywords[:5])  # Take first 5 meaningful words
+
+
+def get_keyword_for_image(image_info, json_file):
+    """Generate keyword based on image info using title_en and desc_en"""
     file_type = json_file.replace('.json', '')
-    base_keyword = KEYWORDS_MAP.get(file_type, "korea fashion lifestyle")
 
-    image_lower = image_path.lower()
+    # Primary keywords from title_en and desc_en
+    title_keywords = extract_keywords_from_text(image_info.get('title_en', ''))
+    desc_keywords = extract_keywords_from_text(image_info.get('desc_en', ''))
 
-    if 'seongsu' in image_lower:
-        base_keyword += " industrial factory aesthetic"
-    elif 'hannam' in image_lower:
-        base_keyword += " luxury sophisticated premium"
-    elif 'hongdae' in image_lower:
-        base_keyword += " street youth trendy"
-    elif 'myeongdong' in image_lower:
-        base_keyword += " shopping tourism beauty"
+    # Combine keywords
+    primary_keyword = f"{title_keywords} {desc_keywords}".strip()
 
-    if 'cafe' in image_lower:
-        base_keyword += " cafe coffee interior"
-    elif 'street' in image_lower:
-        base_keyword += " street urban city"
-    elif 'gallery' in image_lower:
-        base_keyword += " gallery art exhibition"
-    elif 'nail' in image_lower:
-        base_keyword += " nail art manicure salon"
-    elif 'hair' in image_lower:
-        base_keyword += " hair salon hairstyle"
-    elif 'food' in image_lower or 'restaurant' in image_lower:
-        base_keyword += " food restaurant dining"
-    elif 'beer' in image_lower or 'brewery' in image_lower:
-        base_keyword += " craft beer brewery bar"
-    elif 'spa' in image_lower:
-        base_keyword += " spa wellness massage"
+    # If no keywords extracted, use category-based fallback
+    if not primary_keyword:
+        category = image_info.get('category', '').lower()
+        if category:
+            primary_keyword = category
+        else:
+            primary_keyword = file_type
 
-    return base_keyword
+    # Add district-specific context
+    district_name = image_info.get('district_name')
+    if district_name:
+        if 'seongsu' in district_name:
+            primary_keyword += " industrial urban seoul"
+        elif 'hannam' in district_name:
+            primary_keyword += " luxury sophisticated seoul"
+        elif 'hongdae' in district_name:
+            primary_keyword += " street youth seoul"
+        elif 'myeongdong' in district_name:
+            primary_keyword += " shopping seoul"
+    else:
+        primary_keyword += " korea korean"
+
+    return primary_keyword
+
+
+def generate_fallback_keywords(image_info, json_file):
+    """Generate fallback keywords"""
+    file_type = json_file.replace('.json', '')
+    category = image_info.get('category', '').lower()
+
+    fallbacks = []
+
+    # Category-based fallbacks
+    if 'fashion' in file_type or 'fashion' in category:
+        fallbacks.extend(["fashion style", "trendy clothing", "korean fashion", "stylish outfit"])
+    elif 'beauty' in file_type or 'beauty' in category:
+        fallbacks.extend(["beauty makeup", "skincare", "cosmetics", "korean beauty"])
+    elif 'life' in file_type or 'cafe' in category:
+        fallbacks.extend(["lifestyle cafe", "modern living", "urban culture", "seoul cafe"])
+    elif 'district' in file_type:
+        fallbacks.extend(["seoul street", "urban neighborhood", "city culture", "korean district"])
+
+    # Generic fallbacks
+    fallbacks.extend(["korea", "korean style", "asian culture", "modern seoul"])
+
+    return fallbacks[:5]
 
 
 def load_existing_hashes():
     """Load hashes of existing images"""
     img_folders = [
-        os.path.join(BASE_DIR, "img/hero"),
-        os.path.join(BASE_DIR, "img/headlines"),
         os.path.join(BASE_DIR, "img/fashion"),
         os.path.join(BASE_DIR, "img/beauty"),
         os.path.join(BASE_DIR, "img/life"),
@@ -436,7 +472,8 @@ def load_existing_hashes():
 
 def download_single_image(task):
     """Download a single image with dual-source fallback strategies"""
-    json_file, image_path, index, total = task
+    json_file, image_info, index, total = task
+    image_path = image_info['path']
     full_path = os.path.join(BASE_DIR, image_path)
     file_type = json_file.replace('.json', '')
 
@@ -455,11 +492,12 @@ def download_single_image(task):
     # Create directory
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
-    # Generate keyword
-    keyword = get_keyword_for_image(image_path, json_file)
+    # Generate keyword from title_en and desc_en
+    keyword = get_keyword_for_image(image_info, json_file)
+    fallback_keywords = generate_fallback_keywords(image_info, json_file)
 
     # Try download from both sources
-    success, strategy = download_from_dual_sources(keyword, full_path, file_type)
+    success, strategy = download_from_dual_sources(keyword, full_path, fallback_keywords)
 
     if success:
         with stats_lock:
@@ -511,16 +549,25 @@ def main():
         load_existing_hashes()
         print()
 
+    # Load district metadata
+    print(f"Step {3 if not cleared else 2}: Loading district metadata...")
+    district_map = load_district_meta()
+    if district_map:
+        print(f"✓ Loaded {len(district_map)} district mappings")
+    print()
+
     # Collect all image paths
-    print(f"Step {3 if not cleared else 2}: Collecting image paths from JSON files...")
+    print(f"Step {4 if not cleared else 3}: Collecting image paths from JSON files...")
     all_tasks = []
 
     for json_file in JSON_FILES:
-        images = extract_images_from_json(json_file)
+        images = extract_images_from_json(json_file, district_map)
         if images:
             print(f"  ✓ {json_file}: {len(images)} images")
-            for img in images:
-                all_tasks.append((json_file, img, len(all_tasks) + 1, 0))
+            for img_info in images:
+                all_tasks.append((json_file, img_info, len(all_tasks) + 1, 0))
+        else:
+            print(f"  ⚠ {json_file}: No images found")
 
     # Update total count
     total = len(all_tasks)
@@ -529,12 +576,26 @@ def main():
     print(f"\nTotal images to process: {total}")
     print()
 
+    # Check if there are any images to download
+    if total == 0:
+        print("=" * 70)
+        print("⚠ No images to download.")
+        print("=" * 70)
+        print()
+        print("Possible reasons:")
+        print("  - All images already exist (skipped)")
+        print("  - JSON files are empty or missing")
+        print("  - JSON files are not in the correct format")
+        print()
+        input("Press Enter to exit...")
+        return
+
     # Download with ThreadPoolExecutor
-    print(f"Step {4 if not cleared else 3}: Downloading images (using {min(6, total)} parallel threads)...")
-    print("Note: Using Pexels + Unsplash with advanced fallback strategies")
+    print(f"Step {5 if not cleared else 4}: Downloading images (using {min(6, total)} parallel threads)...")
+    print("Note: Using title_en & desc_en for intelligent keyword generation")
     print()
 
-    max_workers = min(6, total)
+    max_workers = min(2, total)
     start_time = time.time()
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:

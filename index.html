@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FBC Creators Magazine</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -46,11 +47,10 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
-            width: calc(100% - 16px); /* max-width 대신 width 사용, 좌우 8px씩 여백 */
+            width: calc(100% - 16px);
             text-align: center;
             padding: 0 8px;
         }
-
         .hero-content h2 {
             word-break: keep-all;
             overflow-wrap: break-word;
@@ -62,53 +62,39 @@
             text-wrap: balance;
             line-height: 1.6;
         }
-        /* 마침표와 슬래시 뒤에서 줄바꿈 허용 */
-        #location-desc::after {
-            content: "";
-            display: inline-block;
-        }
-
         @media only screen and (max-width: 768px) {
             .hero-content {
-                width: calc(100% - 16px); /* 좌우 8px씩 = 총 16px 여백 */
+                width: calc(100% - 16px);
                 padding: 0 8px;
             }
-
             .hero-content h2 {
                 font-size: 1.75rem;
                 line-height: 1.35;
             }
-
             .hero-content p {
                 font-size: 0.875rem;
             }
         }
-
         @media only screen and (max-width: 480px) {
             .hero-content {
-                width: calc(100% - 16px); /* 좌우 8px씩 유지 */
+                width: calc(100% - 16px);
                 padding: 0 8px;
             }
-
             .hero-content h2 {
                 font-size: 1.5rem;
                 line-height: 1.4;
             }
-
             .hero-content p {
                 font-size: 0.8125rem;
             }
         }
-
-        /* 데스크톱에서는 적당한 max-width 유지 */
         @media only screen and (min-width: 1024px) {
             .hero-content {
                 width: auto;
-                max-width: 800px; /* 데스크톱에서는 너무 넓지 않게 */
+                max-width: 800px;
                 padding: 0 40px;
             }
         }
-
         .hero-indicators {
             position: absolute;
             bottom: 30px;
@@ -155,7 +141,7 @@
         }
         .district-tag {
             position: absolute;
-            top: 12px;
+            bottom: 12px;  /* top에서 bottom으로 변경 */
             left: 12px;
             background: rgba(255,255,255,0.95);
             padding: 4px 12px;
@@ -165,6 +151,7 @@
             border-radius: 2px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+
         .cultural-badge {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -174,19 +161,22 @@
             font-weight: 600;
             letter-spacing: 0.03em;
         }
-        .swiper-container {
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+
+        .best-stories-swiper {
+            overflow: hidden;
+            margin: 0 -16px;
+            padding: 0 16px;
         }
-        .swiper-container::-webkit-scrollbar {
-            display: none;
+        .best-stories-swiper img {
+            pointer-events: none; /* 이미지 드래그 방지 */
+            user-select: none;    /* 선택 방지 */
+            -webkit-user-drag: none; /* WebKit 드래그 방지 */
         }
-        .swiper-slide {
-            scroll-snap-align: start;
-            flex-shrink: 0;
+
+        .best-stories-swiper .article-card {
+            user-select: none; /* 카드 전체 선택 방지 */
         }
+
         .location-hero {
             background: linear-gradient(to bottom, #f9fafb 0%, #f3f4f6 100%);
             border-top: 1px solid #e5e7eb;
@@ -219,7 +209,6 @@
     <!-- Header -->
     <header class="bg-white border-b sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4">
-            <!-- Top Bar with Centered Logo -->
             <div class="header-container py-3 border-b">
                 <div class="header-left flex items-center space-x-4 text-xs">
                     <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
@@ -235,8 +224,6 @@
                     <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
                 </div>
             </div>
-           
-            <!-- Main Navigation -->
             <nav class="py-4">
                 <ul class="flex items-center justify-center space-x-6 md:space-x-8 text-sm font-medium">
                     <li><a href="fashion.html" class="hover:text-gray-600 transition">FASHION</a></li>
@@ -250,21 +237,15 @@
 
     <!-- Hero Section -->
     <section class="hero-image flex items-center justify-center text-white" id="hero-section">
-        <!-- Hero Slides Container -->
         <div id="hero-slides-container"></div>
-        
-        <!-- Hero Content -->
         <div class="hero-content text-center px-4">
             <h2 class="text-3xl md:text-4xl font-serif font-bold mb-2" id="hero-title"></h2>
             <p class="text-sm md:text-base opacity-90" id="hero-subtitle"></p>
         </div>
-
-        
-        <!-- Indicators -->
         <div class="hero-indicators" id="hero-indicators"></div>
     </section>
 
-    <!-- Are You In? Location-Based Section -->
+    <!-- Location Section -->
     <section class="location-hero py-16 mb-12">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
@@ -277,58 +258,49 @@
         </div>
     </section>
 
-    <!-- Fashion Recommendations for Location -->
+    <!-- Fashion Recommendations -->
     <section class="max-w-7xl mx-auto px-4 mb-16">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="section-title" id="fashion-location-title">Fashion for Seongsu</h2>
+            <h2 class="section-title" id="fashion-location-title">Fashion</h2>
             <a href="fashion.html" class="text-sm hover:underline">View All →</a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="fashion-grid">
-            <!-- Dynamically loaded -->
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="fashion-grid"></div>
     </section>
 
-    <!-- Beauty Recommendations for Location -->
+    <!-- Beauty Recommendations -->
     <section class="max-w-7xl mx-auto px-4 mb-16">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="section-title" id="beauty-location-title">Beauty for Seongsu</h2>
+            <h2 class="section-title" id="beauty-location-title">Beauty</h2>
             <a href="beauty.html" class="text-sm hover:underline">View All →</a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="beauty-grid">
-            <!-- Dynamically loaded -->
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="beauty-grid"></div>
     </section>
 
     <!-- Today's Stories -->
     <section class="max-w-7xl mx-auto px-4 mb-16">
         <h2 class="section-title">Today's Stories</h2>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6" id="today-stories">
-            <!-- Dynamically loaded -->
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6" id="today-stories"></div>
     </section>
 
     <!-- Best Stories -->
     <section class="max-w-7xl mx-auto px-4 mb-16">
         <h2 class="section-title">Best Stories</h2>
-        <div class="swiper-container flex gap-6 pb-4" id="best-stories">
-            <!-- Dynamically loaded -->
+        <div class="swiper best-stories-swiper overflow-hidden">
+            <div class="swiper-wrapper" id="best-stories"></div>
         </div>
     </section>
+
 
     <!-- Must Read -->
     <section class="max-w-7xl mx-auto px-4 mb-16">
         <h2 class="section-title">Must Read</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="must-read">
-            <!-- Dynamically loaded -->
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="must-read"></div>
     </section>
 
     <!-- Latest Stories -->
     <section class="max-w-7xl mx-auto px-4 mb-16">
         <h2 class="section-title">Latest Stories</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="latest-stories">
-            <!-- Dynamically loaded -->
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="latest-stories"></div>
     </section>
 
     <!-- Footer -->
@@ -371,24 +343,22 @@
         </div>
     </footer>
 
-    <!-- Location Change Modal -->
+    <!-- Location Modal -->
     <div id="location-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg max-w-md w-full">
             <div class="p-6">
                 <h3 class="text-xl font-bold mb-4">Select Your Location</h3>
-                <div class="space-y-3" id="location-options">
-                    <!-- Dynamically loaded -->
-                </div>
+                <div class="space-y-3" id="location-options"></div>
                 <button id="close-location-modal" class="mt-4 w-full py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // Global State
         let currentLang = 'en';
-        let currentDistrict = 'seongsu';
+        let currentDistrict = 'dsm00001';
         let currentHeroIndex = 0;
         let heroInterval;
         let heroSlides = [];
@@ -396,13 +366,12 @@
         let touchStartX = 0;
         let touchEndX = 0;
         let data = {
-            hero: [],
-            headlines: [],
+            pinned: null,
             fashion: [],
             beauty: [],
             life: [],
             districts: [],
-            areas: []
+            districtMeta: []
         };
 
         // Detect system language
@@ -417,52 +386,73 @@
             }
         }
 
-        // Load session storage preferences
+        // Load session preferences
         function loadSessionPreferences() {
             const storedAutoSelect = sessionStorage.getItem('autoSelectEnabled');
             const storedDistrict = sessionStorage.getItem('currentDistrict');
-            
+
             if (storedAutoSelect !== null) {
                 autoSelectEnabled = storedAutoSelect === 'true';
             }
-            
+
             if (storedDistrict !== null) {
                 currentDistrict = storedDistrict;
             }
         }
 
-        // Save session storage preferences
+        // Save session preferences
         function saveSessionPreferences() {
             sessionStorage.setItem('autoSelectEnabled', autoSelectEnabled);
             sessionStorage.setItem('currentDistrict', currentDistrict);
         }
 
+        async function loadData() {
+            try {
+                const districtsRes = await fetch('data/districts.json?' + Date.now()); // 캐시 무효화
+                data.districts = await districtsRes.json();
+
+                console.log('✅ districts.json 로드 완료:', data.districts.length, '개');
+                console.log('첫 5개 ID:', data.districts.slice(0, 5).map(x => x.id));
+
+            } catch (error) {
+                console.error('districts.json 로드 실패:', error);
+            }
+        }
         // Load All Data
         async function loadData() {
             try {
-                const [heroRes, headlinesRes, fashionRes, beautyRes, lifeRes, districtsRes, areasRes] = await Promise.all([
-                    fetch('data/hero.json'),
-                    fetch('data/headlines.json'),
+                const [pinnedRes, fashionRes, beautyRes, lifeRes, districtsRes, districtMetaRes] = await Promise.all([
+                    fetch('data/pinned.json'),
                     fetch('data/fashion.json'),
                     fetch('data/beauty.json'),
                     fetch('data/life.json'),
                     fetch('data/districts.json'),
-                    fetch('data/areas.json')
+                    fetch('data/district_meta.json')
                 ]);
 
-                data.hero = await heroRes.json();
-                data.headlines = await headlinesRes.json();
+                data.pinned = await pinnedRes.json();
                 data.fashion = await fashionRes.json();
                 data.beauty = await beautyRes.json();
                 data.life = await lifeRes.json();
                 data.districts = await districtsRes.json();
-                data.areas = await areasRes.json();
+                data.districtMeta = await districtMetaRes.json();
 
                 initializePage();
             } catch (error) {
                 console.error('Error loading data:', error);
-                alert('Failed to load data. Please check if all JSON files exist.');
+                alert('Failed to load data. Please check if all JSON files exist in the data folder.');
             }
+        }
+
+        // Get content by source and id
+        function getContentById(source, id) {
+            const sourceData = data[source];
+            return sourceData.find(item => item.id === id);
+        }
+
+        // Get district meta by district_id
+        function getDistrictMeta(districtId) {
+            return data.districtMeta.find(d => d.district_id === districtId);
         }
 
         // Initialize Page
@@ -484,7 +474,6 @@
             renderLocationModal();
             initializeHeroSwipe();
 
-            // Geolocation은 나중에 lazy하게 실행
             if (autoSelectEnabled) {
                 setTimeout(() => {
                     autoDetectLocationLazy();
@@ -492,8 +481,7 @@
             }
         }
 
-
-        // Auto Detect Location (Lazy version)
+        // Auto Detect Location (Lazy)
         function autoDetectLocationLazy() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -501,23 +489,21 @@
                         const userLat = position.coords.latitude;
                         const userLon = position.coords.longitude;
 
-                        let closestDistrict = data.areas[0];
+                        let closestDistrict = data.districtMeta[0];
                         let minDistance = Infinity;
 
-                        data.areas.forEach(area => {
-                            const distance = calculateDistance(userLat, userLon, area.latitude, area.longitude);
+                        data.districtMeta.forEach(district => {
+                            const distance = calculateDistance(userLat, userLon, district.latitude, district.longitude);
                             if (distance < minDistance) {
                                 minDistance = distance;
-                                closestDistrict = area;
+                                closestDistrict = district;
                             }
                         });
 
-                        // 위치가 변경된 경우만 업데이트
-                        if (currentDistrict !== closestDistrict.id) {
-                            currentDistrict = closestDistrict.id;
+                        if (currentDistrict !== closestDistrict.district_id) {
+                            currentDistrict = closestDistrict.district_id;
                             saveSessionPreferences();
 
-                            // 위치 관련 섹션만 다시 렌더링
                             renderLocationSection();
                             renderFashionSection();
                             renderBeautySection();
@@ -530,15 +516,14 @@
             }
         }
 
-
-        // Initialize Hero Swipe Gestures
+        // Initialize Hero Swipe
         function initializeHeroSwipe() {
             const heroSection = document.getElementById('hero-section');
-            
+
             heroSection.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
             });
-            
+
             heroSection.addEventListener('touchend', (e) => {
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
@@ -549,14 +534,12 @@
         function handleSwipe() {
             const swipeThreshold = 50;
             const diff = touchStartX - touchEndX;
-            
+
             if (Math.abs(diff) > swipeThreshold) {
                 clearInterval(heroInterval);
                 if (diff > 0) {
-                    // Swipe left - next slide
                     nextSlide();
                 } else {
-                    // Swipe right - previous slide
                     prevSlide();
                 }
                 startHeroRotation();
@@ -565,12 +548,22 @@
 
         // Initialize Hero Slides
         function initializeHeroSlides() {
-            const shuffled = [...data.hero].sort(() => 0.5 - Math.random());
-            heroSlides = shuffled.slice(0, 5);
+            heroSlides = data.pinned.hero.slice(0, 5).map(item => {
+                const content = getContentById(item.source, item.id);
+                if (!content) {
+                    console.error(`Content not found: ${item.source} - ${item.id}`);
+                    return null;
+                }
+                return content;
+            }).filter(Boolean);
+
+            if (heroSlides.length === 0) {
+                console.error('No hero slides found!');
+                return;
+            }
 
             const container = document.getElementById('hero-slides-container');
 
-            // 첫 번째 슬라이드만 즉시 로드
             container.innerHTML = heroSlides.map((hero, index) => `
                 <div class="hero-slide ${index === 0 ? 'active' : ''}"
                     style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')` : 'none'}"
@@ -593,7 +586,6 @@
                 });
             });
 
-            // 나머지 이미지들을 lazy하게 로드
             setTimeout(() => {
                 lazyLoadHeroImages();
             }, 500);
@@ -603,34 +595,18 @@
         function lazyLoadHeroImages() {
             const slides = document.querySelectorAll('.hero-slide');
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const slide = entry.target;
-                        const imageUrl = slide.getAttribute('data-image');
-
-                        if (imageUrl && !slide.style.backgroundImage.includes('url')) {
-                            const img = new Image();
-                            img.onload = () => {
-                                slide.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${imageUrl}')`;
-                            };
-                            img.src = imageUrl;
-                        }
-
-                        observer.unobserve(slide);
-                    }
-                });
-            }, {
-                root: document.getElementById('hero-section'),
-                threshold: 0.1
-            });
-
             slides.forEach((slide, index) => {
-                if (index === 0) return; // 첫 번째는 이미 로드됨
-                observer.observe(slide);
+                if (index === 0) return;
+                const imageUrl = slide.getAttribute('data-image');
+                if (imageUrl) {
+                    const img = new Image();
+                    img.onload = () => {
+                        slide.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${imageUrl}')`;
+                    };
+                    img.src = imageUrl;
+                }
             });
         }
-
 
         // Render Hero
         function renderHero() {
@@ -640,22 +616,31 @@
             const hero = heroSlides[currentHeroIndex];
 
             heroTitle.textContent = currentLang === 'kor' ? hero.title_kor : hero.title_en;
-            heroSubtitle.textContent = currentLang === 'kor' ? hero.subtitle_kor : hero.subtitle_en;
+            heroSubtitle.textContent = formatDate(hero.date);
         }
 
-        // Go to specific slide
+        // Format date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return currentLang === 'kor'
+                ? date.toLocaleDateString('ko-KR', options)
+                : date.toLocaleDateString('en-US', options);
+        }
+
+        // Go to slide
         function goToSlide(index) {
             const slides = document.querySelectorAll('.hero-slide');
             const indicators = document.querySelectorAll('.hero-indicator');
-            
+
             slides[currentHeroIndex].classList.remove('active');
             indicators[currentHeroIndex].classList.remove('active');
-            
+
             currentHeroIndex = index;
-            
+
             slides[currentHeroIndex].classList.add('active');
             indicators[currentHeroIndex].classList.add('active');
-            
+
             renderHero();
         }
 
@@ -675,10 +660,10 @@
         function startHeroRotation() {
             heroInterval = setInterval(() => {
                 nextSlide();
-            }, 5000); // 5초마다 변경
+            }, 5000);
         }
 
-        // Calculate Distance (Haversine formula)
+        // Calculate Distance
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -690,55 +675,9 @@
             return R * c;
         }
 
-        // Auto Detect Location
-        function autoDetectLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const userLat = position.coords.latitude;
-                        const userLon = position.coords.longitude;
-                        
-                        let closestDistrict = data.areas[0];
-                        let minDistance = Infinity;
-
-                        data.areas.forEach(area => {
-                            const distance = calculateDistance(userLat, userLon, area.latitude, area.longitude);
-                            if (distance < minDistance) {
-                                minDistance = distance;
-                                closestDistrict = area;
-                            }
-                        });
-
-                        currentDistrict = closestDistrict.id;
-                        saveSessionPreferences();
-                        
-                        renderLocationSection();
-                        renderFashionSection();
-                        renderBeautySection();
-                    },
-                    (error) => {
-                        console.error('Geolocation error:', error);
-                        currentDistrict = 'seongsu';
-                        saveSessionPreferences();
-                        
-                        renderLocationSection();
-                        renderFashionSection();
-                        renderBeautySection();
-                    }
-                );
-            } else {
-                currentDistrict = 'seongsu';
-                saveSessionPreferences();
-                
-                renderLocationSection();
-                renderFashionSection();
-                renderBeautySection();
-            }
-        }
-
         // Render Location Section
         function renderLocationSection() {
-            const district = data.districts.find(d => d.id === currentDistrict);
+            const district = getDistrictMeta(currentDistrict);
             if (!district) {
                 console.error('District not found:', currentDistrict);
                 return;
@@ -750,14 +689,14 @@
 
         // Render Fashion Section
         function renderFashionSection() {
-            const district = data.districts.find(d => d.id === currentDistrict);
-            const districtName = district ? district.name_en : 'Seongsu';
+            const district = getDistrictMeta(currentDistrict);
+            const districtName = district ? (currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
             document.getElementById('fashion-location-title').textContent = `Fashion for ${districtName}`;
 
-            const districtItems = data.fashion.filter(item => item.district === currentDistrict);
-            const generalItems = data.fashion.filter(item => !item.district);
+            const districtItems = data.fashion.filter(item => item.district_id === currentDistrict);
+            const generalItems = data.fashion.filter(item => !item.district_id);
             const fashionItems = [...districtItems, ...generalItems].slice(0, 4);
-            
+
             const fashionGrid = document.getElementById('fashion-grid');
 
             fashionGrid.innerHTML = fashionItems.map(item => `
@@ -776,19 +715,20 @@
 
         // Render Beauty Section
         function renderBeautySection() {
-            const district = data.districts.find(d => d.id === currentDistrict);
-            const districtName = district ? district.name_en : 'Seongsu';
+            const district = getDistrictMeta(currentDistrict);
+            const districtName = district ? (currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
             document.getElementById('beauty-location-title').textContent = `Beauty for ${districtName}`;
 
-            const districtItems = data.beauty.filter(item => item.district === currentDistrict);
-            const generalItems = data.beauty.filter(item => !item.district);
+            const districtItems = data.beauty.filter(item => item.district_id === currentDistrict);
+            const generalItems = data.beauty.filter(item => !item.district_id);
             const beautyItems = [...districtItems, ...generalItems].slice(0, 4);
-            
+
             const beautyGrid = document.getElementById('beauty-grid');
 
             beautyGrid.innerHTML = beautyItems.map(item => `
                 <article class="article-card cursor-pointer">
                     <div class="relative overflow-hidden mb-3 h-64">
+                        ${item.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${item.cultural_badge}</span>` : ''}
                         <img src="${item.image}" alt="" class="w-full h-full object-cover bg-gray-200">
                     </div>
                     <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
@@ -799,20 +739,59 @@
             `).join('');
         }
 
-        // Render Today's Stories
+        // Render Today's Stories (디버깅 로그 추가)
         function renderTodayStories() {
-            const stories = data.headlines.slice(0, 4);
-            const container = document.getElementById('today-stories');
+            console.log('=== Today\'s Stories Debug ===');
+            console.log('pinned.todayStories:', data.pinned.todayStories);
 
+            const stories = data.pinned.todayStories.map((item, index) => {
+                console.log(`[${index}] 시도: source=${item.source}, id=${item.id}`);
+                const content = getContentById(item.source, item.id);
+
+                if (content) {
+                    console.log(`✅ [${index}] 성공:`, {
+                        id: content.id,
+                        title: content.title_kor,
+                        image: content.image
+                    });
+                } else {
+                    console.error(`❌ [${index}] 실패: ${item.source} - ${item.id} 를 찾을 수 없습니다!`);
+                    console.log(`Available IDs in ${item.source}:`, data[item.source]?.map(x => x.id));
+                }
+
+                return content;
+            }).filter(Boolean);
+
+            console.log(`총 로드된 항목: ${stories.length}/5`);
+
+            if (stories.length < 5) {
+                console.warn(`⚠️ 5개 중 ${5 - stories.length}개 항목을 찾지 못했습니다!`);
+            }
+
+            if (stories.length === 0) {
+                console.error('No stories found for Today\'s Stories');
+                return;
+            }
+
+            const container = document.getElementById('today-stories');
             const featured = stories[0];
             const small = stories.slice(1);
+
+            console.log('Featured:', featured?.title_kor);
+            console.log('Small stories:', small.length);
+
+            const getDistrictName = (districtId) => {
+                if (!districtId) return null;
+                const district = getDistrictMeta(districtId);
+                return district ? (currentLang === 'kor' ? district.name_kor : district.name_en) : null;
+            };
 
             container.innerHTML = `
                 <div class="md:col-span-5">
                     <article class="article-card h-full cursor-pointer">
                         <div class="relative overflow-hidden mb-4 h-96">
-                            ${featured.district ? `<span class="district-tag">${featured.district}</span>` : ''}
-                            ${featured.cultural_translation ? `<span class="cultural-badge absolute top-12 left-12">Cultural Translation</span>` : ''}
+                            ${featured.district_id ? `<span class="district-tag">${getDistrictName(featured.district_id)}</span>` : ''}
+                            ${featured.cultural_badge ? `<span class="cultural-badge absolute top-12 left-12">${featured.cultural_badge}</span>` : ''}
                             <img src="${featured.image}" alt="" class="w-full h-full object-cover bg-gray-200">
                         </div>
                         <div class="text-xs text-gray-500 mb-2 uppercase tracking-wide">${featured.category}</div>
@@ -825,8 +804,8 @@
                     ${small.map(story => `
                         <article class="article-card cursor-pointer">
                             <div class="relative overflow-hidden mb-3 h-48">
-                                ${story.district ? `<span class="district-tag">${story.district}</span>` : ''}
-                                ${story.cultural_translation ? `<span class="cultural-badge absolute top-3 left-3">Cultural Translation</span>` : ''}
+                                ${story.district_id ? `<span class="district-tag">${getDistrictName(story.district_id)}</span>` : ''}
+                                ${story.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${story.cultural_badge}</span>` : ''}
                                 <img src="${story.image}" alt="" class="w-full h-full object-cover bg-gray-200">
                             </div>
                             <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
@@ -837,20 +816,43 @@
                     `).join('')}
                 </div>
             `;
+
+            console.log('=== End of Today\'s Stories Debug ===');
         }
 
         // Render Best Stories
         function renderBestStories() {
-            const stories = data.headlines.slice(4, 9);
+            const allContent = [
+                ...data.fashion,
+                ...data.beauty,
+                ...data.life,
+                ...data.districts
+            ];
+
+            const stories = allContent
+                .sort((a, b) => b.views - a.views)
+                .slice(0, 15);
+
+            if (stories.length === 0) {
+                console.error('No stories found for Best Stories');
+                return;
+            }
+
             const container = document.getElementById('best-stories');
 
+            const getDistrictName = (districtId) => {
+                if (!districtId) return null;
+                const district = getDistrictMeta(districtId);
+                return district ? (currentLang === 'kor' ? district.name_kor : district.name_en) : null;
+            };
+
             container.innerHTML = stories.map(story => `
-                <div class="swiper-slide w-72">
+                <div class="swiper-slide" style="width: 256px;">
                     <article class="article-card cursor-pointer">
                         <div class="relative overflow-hidden mb-3 h-48">
-                            ${story.district ? `<span class="district-tag">${story.district}</span>` : ''}
-                            ${story.cultural_translation ? `<span class="cultural-badge absolute top-3 left-3">Cultural Translation</span>` : ''}
-                            <img src="${story.image}" alt="" class="w-full h-full object-cover bg-gray-200">
+                            ${story.district_id ? `<span class="district-tag">${getDistrictName(story.district_id)}</span>` : ''}
+                            ${story.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${story.cultural_badge}</span>` : ''}
+                            <img src="${story.image}" alt="" class="w-full h-full object-cover bg-gray-200" draggable="false">
                         </div>
                         <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
                         <h4 class="text-base font-bold leading-tight">
@@ -859,22 +861,47 @@
                     </article>
                 </div>
             `).join('');
+
+            new Swiper('.best-stories-swiper', {
+                slidesPerView: 'auto',
+                spaceBetween: 24,
+                freeMode: {
+                    enabled: true,
+                    momentum: true,
+                    momentumRatio: 0.7,
+                    momentumVelocityRatio: 0.4,
+                    momentumBounce: false,
+                },
+                grabCursor: true,
+                resistance: true,
+                resistanceRatio: 0.85,
+            });
         }
 
         // Render Must Read
         function renderMustRead() {
-            const mixed = [
-                ...data.headlines.slice(2, 3),
-                ...data.fashion.slice(4, 6),
-                ...data.beauty.slice(4, 5)
-            ];
+            const stories = data.pinned.mustRead.map(item => {
+                return getContentById(item.source, item.id);
+            }).filter(Boolean);
+
+            if (stories.length === 0) {
+                console.error('No stories found for Must Read');
+                return;
+            }
 
             const container = document.getElementById('must-read');
-            container.innerHTML = mixed.map(item => `
+
+            const getDistrictName = (districtId) => {
+                if (!districtId) return null;
+                const district = getDistrictMeta(districtId);
+                return district ? (currentLang === 'kor' ? district.name_kor : district.name_en) : null;
+            };
+
+            container.innerHTML = stories.map(item => `
                 <article class="article-card cursor-pointer">
                     <div class="relative overflow-hidden mb-3 h-56">
-                        ${item.district ? `<span class="district-tag">${item.district}</span>` : ''}
-                        ${item.cultural_translation ? `<span class="cultural-badge absolute top-3 left-3">Cultural Translation</span>` : ''}
+                        ${item.district_id ? `<span class="district-tag">${getDistrictName(item.district_id)}</span>` : ''}
+                        ${item.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${item.cultural_badge}</span>` : ''}
                         <img src="${item.image}" alt="" class="w-full h-full object-cover bg-gray-200">
                     </div>
                     <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
@@ -888,11 +915,21 @@
 
         // Render Latest Stories
         function renderLatestStories() {
-            const latest = [
-                data.life[0],
-                data.beauty[5],
-                data.fashion[6]
-            ].filter(Boolean);
+            const allContent = [
+                ...data.fashion,
+                ...data.beauty,
+                ...data.life,
+                ...data.districts
+            ];
+
+            const latest = allContent
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 3);
+
+            if (latest.length === 0) {
+                console.error('No stories found for Latest Stories');
+                return;
+            }
 
             const container = document.getElementById('latest-stories');
             container.innerHTML = latest.map(item => `
@@ -905,7 +942,7 @@
                         <h4 class="text-sm font-bold leading-tight mb-2">
                             ${currentLang === 'kor' ? item.title_kor : item.title_en}
                         </h4>
-                        <p class="text-xs text-gray-600">${item.date}</p>
+                        <p class="text-xs text-gray-600">${formatDate(item.date)}</p>
                     </div>
                 </article>
             `).join('');
@@ -921,10 +958,10 @@
                     <div class="font-bold ${currentSelection === 'auto' ? 'text-blue-700' : ''}">🎯 Auto Detect</div>
                     <div class="text-sm text-gray-600">Find nearest district automatically</div>
                 </button>
-                ${data.districts.map(district => `
-                    <button class="location-option w-full text-left p-4 border ${currentSelection === district.id ? 'border-2 border-blue-500 bg-blue-50' : 'border-gray-300'} rounded hover:bg-gray-50 transition" data-location="${district.id}">
-                        <div class="font-bold ${currentSelection === district.id ? 'text-blue-700' : ''}">📍 ${district.name_en}</div>
-                        <div class="text-sm text-gray-600">${district.tagline_en}</div>
+                ${data.districtMeta.map(district => `
+                    <button class="location-option w-full text-left p-4 border ${currentSelection === district.district_id ? 'border-2 border-blue-500 bg-blue-50' : 'border-gray-300'} rounded hover:bg-gray-50 transition" data-location="${district.district_id}">
+                        <div class="font-bold ${currentSelection === district.district_id ? 'text-blue-700' : ''}">📍 ${currentLang === 'kor' ? district.name_kor : district.name_en}</div>
+                        <div class="text-sm text-gray-600">${currentLang === 'kor' ? district.desc_kor : district.desc_en}</div>
                     </button>
                 `).join('')}
             `;
@@ -935,7 +972,7 @@
                     if (location === 'auto') {
                         autoSelectEnabled = true;
                         saveSessionPreferences();
-                        autoDetectLocation();
+                        autoDetectLocationLazy();
                     } else {
                         autoSelectEnabled = false;
                         currentDistrict = location;
@@ -973,6 +1010,7 @@
             renderBestStories();
             renderMustRead();
             renderLatestStories();
+            renderLocationModal();
         });
 
         // Location Modal
@@ -1002,13 +1040,13 @@
             }
         });
 
-        // Subscribe button scroll
+        // Subscribe scroll
         document.querySelector('a[href="#newsletter-section"]').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('newsletter-section').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Load data on page load
+        // Load data
         loadData();
     </script>
 

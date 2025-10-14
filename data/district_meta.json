@@ -1,0 +1,46 @@
+[
+  {
+    "district_id": "dsm00001",
+    "name_kor": "성수동",
+    "name_en": "Seongsu-dong",
+    "latitude": 37.5447,
+    "longitude": 127.0557,
+    "title_kor": "Are You in 성수?",
+    "title_en": "Are You in Seongsu?",
+    "desc_kor": "성수동: 인더스트리얼 감성과 아티스트 문화가 만나는 곳",
+    "desc_en": "Seongsu :Where industrial aesthetic meets artist culture"
+  },
+  {
+    "district_id": "dsm00002",
+    "name_kor": "한남동",
+    "name_en": "Hannam-dong",
+    "latitude": 37.5347,
+    "longitude": 127.0026,
+    "title_kor": "Are You in 한남동?",
+    "title_en": "Are You in Hannam?",
+    "desc_kor": "한남동: 세련된 큐레이션 문화와 MZ세대의 취향이 만나는 곳",
+    "desc_en": "Hannam-dong : where sophisticated curation meets MZ taste"
+  },
+  {
+    "district_id": "dsm00003",
+    "name_kor": "홍대",
+    "name_en": "Hongdae",
+    "latitude": 37.5565,
+    "longitude": 126.9240,
+    "title_kor": "Are You in 홍대?",
+    "title_en": "Are You in Hongdae?",
+    "desc_kor": "홍대: 젊음과 자유로운 표현의 중심지",
+    "desc_en": "Hongdae : the center of youth and free expression"
+  },
+  {
+    "district_id": "dsm00004",
+    "name_kor": "명동",
+    "name_en": "Myeongdong",
+    "latitude": 37.5636,
+    "longitude": 126.9826,
+    "title_kor": "Are You in 명동?",
+    "title_en": "Are You in Myeongdong?",
+    "desc_kor": "명동: K-뷰티와 관광의 메카",
+    "desc_en": "Myeongdong : the mecca of K-beauty and tourism"
+  }
+]

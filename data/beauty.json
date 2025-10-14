@@ -1,398 +1,572 @@
 [
   {
     "id": "by00001",
+    "district_id": null,
     "title_kor": "내추럴 글로우 메이크업",
     "title_en": "Natural Glow Makeup",
     "desc_kor": "피부 본연의 빛을 살리는 메이크업",
     "desc_en": "Makeup that highlights skin's natural glow",
     "category": "Beauty Trend",
-    "district": null,
     "image": "img/beauty/by00001.jpg",
-    "tags": ["makeup", "glow", "natural"],
+    "tags": [
+      "makeup",
+      "glow",
+      "natural"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-09",
-    "author": "Lee Ji-hye"
+    "author": "Lee Ji-hye",
+    "views": 4664
   },
   {
     "id": "by00002",
+    "district_id": "dsm00001",
     "title_kor": "성수동 감성 네일샵 탐방",
     "title_en": "Seongsu's Aesthetic Nail Salons",
     "desc_kor": "인더스트리얼 공간에서 만나는 네일 아트",
     "desc_en": "Nail art meets industrial space",
     "category": "Beauty Spot",
-    "district": "seongsu",
     "image": "img/beauty/by00002.jpg",
-    "tags": ["nail", "salon", "seongsu"],
+    "tags": [
+      "nail",
+      "salon",
+      "seongsu"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-08",
-    "author": "Park Soo-jin"
+    "author": "Park Soo-jin",
+    "views": 66190
   },
   {
     "id": "by00003",
+    "district_id": null,
     "title_kor": "여름에서 가을로, 스킨케어 전환",
     "title_en": "Transitioning Skincare: Summer to Fall",
     "desc_kor": "계절 변화에 맞는 피부 관리",
     "desc_en": "Skin care for seasonal changes",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00003.jpg",
-    "tags": ["skincare", "fall", "transition"],
+    "tags": [
+      "skincare",
+      "fall",
+      "transition"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-07",
-    "author": "Choi Min-ah"
+    "author": "Choi Min-ah",
+    "views": 1287
   },
   {
     "id": "by00004",
+    "district_id": null,
     "title_kor": "미니멀 헤어스타일의 부활",
     "title_en": "The Return of Minimal Hairstyles",
     "desc_kor": "심플함 속에 담긴 세련미",
     "desc_en": "Sophistication in simplicity",
     "category": "Beauty Trend",
-    "district": null,
     "image": "img/beauty/by00004.jpg",
-    "tags": ["hair", "minimal", "trend"],
+    "tags": [
+      "hair",
+      "minimal",
+      "trend"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-06",
-    "author": "Jung Hye-won"
+    "author": "Jung Hye-won",
+    "views": 4174
   },
   {
     "id": "by00005",
+    "district_id": null,
     "title_kor": "K-뷰티 루틴: 외국인이 알아야 할 10단계",
     "title_en": "K-Beauty Routine: 10 Steps Foreigners Should Know",
     "desc_kor": "한국식 뷰티의 문화적 배경",
     "desc_en": "Cultural background of Korean beauty",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00005.jpg",
-    "tags": ["k-beauty", "routine", "guide"],
-    "cultural_translation": true,
+    "tags": [
+      "k-beauty",
+      "routine",
+      "guide"
+    ],
+    "cultural_badge": "Cultural Translation",
     "date": "2025-10-05",
-    "author": "Kim Yu-na"
+    "author": "Kim Yu-na",
+    "views": 9535
   },
   {
     "id": "by00006",
+    "district_id": null,
     "title_kor": "가을 메이크업 트렌드: 자연스러운 광채",
     "title_en": "Fall Makeup Trends: Natural Glow",
     "desc_kor": "따뜻한 톤의 가을 메이크업",
     "desc_en": "Warm-toned fall makeup",
     "category": "Beauty Trend",
-    "district": null,
     "image": "img/beauty/by00006.jpg",
-    "tags": ["makeup", "fall", "trend"],
+    "tags": [
+      "makeup",
+      "fall",
+      "trend"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-04",
-    "author": "Lee Seo-yeon"
+    "author": "Lee Seo-yeon",
+    "views": 63925
   },
   {
     "id": "by00007",
+    "district_id": "dsm00004",
     "title_kor": "올리브영 베스트셀러 아이템",
     "title_en": "Olive Young Bestseller Items",
     "desc_kor": "외국인 관광객이 가장 많이 찾는 제품",
     "desc_en": "Most sought products by foreign tourists",
     "category": "Beauty Item",
-    "district": "myeongdong",
     "image": "img/beauty/by00007.jpg",
-    "tags": ["olive young", "bestseller", "tourist"],
-    "cultural_translation": true,
+    "tags": [
+      "olive young",
+      "bestseller",
+      "tourist"
+    ],
+    "cultural_badge": "Cultural Translation",
     "date": "2025-10-03",
-    "author": "Kim Hyun-joo"
+    "author": "Kim Hyun-joo",
+    "views": 78080
   },
   {
     "id": "by00008",
+    "district_id": null,
     "title_kor": "수분 크림의 모든 것",
     "title_en": "Everything About Moisturizing Cream",
     "desc_kor": "건조한 계절을 위한 필수템",
     "desc_en": "Essential for dry season",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00008.jpg",
-    "tags": ["moisturizer", "cream", "skincare"],
+    "tags": [
+      "moisturizer",
+      "cream",
+      "skincare"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-02",
-    "author": "Park Min-ji"
+    "author": "Park Min-ji",
+    "views": 6106
   },
   {
     "id": "by00009",
+    "district_id": null,
     "title_kor": "아이라이너 완벽 가이드",
     "title_en": "Complete Eyeliner Guide",
     "desc_kor": "눈매를 살리는 테크닉",
     "desc_en": "Techniques to enhance your eyes",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00009.jpg",
-    "tags": ["eyeliner", "makeup", "guide"],
+    "tags": [
+      "eyeliner",
+      "makeup",
+      "guide"
+    ],
+    "cultural_badge": null,
     "date": "2025-10-01",
-    "author": "Choi Jung-woo"
+    "author": "Choi Jung-woo",
+    "views": 36133
   },
   {
     "id": "by00010",
+    "district_id": "dsm00002",
     "title_kor": "한남동 프리미엄 스파 체험",
     "title_en": "Hannam-dong Premium Spa Experience",
     "desc_kor": "도심 속 힐링 공간",
     "desc_en": "Healing space in the city",
     "category": "Beauty Spot",
-    "district": "hannam",
     "image": "img/beauty/by00010.jpg",
-    "tags": ["spa", "wellness", "hannam"],
+    "tags": [
+      "spa",
+      "wellness",
+      "hannam"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-30",
-    "author": "Lee Min-ho"
+    "author": "Lee Min-ho",
+    "views": 97658
   },
   {
     "id": "by00011",
+    "district_id": null,
     "title_kor": "선크림의 중요성과 선택법",
     "title_en": "Importance of Sunscreen and How to Choose",
     "desc_kor": "365일 필수 스킨케어",
     "desc_en": "Essential skincare for 365 days",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00011.jpg",
-    "tags": ["sunscreen", "skincare", "protection"],
+    "tags": [
+      "sunscreen",
+      "skincare",
+      "protection"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-29",
-    "author": "Kim So-young"
+    "author": "Kim So-young",
+    "views": 52635
   },
   {
     "id": "by00012",
+    "district_id": null,
     "title_kor": "립스틱 vs 립틴트: 완벽 비교",
     "title_en": "Lipstick vs Lip Tint: Complete Comparison",
     "desc_kor": "나에게 맞는 립 제품 찾기",
     "desc_en": "Finding the right lip product for you",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00012.jpg",
-    "tags": ["lipstick", "tint", "comparison"],
+    "tags": [
+      "lipstick",
+      "tint",
+      "comparison"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-28",
-    "author": "Jung Da-eun"
+    "author": "Jung Da-eun",
+    "views": 76792
   },
   {
     "id": "by00013",
+    "district_id": null,
     "title_kor": "K-뷰티 수출 1위 제품들",
     "title_en": "Top K-Beauty Export Products",
     "desc_kor": "세계가 사랑하는 한국 화장품",
     "desc_en": "Korean cosmetics loved by the world",
     "category": "Beauty News",
-    "district": null,
     "image": "img/beauty/by00013.jpg",
-    "tags": ["k-beauty", "export", "global"],
-    "cultural_translation": true,
+    "tags": [
+      "k-beauty",
+      "export",
+      "global"
+    ],
+    "cultural_badge": "Cultural Translation",
     "date": "2025-09-27",
-    "author": "Park Ji-won"
+    "author": "Park Ji-won",
+    "views": 869
   },
   {
     "id": "by00014",
+    "district_id": null,
     "title_kor": "모공 관리의 모든 것",
     "title_en": "Everything About Pore Care",
     "desc_kor": "깨끗한 피부를 위한 필수 케어",
     "desc_en": "Essential care for clean skin",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00014.jpg",
-    "tags": ["pore", "skincare", "care"],
+    "tags": [
+      "pore",
+      "skincare",
+      "care"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-26",
-    "author": "Lee Ji-hye"
+    "author": "Lee Ji-hye",
+    "views": 99227
   },
   {
     "id": "by00015",
+    "district_id": null,
     "title_kor": "시트마스크 200% 활용법",
     "title_en": "How to Use Sheet Masks 200% Better",
     "desc_kor": "효과를 극대화하는 팁",
     "desc_en": "Tips to maximize effectiveness",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00015.jpg",
-    "tags": ["sheet mask", "skincare", "tips"],
+    "tags": [
+      "sheet mask",
+      "skincare",
+      "tips"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-25",
-    "author": "Choi Hye-jin"
+    "author": "Choi Hye-jin",
+    "views": 18681
   },
   {
     "id": "by00016",
+    "district_id": "dsm00003",
     "title_kor": "홍대 네일아트 트렌드",
     "title_en": "Hongdae Nail Art Trends",
     "desc_kor": "젊은 감성의 네일 디자인",
     "desc_en": "Youthful nail designs",
     "category": "Beauty Trend",
-    "district": "hongdae",
     "image": "img/beauty/by00016.jpg",
-    "tags": ["nail art", "hongdae", "trend"],
+    "tags": [
+      "nail art",
+      "hongdae",
+      "trend"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-24",
-    "author": "Kim Yu-na"
+    "author": "Kim Yu-na",
+    "views": 36602
   },
   {
     "id": "by00017",
+    "district_id": null,
     "title_kor": "아침 vs 저녁 스킨케어 루틴",
     "title_en": "Morning vs Evening Skincare Routine",
     "desc_kor": "시간대별 최적화된 관리법",
     "desc_en": "Optimized care by time of day",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00017.jpg",
-    "tags": ["routine", "skincare", "guide"],
+    "tags": [
+      "routine",
+      "skincare",
+      "guide"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-23",
-    "author": "Lee Seo-yeon"
+    "author": "Lee Seo-yeon",
+    "views": 97194
   },
   {
     "id": "by00018",
+    "district_id": null,
     "title_kor": "BB크림 vs CC크림: 차이점 완벽 분석",
     "title_en": "BB Cream vs CC Cream: Perfect Analysis",
     "desc_kor": "베이스 메이크업의 선택",
     "desc_en": "Choosing base makeup",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00018.jpg",
-    "tags": ["bb cream", "cc cream", "base"],
+    "tags": [
+      "bb cream",
+      "cc cream",
+      "base"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-22",
-    "author": "Park Soo-jin"
+    "author": "Park Soo-jin",
+    "views": 26780
   },
   {
     "id": "by00019",
+    "district_id": null,
     "title_kor": "눈썹 메이크업의 정석",
     "title_en": "Classic Eyebrow Makeup",
     "desc_kor": "얼굴형에 맞는 눈썹 그리기",
     "desc_en": "Drawing eyebrows for face shape",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00019.jpg",
-    "tags": ["eyebrow", "makeup", "guide"],
+    "tags": [
+      "eyebrow",
+      "makeup",
+      "guide"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-21",
-    "author": "Jung Hye-won"
+    "author": "Jung Hye-won",
+    "views": 22604
   },
   {
     "id": "by00020",
+    "district_id": "dsm00004",
     "title_kor": "명동 뷰티 쇼핑 완전정복",
     "title_en": "Complete Myeongdong Beauty Shopping Guide",
     "desc_kor": "K-뷰티 쇼핑의 성지",
     "desc_en": "Sacred place of K-beauty shopping",
     "category": "Beauty Spot",
-    "district": "myeongdong",
     "image": "img/beauty/by00020.jpg",
-    "tags": ["myeongdong", "shopping", "beauty"],
-    "cultural_translation": true,
+    "tags": [
+      "myeongdong",
+      "shopping",
+      "beauty"
+    ],
+    "cultural_badge": "Cultural Translation",
     "date": "2025-09-20",
-    "author": "Kim Hyun-joo"
+    "author": "Kim Hyun-joo",
+    "views": 91520
   },
   {
     "id": "by00021",
+    "district_id": null,
     "title_kor": "에센스 vs 세럼: 어떻게 다를까?",
     "title_en": "Essence vs Serum: What's the Difference?",
     "desc_kor": "스킨케어 제품의 올바른 이해",
     "desc_en": "Proper understanding of skincare products",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00021.jpg",
-    "tags": ["essence", "serum", "skincare"],
+    "tags": [
+      "essence",
+      "serum",
+      "skincare"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-19",
-    "author": "Park Min-ji"
+    "author": "Park Min-ji",
+    "views": 55962
   },
   {
     "id": "by00022",
+    "district_id": null,
     "title_kor": "쿠션 파운데이션의 모든 것",
     "title_en": "Everything About Cushion Foundation",
     "desc_kor": "K-뷰티가 만든 혁신",
     "desc_en": "Innovation created by K-beauty",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00022.jpg",
-    "tags": ["cushion", "foundation", "k-beauty"],
-    "cultural_translation": true,
+    "tags": [
+      "cushion",
+      "foundation",
+      "k-beauty"
+    ],
+    "cultural_badge": "Cultural Translation",
     "date": "2025-09-18",
-    "author": "Choi Min-ah"
+    "author": "Choi Min-ah",
+    "views": 37619
   },
   {
     "id": "by00023",
+    "district_id": null,
     "title_kor": "각질 제거의 올바른 방법",
     "title_en": "Proper Way to Exfoliate",
     "desc_kor": "피부 타입별 각질 관리",
     "desc_en": "Exfoliation for different skin types",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00023.jpg",
-    "tags": ["exfoliation", "skincare", "guide"],
+    "tags": [
+      "exfoliation",
+      "skincare",
+      "guide"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-17",
-    "author": "Lee Min-ho"
+    "author": "Lee Min-ho",
+    "views": 19278
   },
   {
     "id": "by00024",
+    "district_id": null,
     "title_kor": "겨울 피부 건조 대처법",
     "title_en": "How to Deal with Winter Dry Skin",
     "desc_kor": "수분 충전 집중 관리",
     "desc_en": "Intensive hydration care",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00024.jpg",
-    "tags": ["winter", "dry skin", "hydration"],
+    "tags": [
+      "winter",
+      "dry skin",
+      "hydration"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-16",
-    "author": "Kim So-young"
+    "author": "Kim So-young",
+    "views": 10331
   },
   {
     "id": "by00025",
+    "district_id": null,
     "title_kor": "아이섀도우 팔레트 완벽 활용법",
     "title_en": "Perfect Use of Eyeshadow Palette",
     "desc_kor": "다양한 룩을 만드는 방법",
     "desc_en": "Creating various looks",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00025.jpg",
-    "tags": ["eyeshadow", "palette", "makeup"],
+    "tags": [
+      "eyeshadow",
+      "palette",
+      "makeup"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-15",
-    "author": "Jung Da-eun"
+    "author": "Jung Da-eun",
+    "views": 6314
   },
   {
     "id": "by00026",
+    "district_id": null,
     "title_kor": "한방 화장품의 재발견",
     "title_en": "Rediscovering Herbal Cosmetics",
     "desc_kor": "전통에서 찾은 뷰티 비결",
     "desc_en": "Beauty secrets found in tradition",
     "category": "Beauty Item",
-    "district": null,
     "image": "img/beauty/by00026.jpg",
-    "tags": ["herbal", "traditional", "cosmetics"],
-    "cultural_translation": true,
+    "tags": [
+      "herbal",
+      "traditional",
+      "cosmetics"
+    ],
+    "cultural_badge": "Cultural Translation",
     "date": "2025-09-14",
-    "author": "Park Ji-won"
+    "author": "Park Ji-won",
+    "views": 28248
   },
   {
     "id": "by00027",
+    "district_id": null,
     "title_kor": "컨실러 완벽 가이드",
     "title_en": "Complete Concealer Guide",
     "desc_kor": "결점 커버의 모든 것",
     "desc_en": "Everything about covering imperfections",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00027.jpg",
-    "tags": ["concealer", "makeup", "guide"],
+    "tags": [
+      "concealer",
+      "makeup",
+      "guide"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-13",
-    "author": "Lee Ji-hye"
+    "author": "Lee Ji-hye",
+    "views": 62434
   },
   {
     "id": "by00028",
+    "district_id": null,
     "title_kor": "클렌징의 중요성과 방법",
     "title_en": "Importance and Methods of Cleansing",
     "desc_kor": "모든 스킨케어의 시작",
     "desc_en": "Beginning of all skincare",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00028.jpg",
-    "tags": ["cleansing", "skincare", "basics"],
+    "tags": [
+      "cleansing",
+      "skincare",
+      "basics"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-12",
-    "author": "Choi Hye-jin"
+    "author": "Choi Hye-jin",
+    "views": 72926
   },
   {
     "id": "by00029",
+    "district_id": "dsm00001",
     "title_kor": "성수동 헤어샵: 트렌디한 스타일링",
     "title_en": "Seongsu Hair Salons: Trendy Styling",
     "desc_kor": "아티스트들이 모이는 헤어샵",
     "desc_en": "Hair salons where artists gather",
     "category": "Beauty Spot",
-    "district": "seongsu",
     "image": "img/beauty/by00029.jpg",
-    "tags": ["hair salon", "seongsu", "trendy"],
+    "tags": [
+      "hair salon",
+      "seongsu",
+      "trendy"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-11",
-    "author": "Kim Yu-na"
+    "author": "Kim Yu-na",
+    "views": 43009
   },
   {
     "id": "by00030",
+    "district_id": null,
     "title_kor": "하이라이터 vs 쉐딩: 입체감 만들기",
     "title_en": "Highlighter vs Shading: Creating Dimension",
     "desc_kor": "얼굴 윤곽을 살리는 메이크업",
     "desc_en": "Makeup to enhance facial contours",
     "category": "Beauty Guide",
-    "district": null,
     "image": "img/beauty/by00030.jpg",
-    "tags": ["highlighter", "shading", "contouring"],
+    "tags": [
+      "highlighter",
+      "shading",
+      "contouring"
+    ],
+    "cultural_badge": null,
     "date": "2025-09-10",
-    "author": "Lee Seo-yeon"
+    "author": "Lee Seo-yeon",
+    "views": 11091
   }
 ]

@@ -5,10 +5,25 @@ echo FBC Creators Local Server
 echo ========================================
 echo.
 
-cd /d "C:\Users\movemin\Desktop\새 폴더\FBC"
+REM Get the directory where the batch file is located
+set "SCRIPT_DIR=%~dp0"
+cd /d "%SCRIPT_DIR%"
+
+REM Check if index.html exists
+echo [1/4] Checking index.html...
+if not exist "index.html" (
+    echo   [ERROR] index.html not found in current directory!
+    echo   Current directory: %SCRIPT_DIR%
+    echo.
+    pause
+    exit /b
+) else (
+    echo   [OK] index.html found
+)
+echo.
 
 REM Check folder structure
-echo [1/3] Checking folder structure...
+echo [2/4] Checking folder structure...
 if not exist "data" (
     echo   [ERROR] 'data' folder not found!
     echo   Creating 'data' folder...
@@ -20,21 +35,14 @@ if not exist "data" (
 echo.
 
 REM Check JSON files
-echo [2/3] Checking required JSON files...
+echo [3/4] Checking required JSON files...
 set "missing=0"
 
-if not exist "data\hero.json" (
-    echo   [MISSING] data\hero.json
+if not exist "data\pinned.json" (
+    echo   [MISSING] data\pinned.json
     set "missing=1"
 ) else (
-    echo   [OK] data\hero.json
-)
-
-if not exist "data\headlines.json" (
-    echo   [MISSING] data\headlines.json
-    set "missing=1"
-) else (
-    echo   [OK] data\headlines.json
+    echo   [OK] data\pinned.json
 )
 
 if not exist "data\fashion.json" (
@@ -65,11 +73,11 @@ if not exist "data\districts.json" (
     echo   [OK] data\districts.json
 )
 
-if not exist "data\areas.json" (
-    echo   [MISSING] data\areas.json
+if not exist "data\district_meta.json" (
+    echo   [MISSING] data\district_meta.json
     set "missing=1"
 ) else (
-    echo   [OK] data\areas.json
+    echo   [OK] data\district_meta.json
 )
 
 echo.
@@ -81,6 +89,14 @@ if "%missing%"=="1" (
     echo.
     echo The website may not work properly.
     echo Please make sure all JSON files are in the 'data' folder.
+    echo.
+    echo Required files:
+    echo   - pinned.json
+    echo   - fashion.json
+    echo   - beauty.json
+    echo   - life.json
+    echo   - districts.json
+    echo   - district_meta.json
     echo.
     echo Do you want to continue anyway? (Y/N)
     set /p "continue=Your choice: "
@@ -95,7 +111,7 @@ if "%missing%"=="1" (
 )
 
 REM Find IP address
-echo [3/3] Getting network information...
+echo [4/4] Getting network information...
 for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4" ^| findstr /v "127.0.0.1"') do (
     set IP=%%a
     goto :found
@@ -108,16 +124,17 @@ echo ========================================
 echo Server is starting...
 echo ========================================
 echo.
-echo   Local:   http://localhost:8000
-echo   Network: http://%IP%:8000
+echo   Location: %SCRIPT_DIR%
+echo   Local:    http://localhost:8000
+echo   Network:  http://%IP%:8000
 echo.
 echo Opening browser...
 echo Press Ctrl+C to stop the server
 echo ========================================
 echo.
 
-REM Open browser
-start http://localhost:8000
+REM Open browser (index.html in current directory)
+start http://localhost:8000/index.html
 
 REM Start server
 python -m http.server 8000
