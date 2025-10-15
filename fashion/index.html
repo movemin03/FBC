@@ -33,18 +33,6 @@
         .header-right {
             justify-self: end;
         }
-
-        .hero-article {
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-article img {
-            transition: transform 0.5s ease;
-        }
-        .hero-article:hover img {
-            transform: scale(1.05);
-        }
-
         .category-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -98,6 +86,40 @@
 
         html {
             scroll-behavior: smooth;
+        }
+        /* 모바일 반응형 스타일 */
+        @media (max-width: 768px) {
+            .hero-article .absolute {
+                padding: 24px 16px !important;  /* 데스크탑 p-8(32px)에서 줄임 */
+            }
+
+            .hero-article h2 {
+                font-size: 24px !important;  /* 데스크탑 3xl-4xl(36-48px)에서 줄임 */
+                line-height: 1.3 !important;
+                margin-bottom: 12px !important;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+            }
+
+            .hero-article p:first-of-type {  /* 설명 텍스트 */
+                font-size: 14px !important;  /* 데스크탑 lg(18px)에서 줄임 */
+                line-height: 1.4 !important;
+                margin-bottom: 8px !important;
+            }
+
+            .hero-article p:last-of-type {  /* 날짜/저자 텍스트 */
+                font-size: 11px !important;  /* 데스크탑 sm(14px)에서 줄임 */
+            }
+
+            .category-badge {
+                font-size: 10px !important;
+                padding: 3px 10px !important;
+            }
+
+            .cultural-badge {
+                font-size: 9px !important;
+                padding: 2px 8px !important;
+            }
         }
     </style>
 </head>
