@@ -258,6 +258,10 @@
             margin-top: 4px;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         @media (max-width: 768px) {
             .article-title {
                 font-size: 32px;
@@ -336,7 +340,7 @@
 
                 <!-- Related Articles -->
                 <div class="related-section">
-                    <h2 class="section-title" id="related-articles-title">Related Articles</h2>
+                    <h2 class="section-title">Related Articles</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" id="related-articles">
                         <!-- Related articles will be loaded here -->
                     </div>
@@ -344,7 +348,7 @@
 
                 <!-- Latest Articles -->
                 <div class="related-section">
-                    <h2 class="section-title" id="latest-articles-title">Latest Articles</h2>
+                    <h2 class="section-title">Latest Articles</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" id="latest-articles">
                         <!-- Latest articles will be loaded here -->
                     </div>
@@ -356,7 +360,7 @@
                 <div class="sidebar">
                     <!-- Popular Articles -->
                     <div class="sidebar-section">
-                        <h3 id="popular-articles-title">Popular Articles</h3>
+                        <h3>Popular Articles</h3>
                         <div id="popular-articles">
                             <!-- Popular articles will be loaded here -->
                         </div>
@@ -364,7 +368,7 @@
 
                     <!-- Must Read -->
                     <div class="sidebar-section">
-                        <h3 id="must-read-articles-title">Must Read</h3>
+                        <h3>Must Read</h3>
                         <div id="must-read-articles">
                             <!-- Must read articles will be loaded here -->
                         </div>
@@ -423,6 +427,19 @@
     let popularArticlesData = [];
     let mustReadArticlesData = [];
 
+    // Initialize Language with localStorage
+    function initializeLanguage() {
+        const savedLang = localStorage.getItem('fbc_language');
+        if (savedLang) {
+            currentLang = savedLang;
+        } else {
+            const browserLang = navigator.language || navigator.userLanguage;
+            currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+            localStorage.setItem('fbc_language', currentLang);
+        }
+        document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
+    }
+
     // Get category from ID
     function getCategoryFromId(id) {
         const prefix = id.substring(0, 2).toLowerCase();
@@ -437,8 +454,9 @@
 
     // Language toggle
     document.getElementById('lang-toggle').addEventListener('click', function() {
-        currentLang = currentLang === 'kor' ? 'en' : 'kor';
-        document.getElementById('lang-text').textContent = currentLang === 'kor' ? 'Korean' : 'English';
+        currentLang = currentLang === 'en' ? 'ko' : 'en';
+        document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
+        localStorage.setItem('fbc_language', currentLang);
         if (currentArticle) {
             updateLanguage();
         }
@@ -447,26 +465,16 @@
     function updateLanguage() {
         // Update article title
         document.getElementById('article-title').textContent =
-            currentLang === 'kor' ? currentArticle.title_kor : currentArticle.title_en;
+            currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
 
         // Update article content
         const article = articleData.find(a => a.id === currentArticle.id);
         if (article) {
-            const htmlContent = currentLang === 'kor' ? article.article_html_ko : article.article_html_en;
+            const htmlContent = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
             if (htmlContent) {
                 document.getElementById('article-content').innerHTML = htmlContent;
             }
         }
-
-        // Update section titles
-        document.getElementById('related-articles-title').textContent =
-            currentLang === 'kor' ? '관련기사' : 'Related Articles';
-        document.getElementById('latest-articles-title').textContent =
-            currentLang === 'kor' ? '최신기사' : 'Latest Articles';
-        document.getElementById('popular-articles-title').textContent =
-            currentLang === 'kor' ? '인기기사' : 'Popular Articles';
-        document.getElementById('must-read-articles-title').textContent =
-            currentLang === 'kor' ? '추천기사' : 'Must Read';
 
         // Update related articles
         renderArticleGrid('related-articles', relatedArticlesData);
@@ -503,8 +511,6 @@
             const life = await lifeRes.json();
             const districts = await districtsRes.json();
             articleData = await articleRes.json();
-
-            console.log('✅ Loaded article.json:', articleData);
 
             allArticles = {
                 fashion: fashion,
@@ -543,35 +549,29 @@
             return;
         }
 
-        console.log('✅ Found article:', currentArticle);
-
         // article.json에서 콘텐츠 찾기
         const article = articleData.find(a => a.id === articleId);
-        console.log('✅ Looking for article content with id:', articleId);
-        console.log('✅ Found article content:', article);
 
         // Set article data
         document.getElementById('article-category').textContent = currentArticle.category;
         document.getElementById('article-category').href = `../${category}/index.html`;
         document.getElementById('article-title').textContent =
-            currentLang === 'kor' ? currentArticle.title_kor : currentArticle.title_en;
+            currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
         document.getElementById('article-author').textContent = currentArticle.author;
         document.getElementById('article-date').textContent = currentArticle.date;
 
         document.title = `${currentArticle.title_kor} - FBC Creators Magazine`;
 
-        // Set content - 언어에 따라 다른 필드 사용
+        // Set content
         if (article) {
-            const htmlContent = currentLang === 'kor' ? article.article_html_ko : article.article_html_en;
+            const htmlContent = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
             if (htmlContent) {
                 document.getElementById('article-content').innerHTML = htmlContent;
             } else {
-                console.error('❌ No article_html field found');
                 document.getElementById('article-content').innerHTML =
                     '<p>콘텐츠를 불러올 수 없습니다.</p>';
             }
         } else {
-            console.warn('⚠️ article content not found for id:', articleId);
             document.getElementById('article-content').innerHTML =
                 '<p>콘텐츠를 불러올 수 없습니다.</p>';
         }
@@ -588,16 +588,6 @@
                 tagsContainer.appendChild(tagElement);
             });
         }
-
-        // Update section titles based on current language
-        document.getElementById('related-articles-title').textContent =
-            currentLang === 'kor' ? '관련기사' : 'Related Articles';
-        document.getElementById('latest-articles-title').textContent =
-            currentLang === 'kor' ? '최신기사' : 'Latest Articles';
-        document.getElementById('popular-articles-title').textContent =
-            currentLang === 'kor' ? '인기기사' : 'Popular Articles';
-        document.getElementById('must-read-articles-title').textContent =
-            currentLang === 'kor' ? '추천기사' : 'Must Read';
 
         // Load related content
         loadRelatedArticles(category);
@@ -671,7 +661,7 @@
         container.innerHTML = '';
 
         if (!articles || articles.length === 0) {
-            const noArticlesText = currentLang === 'kor' ? '관련 기사가 없습니다.' : 'No related articles.';
+            const noArticlesText = currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No related articles.';
             container.innerHTML = `<p class="text-gray-500">${noArticlesText}</p>`;
             return;
         }
@@ -685,7 +675,7 @@
             card.innerHTML = `
                 <img src="../${article.image}" alt="${article.title_kor || ''}" class="article-card-image" onerror="this.style.display='none'">
                 <div class="article-card-category">${article.category || ''}</div>
-                <h3 class="article-card-title">${currentLang === 'kor' ? (article.title_kor || '') : (article.title_en || '')}</h3>
+                <h3 class="article-card-title">${currentLang === 'ko' ? (article.title_kor || '') : (article.title_en || '')}</h3>
                 <div class="article-card-date">${article.date || ''}</div>
             `;
             container.appendChild(card);
@@ -700,7 +690,7 @@
         container.innerHTML = '';
 
         if (!articles || articles.length === 0) {
-            const noArticlesText = currentLang === 'kor' ? '기사가 없습니다.' : 'No articles.';
+            const noArticlesText = currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.';
             container.innerHTML = `<p class="text-gray-500 text-sm">${noArticlesText}</p>`;
             return;
         }
@@ -714,7 +704,7 @@
             item.innerHTML = `
                 <img src="../${article.image}" alt="${article.title_kor || ''}" class="sidebar-item-image" onerror="this.style.display='none'">
                 <div>
-                    <div class="sidebar-item-title">${currentLang === 'kor' ? (article.title_kor || '') : (article.title_en || '')}</div>
+                    <div class="sidebar-item-title">${currentLang === 'ko' ? (article.title_kor || '') : (article.title_en || '')}</div>
                     <div class="sidebar-item-date">${article.date || ''}</div>
                 </div>
             `;
@@ -725,18 +715,18 @@
     // Share functionality
     document.getElementById('copy-link').addEventListener('click', () => {
         navigator.clipboard.writeText(window.location.href);
-        const message = currentLang === 'kor' ? '링크가 복사되었습니다!' : 'Link copied!';
+        const message = currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!';
         alert(message);
     });
 
     document.getElementById('share-btn').addEventListener('click', () => {
         if (navigator.share && currentArticle) {
             navigator.share({
-                title: currentLang === 'kor' ? currentArticle.title_kor : currentArticle.title_en,
+                title: currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en,
                 url: window.location.href
             });
         } else {
-            const message = currentLang === 'kor' ? '이 브라우저는 공유 기능을 지원하지 않습니다.' : 'Share is not supported in this browser.';
+            const message = currentLang === 'ko' ? '이 브라우저는 공유 기능을 지원하지 않습니다.' : 'Share is not supported in this browser.';
             alert(message);
         }
     });
@@ -745,7 +735,7 @@
     document.getElementById('newsletter-submit').addEventListener('click', () => {
         const email = document.getElementById('newsletter-email').value;
         if (email) {
-            const message = currentLang === 'kor' ? '뉴스레터 신청이 완료되었습니다!' : 'Thank you for subscribing!';
+            const message = currentLang === 'ko' ? '뉴스레터 신청이 완료되었습니다!' : 'Thank you for subscribing!';
             alert(message);
             document.getElementById('newsletter-email').value = '';
         }
@@ -758,6 +748,7 @@
     });
 
     // Initialize
+    initializeLanguage();
     loadData();
 </script>
 

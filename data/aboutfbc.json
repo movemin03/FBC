@@ -1,0 +1,71 @@
+{
+  "title_ko": "글로벌 사용자를 위한 K-패션 큐레이션 매거진, FBC",
+  "title_en": "K-Fashion Curation Magazine for Global Users, FBC",
+  "intro_ko": [
+    "FBC Creators는 한국의 패션(Fashion), 뷰티(Beauty), 문화(Culture)를 글로벌 시각에서 창의적으로 해석하고 새로운 가치로 전달하는 문화 큐레이터입니다.",
+    "한국의 패션과 뷰티, 그리고 이를 둘러싼 생활과 문화는 전 세계적으로 빠르게 소비되고 있습니다. 그러나 단순한 정보 전달만으로는 그 깊이와 매력을 충분히 보여주기 어렵습니다.",
+    "FBC Creators는 문화적 맥락을 선별하고 재구성해 새로운 경험을 제시하는 능동적인 콘텐츠 제작 집단입니다. 한국적 감각과 이야기를 세계 무대에서 새롭게 풀어내어, 글로벌 사용자에게 새로운 가치를 제시합니다."
+  ],
+  "intro_en": [
+    "FBC Creators is a cultural curator that creatively interprets Korean Fashion, Beauty, and Culture from a global perspective and delivers new value.",
+    "Korean fashion, beauty, and the surrounding life and culture are rapidly consumed worldwide. However, simple information delivery alone cannot fully convey their depth and charm.",
+    "FBC Creators is an active content creation group that selects and reconstructs cultural contexts to present new experiences. We reinterpret Korean sensibility and stories on the world stage, presenting new value to global users."
+  ],
+  "mission_title_ko": "우리의 미션",
+  "mission_title_en": "Our Mission",
+  "missions": [
+    {
+      "title_ko": "문화번역 (Cultural Translation)",
+      "title_en": "Cultural Translation",
+      "desc_ko": "단순 언어 번역을 넘어 문화적 맥락, 가치관, 행동 양식까지 포함한 종합적 번역을 제공합니다.",
+      "desc_en": "Beyond simple language translation, we provide comprehensive translation including cultural context, values, and behavioral patterns."
+    },
+    {
+      "title_ko": "지역 기반 큐레이션",
+      "title_en": "Location-Based Curation",
+      "desc_ko": "성수, 한남, 홍대, 명동 등 서울 각 지역의 고유한 패션 DNA를 분석하여 맞춤형 콘텐츠를 제공합니다.",
+      "desc_en": "We analyze the unique fashion DNA of Seoul districts like Seongsu, Hannam, Hongdae, and Myeongdong to provide customized content."
+    },
+    {
+      "title_ko": "프리미엄 에디토리얼",
+      "title_en": "Premium Editorial",
+      "desc_ko": "Vogue 수준의 고급스러운 디자인과 신뢰할 수 있는 큐레이션 콘텐츠를 제공합니다.",
+      "desc_en": "We provide Vogue-level sophisticated design and trustworthy curation content."
+    }
+  ],
+  "team_title_ko": "FBC Creators 팀",
+  "team_title_en": "FBC Creators Team",
+  "team_members": [
+    {
+      "name_ko": "정재웅",
+      "name_en": "Jaewoong Jung",
+      "role_ko": "팀장 / 프로젝트 총괄",
+      "role_en": "Team Leader / Project Director",
+      "major_ko": "영미언어문화학과",
+      "major_en": "Department of English Language & Culture"
+    },
+    {
+      "name_ko": "주영훈",
+      "name_en": "Younghoon Joo",
+      "role_ko": "트렌드 조사 / 문화적 현지화",
+      "role_en": "Trend Research / Cultural Localization",
+      "major_ko": "영미언어문화학과",
+      "major_en": "Department of English Language & Culture"
+    },
+    {
+      "name_ko": "이동민",
+      "name_en": "Dongmin Lee",
+      "role_ko": "UI/UX 디자인 / 시장 조사",
+      "role_en": "UI/UX Design / Market Research",
+      "major_ko": "영미언어문화학과",
+      "major_en": "Department of English Language & Culture"
+    }
+  ],
+  "slides": [
+    "img/about/slide-01.jpg",
+    "img/about/slide-02.jpg",
+    "img/about/slide-03.jpg",
+    "img/about/slide-04.jpg",
+    "img/about/slide-05.jpg"
+  ]
+}
