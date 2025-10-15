@@ -181,9 +181,7 @@
             <div>
                 <h4 class="font-bold mb-3 text-sm">ABOUT</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="../aboutfbc/index.html" class="hover:text-white">About FBC</a></li>
-                    <li><a href="#" class="hover:text-white">Cultural Translation</a></li>
-                    <li><a href="#" class="hover:text-white">Contact</a></li>
+                    <li><a href="../about/index.html" class="hover:text-white">About FBC</a></li>
                 </ul>
             </div>
             <div id="newsletter-section">
@@ -232,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Load Data
 async function loadData() {
     try {
-        const response = await fetch('../data/aboutfbc.json');
+        const response = await fetch('../data/about.json');
         aboutData = await response.json();
     } catch (error) {
         console.error('Error loading about data:', error);
@@ -243,7 +241,7 @@ async function loadData() {
 function setupLanguageToggle() {
     const langToggle = document.getElementById('lang-toggle');
     const langText = document.getElementById('lang-text');
-    
+
     langToggle.addEventListener('click', () => {
         currentLang = currentLang === 'en' ? 'ko' : 'en';
         langText.textContent = currentLang === 'en' ? 'English' : '한국어';
@@ -255,20 +253,20 @@ function setupLanguageToggle() {
 // Render Content
 function renderContent() {
     if (!aboutData) return;
-    
+
     // Main title
-    document.getElementById('main-title').textContent = 
+    document.getElementById('main-title').textContent =
         currentLang === 'ko' ? aboutData.title_ko : aboutData.title_en;
-    
+
     // Intro paragraphs
     const introContent = document.getElementById('intro-content');
     const introParagraphs = currentLang === 'ko' ? aboutData.intro_ko : aboutData.intro_en;
     introContent.innerHTML = introParagraphs.map(p => `<p>${p}</p>`).join('');
-    
+
     // Mission title
-    document.getElementById('mission-title').textContent = 
+    document.getElementById('mission-title').textContent =
         currentLang === 'ko' ? aboutData.mission_title_ko : aboutData.mission_title_en;
-    
+
     // Missions
     const missionsContent = document.getElementById('missions-content');
     missionsContent.innerHTML = aboutData.missions.map(mission => `
@@ -277,21 +275,23 @@ function renderContent() {
             <p class="text-gray-600 leading-relaxed">${currentLang === 'ko' ? mission.desc_ko : mission.desc_en}</p>
         </div>
     `).join('');
-    
+
     // Team title
-    document.getElementById('team-title').textContent = 
+    document.getElementById('team-title').textContent =
         currentLang === 'ko' ? aboutData.team_title_ko : aboutData.team_title_en;
-    
-    // Team members
+
+    // Team members (이메일 추가됨)
     const teamContent = document.getElementById('team-content');
     teamContent.innerHTML = aboutData.team_members.map(member => `
         <div class="team-member">
             <h4 class="text-xl font-bold mb-2">${currentLang === 'ko' ? member.name_ko : member.name_en}</h4>
             <p class="text-gray-600 mb-1">${currentLang === 'ko' ? member.role_ko : member.role_en}</p>
-            <p class="text-sm text-gray-500">${currentLang === 'ko' ? member.major_ko : member.major_en}</p>
+            <p class="text-sm text-gray-500 mb-2">${currentLang === 'ko' ? member.major_ko : member.major_en}</p>
+            <a href="mailto:${member.email}" class="text-sm text-blue-600 hover:underline">${member.email}</a>
         </div>
     `).join('');
 }
+
 
 // Initialize Swiper
 function initializeSwiper() {

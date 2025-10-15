@@ -1,6 +1,6 @@
 {
-  "title_ko": "글로벌 사용자를 위한 K-패션 큐레이션 매거진, FBC",
-  "title_en": "K-Fashion Curation Magazine for Global Users, FBC",
+  "title_ko": "모두를 위한 K-패션 큐레이션 매거진, FBC",
+  "title_en": "K-Fashion Curation Magazine for All, FBC",
   "intro_ko": [
     "FBC Creators는 한국의 패션(Fashion), 뷰티(Beauty), 문화(Culture)를 글로벌 시각에서 창의적으로 해석하고 새로운 가치로 전달하는 문화 큐레이터입니다.",
     "한국의 패션과 뷰티, 그리고 이를 둘러싼 생활과 문화는 전 세계적으로 빠르게 소비되고 있습니다. 그러나 단순한 정보 전달만으로는 그 깊이와 매력을 충분히 보여주기 어렵습니다.",
@@ -29,8 +29,8 @@
     {
       "title_ko": "프리미엄 에디토리얼",
       "title_en": "Premium Editorial",
-      "desc_ko": "Vogue 수준의 고급스러운 디자인과 신뢰할 수 있는 큐레이션 콘텐츠를 제공합니다.",
-      "desc_en": "We provide Vogue-level sophisticated design and trustworthy curation content."
+      "desc_ko": "높은 수준의 고급스러운 디자인과 신뢰할 수 있는 큐레이션 콘텐츠를 제공합니다.",
+      "desc_en": "We provide high-level sophisticated design and trustworthy curation content."
     }
   ],
   "team_title_ko": "FBC Creators 팀",
@@ -42,7 +42,8 @@
       "role_ko": "팀장 / 프로젝트 총괄",
       "role_en": "Team Leader / Project Director",
       "major_ko": "영미언어문화학과",
-      "major_en": "Department of English Language & Culture"
+      "major_en": "Department of English Language & Culture",
+      "email": "ken715@naver.com"
     },
     {
       "name_ko": "주영훈",
@@ -50,15 +51,17 @@
       "role_ko": "트렌드 조사 / 문화적 현지화",
       "role_en": "Trend Research / Cultural Localization",
       "major_ko": "영미언어문화학과",
-      "major_en": "Department of English Language & Culture"
+      "major_en": "Department of English Language & Culture",
+      "email": "hoojoogns@gmail.com"
     },
     {
       "name_ko": "이동민",
       "name_en": "Dongmin Lee",
-      "role_ko": "UI/UX 디자인 / 시장 조사",
-      "role_en": "UI/UX Design / Market Research",
+      "role_ko": "서비스 기획",
+      "role_en": "Product Manage",
       "major_ko": "영미언어문화학과",
-      "major_en": "Department of English Language & Culture"
+      "major_en": "Department of English Language & Culture",
+      "email": "hoffnung@naver.com"
     }
   ],
   "slides": [
