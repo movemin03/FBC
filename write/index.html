@@ -527,7 +527,7 @@
             const contentKor = editorKor.getHTML();
             const statusEl = document.getElementById('translate-content-status');
             
-            if (!contentKor || contentKor === '<p><br></p>') {
+            if (!contentKor || contentKor === '<p><br></p>' || contentKor === '<p></p>') {
                 alert('한국어 본문을 먼저 작성해주세요.');
                 return;
             }
@@ -536,13 +536,20 @@
             statusEl.textContent = '번역 중... (본문이 길면 시간이 걸릴 수 있습니다)';
 
             try {
+                // Translate the HTML content
                 const translated = await translateHTML(contentKor);
+                
+                // Insert the translated HTML into the editor
+                // Use insertHTML to properly insert formatted content
+                editorEn.reset();
                 editorEn.setHTML(translated);
+                
                 statusEl.textContent = '✓ 본문 번역 완료';
                 setTimeout(() => statusEl.textContent = '', 5000);
             } catch (error) {
+                console.error('Translation error:', error);
                 statusEl.textContent = '✗ 번역 실패';
-                alert('번역에 실패했습니다. 본문을 나누어서 번역해보세요.');
+                alert('번역에 실패했습니다. 네트워크 연결을 확인하거나 본문을 나누어서 번역해보세요.');
             } finally {
                 this.disabled = false;
             }
