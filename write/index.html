@@ -121,6 +121,24 @@
             background: #9ca3af;
             cursor: not-allowed;
         }
+        .btn-upload {
+            background: #000;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 13px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .btn-upload:hover {
+            background: #333;
+        }
         #pinned-options {
             display: none;
             margin-top: 16px;
@@ -144,6 +162,54 @@
             color: #6b7280;
             margin-top: 4px;
             min-height: 16px;
+        }
+        .thumbnail-container {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .thumbnail-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        .thumbnail-input-wrapper input[type="file"] {
+            display: none;
+        }
+        .thumbnail-fake-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            height: 42px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: #9ca3af;
+        }
+        .thumbnail-fake-input.has-file {
+            color: #000;
+        }
+        .thumbnail-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: none;
+        }
+        .thumbnail-preview.active {
+            display: block;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+        .loading-spinner.active {
+            display: block;
         }
     </style>
 </head>
@@ -181,6 +247,13 @@
     <!-- Editor Container -->
     <div class="editor-container">
         <h1 class="text-3xl font-bold mb-8">콘텐츠 발행 에디터</h1>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner active" id="loading-spinner">
+            <p>📁 서버에서 JSON 데이터를 불러오는 중...</p>
+        </div>
+
+        <div id="editor-content" style="display: none;">
 
         <!-- Category Selection -->
         <div class="form-section">
@@ -264,8 +337,17 @@
                     <input type="text" id="author" class="form-input" placeholder="Author name" pattern="[A-Za-z0-9\s\-]+" required>
                 </div>
                 <div>
-                    <label class="form-label">이미지 URL *</label>
-                    <input type="text" id="image-url" class="form-input" placeholder="img/category/id.jpg" required>
+                    <label class="form-label">썸네일 이미지 * (jpg, jpeg, png만)</label>
+                    <div class="thumbnail-container">
+                        <div class="thumbnail-input-wrapper">
+                            <input type="file" id="thumbnail-upload" accept=".jpg,.jpeg,.png">
+                            <div class="thumbnail-fake-input" id="thumbnail-fake-input" onclick="document.getElementById('thumbnail-upload').click()">
+                                이미지 선택...
+                            </div>
+                        </div>
+                        <button type="button" id="thumbnail-upload-btn" class="btn-upload">📤 이미지 업로드</button>
+                    </div>
+                    <img id="thumbnail-preview" class="thumbnail-preview" alt="썸네일 미리보기">
                 </div>
                 <div>
                     <label class="form-label">Cultural Badge (선택, 영어/숫자만)</label>
@@ -304,6 +386,8 @@
         <div class="form-section text-center">
             <button id="publish-btn" class="btn-primary">발행하기</button>
             <p class="text-sm text-gray-600 mt-4">발행하면 관련 JSON 파일들이 자동으로 다운로드됩니다.</p>
+        </div>
+
         </div>
     </div>
 
@@ -349,28 +433,25 @@
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
     <script>
+        // Store uploaded JSON data
+        let uploadedData = {
+            fashion: [],
+            beauty: [],
+            life: [],
+            districts: [],
+            article: [],
+            pinned: { hero: [], todayStories: [], mustRead: [] }
+        };
+
+        // Store thumbnail file
+        let thumbnailFile = null;
+
         // District Meta Data
         const districtMeta = [
-            {
-                "district_id": "dsm00001",
-                "name_kor": "성수동",
-                "name_en": "Seongsu-dong"
-            },
-            {
-                "district_id": "dsm00002",
-                "name_kor": "한남동",
-                "name_en": "Hannam-dong"
-            },
-            {
-                "district_id": "dsm00003",
-                "name_kor": "홍대",
-                "name_en": "Hongdae"
-            },
-            {
-                "district_id": "dsm00004",
-                "name_kor": "명동",
-                "name_en": "Myeongdong"
-            }
+            { "district_id": "dsm00001", "name_kor": "성수동", "name_en": "Seongsu-dong" },
+            { "district_id": "dsm00002", "name_kor": "한남동", "name_en": "Hannam-dong" },
+            { "district_id": "dsm00003", "name_kor": "홍대", "name_en": "Hongdae" },
+            { "district_id": "dsm00004", "name_kor": "명동", "name_en": "Myeongdong" }
         ];
 
         // Populate District Dropdown
@@ -382,6 +463,94 @@
             districtSelect.appendChild(option);
         });
 
+        // Load JSON files from server
+        async function loadJSONFromServer() {
+            const files = ['fashion', 'beauty', 'life', 'districts', 'article', 'pinned'];
+            
+            try {
+                for (const file of files) {
+                    const response = await fetch(`../data/${file}.json`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        uploadedData[file] = data;
+                    } else {
+                        console.warn(`${file}.json을 불러올 수 없습니다.`);
+                    }
+                }
+                
+                // Hide loading spinner and show editor
+                document.getElementById('loading-spinner').classList.remove('active');
+                document.getElementById('editor-content').style.display = 'block';
+                
+            } catch (error) {
+                console.error('JSON 로딩 오류:', error);
+                alert('서버에서 JSON 파일을 불러오는데 실패했습니다. 콘솔을 확인해주세요.');
+            }
+        }
+
+        // Load JSON on page load
+        loadJSONFromServer();
+
+        // Thumbnail Upload Handler
+        const thumbnailInput = document.getElementById('thumbnail-upload');
+        const thumbnailFakeInput = document.getElementById('thumbnail-fake-input');
+        const thumbnailUploadBtn = document.getElementById('thumbnail-upload-btn');
+        const thumbnailPreview = document.getElementById('thumbnail-preview');
+
+        thumbnailInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('jpg, jpeg, png 파일만 업로드 가능합니다.');
+                    this.value = '';
+                    return;
+                }
+
+                // Store file
+                thumbnailFile = file;
+
+                // Update fake input text
+                thumbnailFakeInput.textContent = file.name;
+                thumbnailFakeInput.classList.add('has-file');
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    thumbnailPreview.src = e.target.result;
+                    thumbnailPreview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Check if running on localhost:8000
+        function isLocalhost8000() {
+            return window.location.href.includes('localhost:8000');
+        }
+
+        // Upload thumbnail to server (only works on localhost:8000)
+        thumbnailUploadBtn.addEventListener('click', async function() {
+            if (!thumbnailFile) {
+                alert('이미지를 먼저 선택해주세요.');
+                return;
+            }
+
+            const category = document.getElementById('category').value;
+            if (!category) {
+                alert('카테고리를 먼저 선택해주세요.');
+                return;
+            }
+
+            if (!isLocalhost8000()) {
+                alert('⚠️ 데모 버전입니다.\n발행 시 이미지 경로가 자동으로 생성됩니다.\n실제 이미지는 수동으로 업로드해주세요.');
+                return;
+            }
+
+            alert('✓ 이미지가 준비되었습니다. 발행 버튼을 눌러주세요.');
+        });
+
         // Input Validation for English/Numbers only
         const englishOnlyFields = ['subcategory', 'author', 'cultural-badge', 'tags'];
         englishOnlyFields.forEach(fieldId => {
@@ -390,11 +559,7 @@
                 field.addEventListener('input', function(e) {
                     const cursorPosition = this.selectionStart;
                     const originalLength = this.value.length;
-                    
-                    // Allow English letters, numbers, spaces, commas (for tags), and hyphens
                     this.value = this.value.replace(/[^A-Za-z0-9\s,\-]/g, '');
-                    
-                    // Adjust cursor position if characters were removed
                     const newLength = this.value.length;
                     if (newLength < originalLength) {
                         this.setSelectionRange(cursorPosition - (originalLength - newLength), cursorPosition - (originalLength - newLength));
@@ -422,26 +587,17 @@
             language: 'en-US'
         });
 
-        // MyMemory Translation API (Free, No API Key needed)
+        // MyMemory Translation API
         async function translateText(text, sourceLang = 'ko', targetLang = 'en') {
             if (!text || text.trim() === '') {
                 throw new Error('번역할 텍스트가 없습니다.');
             }
-
             try {
                 const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
                 const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                
-                if (data.responseStatus !== 200) {
-                    throw new Error(data.responseDetails || '번역 실패');
-                }
-                
+                if (data.responseStatus !== 200) throw new Error(data.responseDetails || '번역 실패');
                 return data.responseData.translatedText;
             } catch (error) {
                 console.error('Translation error:', error);
@@ -449,41 +605,28 @@
             }
         }
 
-        // Strip HTML tags for translation, then reapply structure
         function stripHTML(html) {
             const temp = document.createElement('div');
             temp.innerHTML = html;
             return temp.textContent || temp.innerText || '';
         }
 
-        // Translate HTML content by extracting text and translating chunks
         async function translateHTML(html, sourceLang = 'ko', targetLang = 'en') {
             try {
-                // Extract plain text from HTML
                 const plainText = stripHTML(html);
-                
-                if (!plainText || plainText.trim() === '') {
-                    throw new Error('번역할 내용이 없습니다.');
-                }
-
-                // Split into chunks if text is too long (MyMemory has 500 char limit per request)
-                const maxLength = 400;
+                if (!plainText || plainText.trim() === '') throw new Error('번역할 내용이 없습니다.');
                 const sentences = plainText.match(/[^.!?]+[.!?]+/g) || [plainText];
                 let translatedText = '';
-                
                 for (let i = 0; i < sentences.length; i++) {
                     const sentence = sentences[i].trim();
                     if (sentence) {
                         const translated = await translateText(sentence, sourceLang, targetLang);
                         translatedText += translated + ' ';
-                        
-                        // Add small delay to avoid rate limiting
                         if (i < sentences.length - 1) {
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }
                     }
                 }
-                
                 return translatedText.trim();
             } catch (error) {
                 console.error('HTML Translation error:', error);
@@ -491,19 +634,16 @@
             }
         }
 
-        // Translate Title Button
+        // Translation Buttons
         document.getElementById('translate-title-btn').addEventListener('click', async function() {
             const titleKor = document.getElementById('title-kor').value;
             const statusEl = document.getElementById('translate-title-status');
-            
             if (!titleKor || titleKor.trim() === '') {
                 alert('한국어 제목을 먼저 입력해주세요.');
                 return;
             }
-
             this.disabled = true;
             statusEl.textContent = '번역 중...';
-
             try {
                 const translated = await translateText(titleKor);
                 document.getElementById('title-en').value = translated;
@@ -511,26 +651,21 @@
                 setTimeout(() => statusEl.textContent = '', 3000);
             } catch (error) {
                 statusEl.textContent = '✗ 번역 실패';
-                console.error(error);
                 alert('번역에 실패했습니다. 네트워크 연결을 확인해주세요.');
             } finally {
                 this.disabled = false;
             }
         });
 
-        // Translate Description Button
         document.getElementById('translate-desc-btn').addEventListener('click', async function() {
             const descKor = document.getElementById('desc-kor').value;
             const statusEl = document.getElementById('translate-desc-status');
-            
             if (!descKor || descKor.trim() === '') {
                 alert('한국어 설명을 먼저 입력해주세요.');
                 return;
             }
-
             this.disabled = true;
             statusEl.textContent = '번역 중...';
-
             try {
                 const translated = await translateText(descKor);
                 document.getElementById('desc-en').value = translated;
@@ -538,38 +673,27 @@
                 setTimeout(() => statusEl.textContent = '', 3000);
             } catch (error) {
                 statusEl.textContent = '✗ 번역 실패';
-                console.error(error);
                 alert('번역에 실패했습니다. 네트워크 연결을 확인해주세요.');
             } finally {
                 this.disabled = false;
             }
         });
 
-        // Translate Content Button
         document.getElementById('translate-content-btn').addEventListener('click', async function() {
             const contentKor = editorKor.getHTML();
             const statusEl = document.getElementById('translate-content-status');
-            
             if (!contentKor || contentKor === '<p><br></p>' || contentKor === '<p></p>') {
                 alert('한국어 본문을 먼저 작성해주세요.');
                 return;
             }
-
             this.disabled = true;
             statusEl.textContent = '번역 중... (본문이 길면 시간이 걸릴 수 있습니다)';
-
             try {
-                // Translate the plain text content
                 const translatedText = await translateHTML(contentKor);
-                
-                // Insert as paragraphs
                 const paragraphs = translatedText.split('\n').filter(p => p.trim());
                 let htmlContent = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
-                
-                // Insert the translated content into the editor
                 editorEn.reset();
                 editorEn.setHTML(htmlContent);
-                
                 statusEl.textContent = '✓ 본문 번역 완료';
                 setTimeout(() => statusEl.textContent = '', 5000);
             } catch (error) {
@@ -587,17 +711,32 @@
             pinnedOptions.style.display = this.checked ? 'block' : 'none';
         });
 
-        // Generate ID based on category
-        function generateId(category) {
+        // Generate next ID based on existing data
+        function generateNextId(category) {
             const prefix = {
                 'fashion': 'fs',
                 'beauty': 'by',
                 'life': 'lf',
                 'districts': 'ds'
             }[category];
+
+            const existingData = uploadedData[category] || [];
             
-            const timestamp = Date.now().toString().slice(-5);
-            return `${prefix}${timestamp}`;
+            if (existingData.length === 0) {
+                return `${prefix}00001`;
+            }
+
+            const numbers = existingData
+                .map(item => {
+                    const match = item.id.match(/\d+$/);
+                    return match ? parseInt(match[0]) : 0;
+                })
+                .filter(num => !isNaN(num));
+
+            const maxNum = numbers.length > 0 ? Math.max(...numbers) : 0;
+            const nextNum = maxNum + 1;
+
+            return `${prefix}${String(nextNum).padStart(5, '0')}`;
         }
 
         // Download JSON file
@@ -613,24 +752,58 @@
             URL.revokeObjectURL(url);
         }
 
+        // Upload image to server (localhost:8000 only)
+        async function uploadImageToServer(file, imagePath) {
+            if (!isLocalhost8000()) {
+                return false;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('path', imagePath);
+
+                const response = await fetch('/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                return response.ok;
+            } catch (error) {
+                console.error('Image upload error:', error);
+                return false;
+            }
+        }
+
         // Publish Button Handler
         document.getElementById('publish-btn').addEventListener('click', async function() {
-            // Validate required fields
             const category = document.getElementById('category').value;
+
+            // Check if category JSON is loaded
+            if (!uploadedData[category] || uploadedData[category].length === 0) {
+                alert(`${category} 데이터를 불러올 수 없습니다. 페이지를 새로고침해주세요.`);
+                return;
+            }
+
+            // Check if thumbnail is uploaded
+            if (!thumbnailFile) {
+                alert('썸네일 이미지를 업로드해주세요!');
+                return;
+            }
+
+            // Validate required fields
             const titleKor = document.getElementById('title-kor').value;
             const titleEn = document.getElementById('title-en').value;
             const descKor = document.getElementById('desc-kor').value;
             const descEn = document.getElementById('desc-en').value;
             const subcategory = document.getElementById('subcategory').value;
             const author = document.getElementById('author').value;
-            const imageUrl = document.getElementById('image-url').value;
 
-            if (!category || !titleKor || !titleEn || !descKor || !descEn || !subcategory || !author || !imageUrl) {
+            if (!category || !titleKor || !titleEn || !descKor || !descEn || !subcategory || !author) {
                 alert('필수 항목을 모두 입력해주세요.');
                 return;
             }
 
-            // Get content from editors
             const contentKor = editorKor.getHTML();
             const contentEn = editorEn.getHTML();
 
@@ -639,19 +812,32 @@
                 return;
             }
 
-            // Generate new ID
-            const newId = generateId(category);
+            // Generate next ID
+            const newId = generateNextId(category);
+
+            // Generate image path
+            const imagePath = `img/${category}/${newId}.jpg`;
+
+            // Upload image if on localhost:8000
+            if (isLocalhost8000()) {
+                const uploadSuccess = await uploadImageToServer(thumbnailFile, imagePath);
+                if (uploadSuccess) {
+                    alert('✓ 이미지가 서버에 업로드되었습니다.');
+                } else {
+                    alert('⚠️ 이미지 업로드에 실패했습니다. 수동으로 업로드해주세요.');
+                }
+            } else {
+                alert(`⚠️ 데모 버전입니다.\n\n이미지를 다음 경로에 수동으로 업로드해주세요:\n${imagePath}`);
+            }
 
             // Get optional fields
             const culturalBadge = document.getElementById('cultural-badge').value || null;
             const tagsInput = document.getElementById('tags').value;
             const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()) : [];
             const districtId = document.getElementById('district-select').value || null;
-
-            // Get today's date
             const today = new Date().toISOString().split('T')[0];
 
-            // Create category JSON entry
+            // Create entries
             const categoryEntry = {
                 id: newId,
                 district_id: districtId,
@@ -660,7 +846,7 @@
                 desc_kor: descKor,
                 desc_en: descEn,
                 category: subcategory,
-                image: imageUrl,
+                image: imagePath,
                 tags: tags,
                 cultural_badge: culturalBadge,
                 date: today,
@@ -668,21 +854,16 @@
                 views: 0
             };
 
-            // Create article JSON entry
             const articleEntry = {
                 id: newId,
                 article_html_ko: contentKor,
                 article_html_en: contentEn
             };
 
-            // Load existing data (simulated - in production, fetch from actual files)
-            let categoryData = [];
-            let articleData = [];
-            let pinnedData = { hero: [], todayStories: [], mustRead: [] };
-
-            // Add new entries
-            categoryData.push(categoryEntry);
-            articleData.push(articleEntry);
+            // Add to existing data
+            let categoryData = [...uploadedData[category], categoryEntry];
+            let articleData = [...uploadedData.article, articleEntry];
+            let pinnedData = { ...uploadedData.pinned };
 
             // Handle pinned data
             const isPinned = document.getElementById('is-pinned').checked;
@@ -693,24 +874,20 @@
                 if (document.getElementById('pinned-mustRead').checked) pinnedTypes.push('mustRead');
 
                 pinnedTypes.forEach(type => {
-                    pinnedData[type].push({
-                        source: category,
-                        id: newId
-                    });
+                    if (!pinnedData[type]) pinnedData[type] = [];
+                    pinnedData[type].push({ source: category, id: newId });
                 });
             }
 
             // Download files
             downloadJSON(`${category}.json`, categoryData);
             downloadJSON(`article.json`, articleData);
-            
             if (isPinned) {
                 downloadJSON(`pinned.json`, pinnedData);
             }
 
-            alert('발행이 완료되었습니다! JSON 파일들이 다운로드되었습니다.');
+            alert(`발행이 완료되었습니다!\n\nID: ${newId}\n이미지 경로: ${imagePath}\n\nJSON 파일들이 다운로드되었습니다.`);
 
-            // Reset form
             if (confirm('폼을 초기화하시겠습니까?')) {
                 location.reload();
             }
