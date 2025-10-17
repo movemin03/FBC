@@ -98,6 +98,20 @@
             background: #9ca3af;
             cursor: not-allowed;
         }
+        .btn-reset {
+            background: #6b7280;
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 12px;
+        }
+        .btn-reset:hover {
+            background: #4b5563;
+        }
         .btn-secondary {
             background: #3b82f6;
             color: white;
@@ -314,7 +328,7 @@
 
         <!-- Loading Spinner -->
         <div class="loading-spinner active" id="loading-spinner">
-            <p>📁 서버에서 JSON 데이터를 불러오는 중...</p>
+            <p>📁 JSON 데이터를 불러오는 중...</p>
         </div>
 
         <div id="editor-content" style="display: none;">
@@ -322,8 +336,8 @@
         <!-- User Type Selection -->
         <div class="user-type-selector">
             <span class="font-semibold">사용자 유형:</span>
-            <button class="user-type-btn active" id="user-type-developer" onclick="setUserType('developer')">개발자</button>
-            <button class="user-type-btn" id="user-type-general" onclick="setUserType('general')">일반 사용자</button>
+            <button class="user-type-btn" id="user-type-developer" onclick="setUserType('developer')">개발자</button>
+            <button class="user-type-btn active" id="user-type-general" onclick="setUserType('general')">일반 사용자</button>
         </div>
 
         <!-- Category Selection -->
@@ -417,7 +431,6 @@
                             </div>
                             <button type="button" class="thumbnail-clear-btn" id="thumbnail-clear-btn" onclick="clearThumbnail()">✕</button>
                         </div>
-                        <button type="button" id="thumbnail-upload-btn" class="btn-upload">📤 이미지 업로드</button>
                     </div>
                     <img id="thumbnail-preview" class="thumbnail-preview" alt="썸네일 미리보기">
                 </div>
@@ -456,8 +469,9 @@
 
         <!-- Publish Button -->
         <div class="form-section text-center">
+            <button id="reset-btn" class="btn-reset">초기화</button>
             <button id="publish-btn" class="btn-primary">발행하기</button>
-            <p class="text-sm text-gray-600 mt-4" id="publish-info">발행하면 관련 JSON 파일들이 자동으로 다운로드됩니다.</p>
+            <p class="text-sm text-gray-600 mt-4" id="publish-info">발행하면 등록 요청 파일(TXT)과 이미지가 다운로드됩니다.</p>
         </div>
 
         </div>
@@ -517,7 +531,7 @@
 
         // Store thumbnail file
         let thumbnailFile = null;
-        let userType = 'developer';
+        let userType = 'general';
 
         // District Meta Data
         const districtMeta = [
@@ -535,7 +549,7 @@
             
             const publishInfo = document.getElementById('publish-info');
             if (type === 'developer') {
-                publishInfo.textContent = '발행하면 관련 JSON 파일들이 자동으로 다운로드됩니다.';
+                publishInfo.textContent = '발행하면 관련 JSON 파일들과 이미지가 다운로드됩니다.';
             } else {
                 publishInfo.textContent = '발행하면 등록 요청 파일(TXT)과 이미지가 다운로드됩니다.';
             }
@@ -550,30 +564,47 @@
             districtSelect.appendChild(option);
         });
 
-        // Load JSON files from server
+        // Load JSON files from server - FIXED
         async function loadJSONFromServer() {
-            const files = ['fashion', 'beauty', 'life', 'districts', 'article', 'pinned'];
+            const files = {
+                'fashion': '../data/fashion.json',
+                'beauty': '../data/beauty.json',
+                'life': '../data/life.json',
+                'districts': '../data/districts.json',
+                'article': '../data/article.json',
+                'pinned': '../data/pinned.json'
+            };
             
-            try {
-                for (const file of files) {
-                    const response = await fetch(`../data/${file}.json`);
+            let loadedCount = 0;
+            
+            for (const [key, path] of Object.entries(files)) {
+                try {
+                    const response = await fetch(path);
                     if (response.ok) {
                         const data = await response.json();
-                        uploadedData[file] = data;
-                    } else {
-                        console.warn(`${file}.json을 불러올 수 없습니다.`);
+                        uploadedData[key] = data;
+                        loadedCount++;
                     }
+                } catch (error) {
+                    console.warn(`${key}.json 로딩 실패:`, error);
+                    // Initialize with empty data if loading fails
+                    if (key === 'pinned') {
+                        uploadedData[key] = { hero: [], todayStories: [], mustRead: [] };
+                    } else {
+                        uploadedData[key] = [];
+                    }
+                    loadedCount++;
                 }
-                
-                document.getElementById('loading-spinner').classList.remove('active');
-                document.getElementById('editor-content').style.display = 'block';
-                
-            } catch (error) {
-                console.error('JSON 로딩 오류:', error);
-                alert('서버에서 JSON 파일을 불러오는데 실패했습니다.');
             }
+            
+            // Always show editor even if some files fail to load
+            document.getElementById('loading-spinner').classList.remove('active');
+            document.getElementById('editor-content').style.display = 'block';
+            
+            console.log(`JSON 로딩 완료: ${loadedCount}/6 파일`);
         }
 
+        // Start loading
         loadJSONFromServer();
 
         // Clear Thumbnail
@@ -588,7 +619,6 @@
         // Thumbnail Upload Handler
         const thumbnailInput = document.getElementById('thumbnail-upload');
         const thumbnailFakeInput = document.getElementById('thumbnail-fake-input');
-        const thumbnailUploadBtn = document.getElementById('thumbnail-upload-btn');
         const thumbnailPreview = document.getElementById('thumbnail-preview');
 
         thumbnailInput.addEventListener('change', function(e) {
@@ -612,30 +642,6 @@
                 };
                 reader.readAsDataURL(file);
             }
-        });
-
-        function isLocalhost8000() {
-            return window.location.href.includes('localhost:8000');
-        }
-
-        thumbnailUploadBtn.addEventListener('click', async function() {
-            if (!thumbnailFile) {
-                alert('이미지를 먼저 선택해주세요.');
-                return;
-            }
-
-            const category = document.getElementById('category').value;
-            if (!category) {
-                alert('카테고리를 먼저 선택해주세요.');
-                return;
-            }
-
-            if (!isLocalhost8000()) {
-                alert('⚠️ 데모 버전입니다.\n발행 시 이미지 경로가 자동으로 생성됩니다.\n실제 이미지는 수동으로 업로드해주세요.');
-                return;
-            }
-
-            alert('✓ 이미지가 준비되었습니다. 발행 버튼을 눌러주세요.');
         });
 
         // Input Validation for English/Numbers only
@@ -672,6 +678,11 @@
             previewStyle: 'vertical',
             placeholder: 'Enter English content...',
             language: 'en-US'
+        });
+
+        // Reset Button
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            location.reload();
         });
 
         // MyMemory Translation API
@@ -859,28 +870,6 @@
             URL.revokeObjectURL(url);
         }
 
-        async function uploadImageToServer(file, imagePath) {
-            if (!isLocalhost8000()) {
-                return false;
-            }
-
-            try {
-                const formData = new FormData();
-                formData.append('image', file);
-                formData.append('path', imagePath);
-
-                const response = await fetch('/upload-image', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                return response.ok;
-            } catch (error) {
-                console.error('Image upload error:', error);
-                return false;
-            }
-        }
-
         // Publish Button Handler
         document.getElementById('publish-btn').addEventListener('click', async function() {
             const category = document.getElementById('category').value;
@@ -891,32 +880,27 @@
             const subcategory = document.getElementById('subcategory').value;
             const author = document.getElementById('author').value;
 
-            // Validation - Check all required fields first
+            // Validation
             if (!category) {
                 alert('카테고리를 선택해주세요.');
                 return;
             }
-
             if (!titleKor || !titleEn) {
                 alert('제목(한국어, English)을 모두 입력해주세요.');
                 return;
             }
-
             if (!descKor || !descEn) {
                 alert('설명(한국어, English)을 모두 입력해주세요.');
                 return;
             }
-
             if (!subcategory) {
                 alert('카테고리 세부를 입력해주세요.');
                 return;
             }
-
             if (!author) {
                 alert('작성자를 입력해주세요.');
                 return;
             }
-
             if (!thumbnailFile) {
                 alert('썸네일 이미지를 업로드해주세요.');
                 return;
@@ -929,7 +913,6 @@
                 alert('한국어 본문을 작성해주세요.');
                 return;
             }
-
             if (!contentEn || contentEn === '<p><br></p>' || contentEn === '<p></p>') {
                 alert('영어 본문을 작성해주세요.');
                 return;
@@ -938,18 +921,6 @@
             // Generate next ID
             const newId = generateNextId(category);
             const imagePath = `img/${category}/${newId}.jpg`;
-
-            // Upload image if on localhost:8000
-            if (isLocalhost8000()) {
-                const uploadSuccess = await uploadImageToServer(thumbnailFile, imagePath);
-                if (uploadSuccess) {
-                    alert('✓ 이미지가 서버에 업로드되었습니다.');
-                } else {
-                    alert('⚠️ 이미지 업로드에 실패했습니다. 수동으로 업로드해주세요.');
-                }
-            } else {
-                alert(`⚠️ 데모 버전입니다.\n\n이미지를 다음 경로에 수동으로 업로드해주세요:\n${imagePath}`);
-            }
 
             const culturalBadge = document.getElementById('cultural-badge').value || null;
             const tagsInput = document.getElementById('tags').value;
@@ -980,7 +951,7 @@
             };
 
             if (userType === 'developer') {
-                // Developer mode: Download JSON files
+                // Developer mode: Download JSON files + Image
                 let categoryData = [...uploadedData[category], categoryEntry];
                 let articleData = [...uploadedData.article, articleEntry];
                 let pinnedData = { ...uploadedData.pinned };
@@ -1003,15 +974,19 @@
                 if (isPinned) {
                     downloadJSON(`pinned.json`, pinnedData);
                 }
+                downloadImage(thumbnailFile, `${newId}.jpg`);
 
-                alert(`발행이 완료되었습니다!\n\nID: ${newId}\n이미지 경로: ${imagePath}\n\nJSON 파일들이 다운로드되었습니다.`);
+                alert(`발행이 완료되었습니다!\n\nID: ${newId}\n이미지 경로: ${imagePath}\n\nJSON 파일들과 이미지가 다운로드되었습니다.`);
 
             } else {
-                // General user mode: Create request text file
+                // General user mode: Create request text file + Image
                 let requestText = `article.json 에 추가 요청\n\n`;
                 requestText += JSON.stringify(articleEntry, null, 2);
                 requestText += `\n\n${category}.json 에 추가 요청\n\n`;
                 requestText += JSON.stringify(categoryEntry, null, 2);
+                requestText += `\n\n이미지 업로드 요청\n\n`;
+                requestText += `파일명: ${newId}.jpg\n`;
+                requestText += `경로: ${imagePath}\n`;
 
                 const isPinned = document.getElementById('is-pinned').checked;
                 if (isPinned) {
@@ -1032,10 +1007,6 @@
                 downloadImage(thumbnailFile, `${newId}.jpg`);
 
                 alert(`등록 요청이 완료되었습니다!\n\nID: ${newId}\n\n요청 파일(TXT)과 이미지가 다운로드되었습니다.\n개발자에게 전달해주세요.`);
-            }
-
-            if (confirm('폼을 초기화하시겠습니까?')) {
-                location.reload();
             }
         });
 
