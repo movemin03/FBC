@@ -212,47 +212,59 @@
         .tiptap-editor:focus {
             outline: none;
         }
-        .tiptap-editor p {
+        
+        /* ProseMirror content styles */
+        .ProseMirror {
+            outline: none;
+        }
+        .ProseMirror p {
             margin-bottom: 1em;
         }
-        .tiptap-editor h1,
-        .tiptap-editor h2,
-        .tiptap-editor h3 {
+        .ProseMirror h1,
+        .ProseMirror h2,
+        .ProseMirror h3 {
             margin-top: 1em;
             margin-bottom: 0.5em;
         }
-        .tiptap-editor ul,
-        .tiptap-editor ol {
+        .ProseMirror ul,
+        .ProseMirror ol {
             padding-left: 2em;
             margin-bottom: 1em;
         }
-        .tiptap-editor img {
+        .ProseMirror img {
             max-width: 100%;
             height: auto;
             border-radius: 4px;
         }
-        .tiptap-editor blockquote {
+        .ProseMirror blockquote {
             border-left: 3px solid #ddd;
             padding-left: 1em;
             margin-left: 0;
             font-style: italic;
             color: #666;
         }
-        .tiptap-editor code {
+        .ProseMirror code {
             background: #f4f4f4;
             padding: 2px 6px;
             border-radius: 3px;
             font-family: 'Courier New', monospace;
         }
-        .tiptap-editor pre {
+        .ProseMirror pre {
             background: #f4f4f4;
             padding: 1em;
             border-radius: 4px;
             overflow-x: auto;
         }
-        .tiptap-editor pre code {
+        .ProseMirror pre code {
             background: none;
             padding: 0;
+        }
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -413,9 +425,9 @@
     </div>
 
     <script type="module">
-        import { Editor } from 'https://esm.sh/@tiptap/core@2.8.0';
-        import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.8.0';
-        import Image from 'https://esm.sh/@tiptap/extension-image@2.8.0';
+        import { Editor } from 'https://esm.sh/@tiptap/core@2.1.13';
+        import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.1.13';
+        import Image from 'https://esm.sh/@tiptap/extension-image@2.1.13';
 
         let editorKo, editorEn;
         let fashionData = [];
@@ -423,76 +435,150 @@
         let lifeData = [];
         let districtsData = [];
 
-        // JSON 데이터 로드
+        // JSON 데이터 로드 함수 (에러 핸들링 강화)
         async function loadJSONData() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
             try {
-                const [fashion, beauty, life, districts] = await Promise.all([
-                    fetch('fashion.json').then(r => r.json()),
-                    fetch('beauty.json').then(r => r.json()),
-                    fetch('life.json').then(r => r.json()),
-                    fetch('districts.json').then(r => r.json())
-                ]);
-
-                fashionData = fashion;
-                beautyData = beauty;
-                lifeData = life;
-                districtsData = districts;
-
-                // 지역 선택 옵션 추가
-                const districtSelect = document.getElementById('relatedDistrict');
-                districts.forEach(district => {
-                    const option = document.createElement('option');
-                    option.value = district.id;
-                    option.textContent = `${district.nameKo} (${district.nameEn})`;
-                    districtSelect.appendChild(option);
+                console.log('JSON 파일 로드 시작...');
+                
+                // JSON 파일들을 개별적으로 로드
+                const fashionResponse = await fetch('./fashion.json').catch(err => {
+                    console.warn('fashion.json 로드 실패, 빈 배열로 초기화:', err);
+                    return { ok: false };
+                });
+                
+                const beautyResponse = await fetch('./beauty.json').catch(err => {
+                    console.warn('beauty.json 로드 실패, 빈 배열로 초기화:', err);
+                    return { ok: false };
+                });
+                
+                const lifeResponse = await fetch('./life.json').catch(err => {
+                    console.warn('life.json 로드 실패, 빈 배열로 초기화:', err);
+                    return { ok: false };
+                });
+                
+                const districtsResponse = await fetch('./districts.json').catch(err => {
+                    console.warn('districts.json 로드 실패, 빈 배열로 초기화:', err);
+                    return { ok: false };
                 });
 
-                document.getElementById('loadingIndicator').classList.add('hidden');
+                // 각 응답 처리
+                if (fashionResponse.ok) {
+                    fashionData = await fashionResponse.json();
+                    console.log('fashion.json 로드 성공:', fashionData.length, '개');
+                } else {
+                    fashionData = [];
+                    console.log('fashion.json 사용 불가, 빈 배열 사용');
+                }
+
+                if (beautyResponse.ok) {
+                    beautyData = await beautyResponse.json();
+                    console.log('beauty.json 로드 성공:', beautyData.length, '개');
+                } else {
+                    beautyData = [];
+                    console.log('beauty.json 사용 불가, 빈 배열 사용');
+                }
+
+                if (lifeResponse.ok) {
+                    lifeData = await lifeResponse.json();
+                    console.log('life.json 로드 성공:', lifeData.length, '개');
+                } else {
+                    lifeData = [];
+                    console.log('life.json 사용 불가, 빈 배열 사용');
+                }
+
+                if (districtsResponse.ok) {
+                    districtsData = await districtsResponse.json();
+                    console.log('districts.json 로드 성공:', districtsData.length, '개');
+                    
+                    // 지역 선택 옵션 추가
+                    const districtSelect = document.getElementById('relatedDistrict');
+                    districtsData.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.id;
+                        option.textContent = `${district.nameKo} (${district.nameEn})`;
+                        districtSelect.appendChild(option);
+                    });
+                } else {
+                    districtsData = [];
+                    console.log('districts.json 사용 불가, 빈 배열 사용');
+                }
+
+                console.log('JSON 로드 완료, 에디터 초기화 시작...');
+                
+                // 로딩 인디케이터 숨기고 폼 표시
+                loadingIndicator.classList.add('hidden');
                 document.getElementById('formContainer').classList.remove('hidden');
                 
                 // 에디터 초기화
-                initializeEditors();
+                await initializeEditors();
+                
+                console.log('에디터 초기화 완료');
+                
             } catch (error) {
-                console.error('JSON 로드 실패:', error);
-                document.getElementById('loadingIndicator').textContent = '❌ 데이터 로드 실패. 콘솔을 확인하세요.';
+                console.error('JSON 로드 중 오류 발생:', error);
+                loadingIndicator.innerHTML = `
+                    <div class="error-message">
+                        <strong>❌ 데이터 로드 실패</strong><br>
+                        오류 내용: ${error.message}<br>
+                        <small>JSON 파일이 없어도 에디터를 사용할 수 있습니다.</small>
+                    </div>
+                `;
+                
+                // 오류가 있어도 폼은 표시
+                setTimeout(() => {
+                    loadingIndicator.classList.add('hidden');
+                    document.getElementById('formContainer').classList.remove('hidden');
+                    initializeEditors();
+                }, 2000);
             }
         }
 
         // Tiptap 에디터 초기화
-        function initializeEditors() {
-            // 한국어 에디터
-            editorKo = new Editor({
-                element: document.querySelector('#contentKo'),
-                extensions: [
-                    StarterKit,
-                    Image.configure({
-                        inline: true,
-                        allowBase64: true
-                    })
-                ],
-                content: '<p>여기에 한국어 본문을 작성하세요...</p>',
-                editable: true,
-                autofocus: false
-            });
+        async function initializeEditors() {
+            try {
+                console.log('에디터 초기화 중...');
+                
+                // 한국어 에디터
+                editorKo = new Editor({
+                    element: document.querySelector('#contentKo'),
+                    extensions: [
+                        StarterKit,
+                        Image.configure({
+                            inline: true,
+                            allowBase64: true
+                        })
+                    ],
+                    content: '<p>여기에 한국어 본문을 작성하세요...</p>',
+                    editable: true,
+                    autofocus: false
+                });
 
-            // 영어 에디터
-            editorEn = new Editor({
-                element: document.querySelector('#contentEn'),
-                extensions: [
-                    StarterKit,
-                    Image.configure({
-                        inline: true,
-                        allowBase64: true
-                    })
-                ],
-                content: '<p>Write your English content here...</p>',
-                editable: true,
-                autofocus: false
-            });
+                // 영어 에디터
+                editorEn = new Editor({
+                    element: document.querySelector('#contentEn'),
+                    extensions: [
+                        StarterKit,
+                        Image.configure({
+                            inline: true,
+                            allowBase64: true
+                        })
+                    ],
+                    content: '<p>Write your English content here...</p>',
+                    editable: true,
+                    autofocus: false
+                });
 
-            // 메뉴바 생성
-            createMenuBar('menubarKo', editorKo);
-            createMenuBar('menubarEn', editorEn);
+                // 메뉴바 생성
+                createMenuBar('menubarKo', editorKo);
+                createMenuBar('menubarEn', editorEn);
+                
+                console.log('에디터 초기화 성공');
+            } catch (error) {
+                console.error('에디터 초기화 오류:', error);
+                alert('에디터 초기화 중 오류가 발생했습니다: ' + error.message);
+            }
         }
 
         // 메뉴바 생성
@@ -500,36 +586,41 @@
             const container = document.getElementById(containerId);
             
             const buttons = [
-                { label: 'B', command: () => editor.chain().focus().toggleBold().run(), isActive: 'bold' },
-                { label: 'I', command: () => editor.chain().focus().toggleItalic().run(), isActive: 'italic' },
-                { label: 'Strike', command: () => editor.chain().focus().toggleStrike().run(), isActive: 'strike' },
-                { label: 'H1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: 'heading' },
-                { label: 'H2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: 'heading' },
-                { label: 'H3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: 'heading' },
-                { label: 'Bullet List', command: () => editor.chain().focus().toggleBulletList().run(), isActive: 'bulletList' },
-                { label: 'Ordered List', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: 'orderedList' },
-                { label: 'Quote', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: 'blockquote' },
-                { label: 'Code', command: () => editor.chain().focus().toggleCode().run(), isActive: 'code' },
-                { label: 'Code Block', command: () => editor.chain().focus().toggleCodeBlock().run(), isActive: 'codeBlock' },
-                { label: 'Image', command: () => addImageToEditor(editor), isActive: null }
+                { label: 'B', command: () => editor.chain().focus().toggleBold().run(), isActive: 'bold', title: 'Bold' },
+                { label: 'I', command: () => editor.chain().focus().toggleItalic().run(), isActive: 'italic', title: 'Italic' },
+                { label: 'Strike', command: () => editor.chain().focus().toggleStrike().run(), isActive: 'strike', title: 'Strikethrough' },
+                { label: 'H1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: 'heading', title: 'Heading 1' },
+                { label: 'H2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: 'heading', title: 'Heading 2' },
+                { label: 'H3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: 'heading', title: 'Heading 3' },
+                { label: '•', command: () => editor.chain().focus().toggleBulletList().run(), isActive: 'bulletList', title: 'Bullet List' },
+                { label: '1.', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: 'orderedList', title: 'Ordered List' },
+                { label: '"', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: 'blockquote', title: 'Quote' },
+                { label: 'Code', command: () => editor.chain().focus().toggleCode().run(), isActive: 'code', title: 'Inline Code' },
+                { label: 'CodeBlock', command: () => editor.chain().focus().toggleCodeBlock().run(), isActive: 'codeBlock', title: 'Code Block' },
+                { label: '🖼️', command: () => addImageToEditor(editor), isActive: null, title: 'Insert Image' }
             ];
 
             buttons.forEach(btn => {
                 const button = document.createElement('button');
                 button.textContent = btn.label;
+                button.title = btn.title;
                 button.onclick = (e) => {
                     e.preventDefault();
                     btn.command();
                 };
                 
                 if (btn.isActive) {
-                    editor.on('selectionUpdate', () => {
+                    // 에디터 상태 변경 시 활성화 상태 업데이트
+                    const updateActiveState = () => {
                         if (editor.isActive(btn.isActive)) {
                             button.classList.add('is-active');
                         } else {
                             button.classList.remove('is-active');
                         }
-                    });
+                    };
+                    
+                    editor.on('selectionUpdate', updateActiveState);
+                    editor.on('transaction', updateActiveState);
                 }
                 
                 container.appendChild(button);
@@ -545,6 +636,8 @@
                 const file = e.target.files[0];
                 if (file) {
                     try {
+                        console.log('이미지 업로드 시작:', file.name);
+                        
                         // 이미지 리사이즈
                         const resizedBlob = await resizeImage(file, 1200);
                         
@@ -562,12 +655,14 @@
                         if (data.success) {
                             // 에디터에 이미지 삽입
                             editor.chain().focus().setImage({ src: data.data.url }).run();
+                            console.log('이미지 업로드 성공:', data.data.url);
                         } else {
+                            console.error('이미지 업로드 실패:', data);
                             alert('이미지 업로드 실패');
                         }
                     } catch (error) {
                         console.error('이미지 업로드 오류:', error);
-                        alert('이미지 업로드 중 오류가 발생했습니다.');
+                        alert('이미지 업로드 중 오류가 발생했습니다: ' + error.message);
                     }
                 }
             };
@@ -576,7 +671,7 @@
 
         // 이미지 리사이즈 함수
         function resizeImage(file, maxWidth) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -599,8 +694,10 @@
                             resolve(blob);
                         }, file.type);
                     };
+                    img.onerror = () => reject(new Error('이미지 로드 실패'));
                     img.src = e.target.result;
                 };
+                reader.onerror = () => reject(new Error('파일 읽기 실패'));
                 reader.readAsDataURL(file);
             });
         }
@@ -669,39 +766,54 @@
             const contentEnHtml = editorEn.getHTML();
 
             if (!category || !titleKo || !titleEn || !descriptionKo || !descriptionEn || 
-                !subcategory || !author || !thumbnailFile || 
-                contentKoHtml === '<p>여기에 한국어 본문을 작성하세요...</p>' ||
-                contentEnHtml === '<p>Write your English content here...</p>') {
+                !subcategory || !author || !thumbnailFile) {
                 alert('필수 항목을 모두 입력해주세요.');
                 return;
             }
 
-            // isPinned 및 pinnedType 처리
-            const isPinned = document.getElementById('isPinned').checked;
-            const pinnedTypes = [];
-            if (isPinned) {
-                document.querySelectorAll('input[name="pinnedType"]:checked').forEach(checkbox => {
-                    pinnedTypes.push(checkbox.value);
-                });
+            // 본문 내용 검증
+            if (contentKoHtml.trim() === '<p>여기에 한국어 본문을 작성하세요...</p>' || 
+                contentKoHtml.trim() === '<p></p>' ||
+                contentKoHtml.trim() === '') {
+                alert('한국어 본문 내용을 입력해주세요.');
+                return;
             }
 
-            // 태그 처리
-            const tagsInput = document.getElementById('tags').value;
-            const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
-
-            // 관련 지역
-            const relatedDistrict = document.getElementById('relatedDistrict').value;
-
-            // Cultural Badge
-            const culturalBadge = document.getElementById('culturalBadge').value;
-
-            // 썸네일 이미지 업로드
-            const thumbnailBlob = await resizeImage(thumbnailFile, 1200);
-            const imgbbKey = '4d755673211c39884cb2a812e1c698c7';
-            const formData = new FormData();
-            formData.append('image', thumbnailBlob);
+            if (contentEnHtml.trim() === '<p>Write your English content here...</p>' ||
+                contentEnHtml.trim() === '<p></p>' ||
+                contentEnHtml.trim() === '') {
+                alert('영어 본문 내용을 입력해주세요.');
+                return;
+            }
 
             try {
+                // isPinned 및 pinnedType 처리
+                const isPinned = document.getElementById('isPinned').checked;
+                const pinnedTypes = [];
+                if (isPinned) {
+                    document.querySelectorAll('input[name="pinnedType"]:checked').forEach(checkbox => {
+                        pinnedTypes.push(checkbox.value);
+                    });
+                }
+
+                // 태그 처리
+                const tagsInput = document.getElementById('tags').value;
+                const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
+
+                // 관련 지역
+                const relatedDistrict = document.getElementById('relatedDistrict').value;
+
+                // Cultural Badge
+                const culturalBadge = document.getElementById('culturalBadge').value;
+
+                console.log('썸네일 이미지 업로드 시작...');
+                
+                // 썸네일 이미지 업로드
+                const thumbnailBlob = await resizeImage(thumbnailFile, 1200);
+                const imgbbKey = '4d755673211c39884cb2a812e1c698c7';
+                const formData = new FormData();
+                formData.append('image', thumbnailBlob);
+
                 const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
                     method: 'POST',
                     body: formData
@@ -709,11 +821,11 @@
 
                 const data = await response.json();
                 if (!data.success) {
-                    alert('썸네일 이미지 업로드 실패');
-                    return;
+                    throw new Error('썸네일 이미지 업로드 실패');
                 }
 
                 const thumbnailUrl = data.data.url;
+                console.log('썸네일 업로드 성공:', thumbnailUrl);
 
                 // ID 생성
                 const timestamp = Date.now();
@@ -741,13 +853,15 @@
 
                 // 선택한 카테고리 데이터에 추가
                 let targetData;
-                if (category === 'fashion') targetData = fashionData;
-                else if (category === 'beauty') targetData = beautyData;
-                else if (category === 'life') targetData = lifeData;
-                else if (category === 'districts') targetData = districtsData;
+                if (category === 'fashion') targetData = [...fashionData];
+                else if (category === 'beauty') targetData = [...beautyData];
+                else if (category === 'life') targetData = [...lifeData];
+                else if (category === 'districts') targetData = [...districtsData];
 
                 targetData.push(newPost);
 
+                console.log('JSON 파일 생성 중...');
+                
                 // JSON 파일 다운로드
                 const jsonBlob = new Blob([JSON.stringify(targetData, null, 2)], { type: 'application/json' });
                 const jsonUrl = URL.createObjectURL(jsonBlob);
@@ -770,7 +884,14 @@ ID: ${newId}
                 txtLink.download = `${category}_${newId}_request.txt`;
                 txtLink.click();
 
+                console.log('발행 완료!');
                 alert('발행이 완료되었습니다! 파일이 다운로드됩니다.');
+                
+                // 메모리 정리
+                setTimeout(() => {
+                    URL.revokeObjectURL(jsonUrl);
+                    URL.revokeObjectURL(txtUrl);
+                }, 100);
                 
                 // 폼 초기화 확인
                 if (confirm('폼을 초기화하시겠습니까?')) {
@@ -778,12 +899,15 @@ ID: ${newId}
                 }
             } catch (error) {
                 console.error('발행 오류:', error);
-                alert('발행 중 오류가 발생했습니다.');
+                alert('발행 중 오류가 발생했습니다: ' + error.message);
             }
         });
 
         // 페이지 로드 시 JSON 데이터 로드
-        loadJSONData();
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('페이지 로드 완료, 초기화 시작');
+            loadJSONData();
+        });
     </script>
 </body>
 </html>
