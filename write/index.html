@@ -4,300 +4,211 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>콘텐츠 발행 에디터</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 40px;
-        }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .loading-indicator {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 16px;
-        }
-        .user-selector {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        .user-selector label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #333;
-        }
-        .user-options {
-            display: flex;
-            gap: 15px;
-        }
-        .user-options label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-weight: normal;
-        }
-        .user-options input[type="radio"] {
-            margin-right: 6px;
-        }
-        .form-section {
-            margin-bottom: 30px;
-        }
-        .form-section h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #444;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 8px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-        input[type="text"],
-        input[type="file"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-        input[type="text"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-        }
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        .checkbox-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0;
-            font-weight: normal;
-        }
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 6px;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .btn-primary {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #45a049;
-        }
-        .btn-secondary {
-            background-color: #f44336;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #da190b;
-        }
-        .btn-copy {
-            background-color: #2196F3;
-            color: white;
-            padding: 8px 16px;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-        .btn-copy:hover {
-            background-color: #0b7dda;
-        }
-        .thumbnail-preview {
-            margin-top: 10px;
-            max-width: 300px;
-        }
-        .thumbnail-preview img {
-            width: 100%;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .required {
-            color: #f44336;
-        }
-        .hidden {
-            display: none;
-        }
-        .help-text {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
-        /* Tiptap Editor Styles */
-        .tiptap-wrapper {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-top: 8px;
+        /* Notion-like Tiptap Editor Styles */
+        .tiptap-editor-wrapper {
+            @apply border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm;
         }
+        
         .tiptap-menubar {
-            background: #f8f9fa;
-            border-bottom: 1px solid #ddd;
-            padding: 8px;
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-        .tiptap-menubar button {
-            padding: 6px 12px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tiptap-menubar button:hover {
-            background: #e9ecef;
-        }
-        .tiptap-menubar button.is-active {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-        .tiptap-editor {
-            padding: 15px;
-            min-height: 300px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        .tiptap-editor:focus {
-            outline: none;
+            @apply sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-1 flex-wrap;
         }
         
-        /* ProseMirror content styles */
+        .tiptap-menubar button {
+            @apply px-3 py-1.5 text-sm rounded hover:bg-gray-100 transition-colors duration-150 font-medium text-gray-700 border border-transparent;
+        }
+        
+        .tiptap-menubar button:hover {
+            @apply bg-gray-100 border-gray-200;
+        }
+        
+        .tiptap-menubar button.is-active {
+            @apply bg-blue-50 text-blue-600 border-blue-200;
+        }
+        
         .ProseMirror {
-            outline: none;
+            @apply outline-none px-16 py-12 min-h-[500px] max-h-[600px] overflow-y-auto;
         }
+        
+        /* Notion-like content styling */
         .ProseMirror p {
-            margin-bottom: 1em;
+            @apply mb-2 text-gray-800 leading-relaxed;
         }
-        .ProseMirror h1,
-        .ProseMirror h2,
+        
+        .ProseMirror p.is-editor-empty:first-child::before {
+            @apply text-gray-400;
+            content: attr(data-placeholder);
+            float: left;
+            height: 0;
+            pointer-events: none;
+        }
+        
+        .ProseMirror h1 {
+            @apply text-4xl font-bold mt-8 mb-4 text-gray-900;
+        }
+        
+        .ProseMirror h2 {
+            @apply text-3xl font-bold mt-6 mb-3 text-gray-900;
+        }
+        
         .ProseMirror h3 {
-            margin-top: 1em;
-            margin-bottom: 0.5em;
+            @apply text-2xl font-semibold mt-4 mb-2 text-gray-900;
         }
+        
         .ProseMirror ul,
         .ProseMirror ol {
-            padding-left: 2em;
-            margin-bottom: 1em;
+            @apply pl-6 my-3;
         }
-        .ProseMirror img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
+        
+        .ProseMirror ul li {
+            @apply list-disc mb-1;
         }
+        
+        .ProseMirror ol li {
+            @apply list-decimal mb-1;
+        }
+        
         .ProseMirror blockquote {
-            border-left: 3px solid #ddd;
-            padding-left: 1em;
-            margin-left: 0;
-            font-style: italic;
-            color: #666;
+            @apply border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700;
         }
+        
         .ProseMirror code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
+            @apply bg-gray-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono;
         }
+        
         .ProseMirror pre {
-            background: #f4f4f4;
-            padding: 1em;
-            border-radius: 4px;
-            overflow-x: auto;
+            @apply bg-gray-900 text-gray-100 rounded-lg p-4 my-4 overflow-x-auto;
         }
+        
         .ProseMirror pre code {
-            background: none;
-            padding: 0;
+            @apply bg-transparent text-gray-100 p-0;
         }
-        .error-message {
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 10px 0;
+        
+        .ProseMirror img {
+            @apply max-w-full h-auto rounded-lg my-4 shadow-md;
+        }
+        
+        .ProseMirror strong {
+            @apply font-bold text-gray-900;
+        }
+        
+        .ProseMirror em {
+            @apply italic;
+        }
+        
+        .ProseMirror a {
+            @apply text-blue-600 underline hover:text-blue-700;
+        }
+        
+        /* User Type Selector */
+        .user-type-btn {
+            @apply relative px-6 py-3 rounded-lg font-medium transition-all duration-200 cursor-pointer;
+        }
+        
+        .user-type-btn input[type="radio"] {
+            @apply sr-only;
+        }
+        
+        .user-type-btn:has(input:not(:checked)) {
+            @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+        }
+        
+        .user-type-btn:has(input:checked) {
+            @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105;
+        }
+        
+        /* Loading Animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>콘텐츠 발행 에디터</h1>
-        
-        <div id="loadingIndicator" class="loading-indicator">
-            📁 JSON 데이터를 불러오는 중...
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">콘텐츠 발행 에디터</h1>
+                        <p class="text-xs text-gray-500">Content Publishing Editor</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">버전 2.0</span>
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="시스템 정상"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="flex flex-col items-center justify-center py-20">
+            <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+            <p class="mt-4 text-gray-600 font-medium">📁 JSON 데이터를 불러오는 중...</p>
         </div>
 
+        <!-- Form Container -->
         <div id="formContainer" class="hidden">
-            <!-- 사용자 타입 선택 -->
-            <div class="user-selector">
-                <label>사용자:</label>
-                <div class="user-options">
-                    <label>
+            <!-- User Type Selector -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">사용자 유형 선택</h2>
+                <div class="flex gap-4">
+                    <label class="user-type-btn flex-1">
                         <input type="radio" name="userType" value="developer" checked>
-                        개발자
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                            <span>개발자</span>
+                        </div>
                     </label>
-                    <label>
+                    <label class="user-type-btn flex-1">
                         <input type="radio" name="userType" value="general">
-                        일반인
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span>일반인</span>
+                        </div>
                     </label>
                 </div>
             </div>
 
-            <form id="contentForm">
-                <!-- 기본 정보 -->
-                <div class="form-section">
-                    <div class="form-group">
-                        <label for="category">카테고리 선택 <span class="required">*</span></label>
-                        <select id="category" name="category" required>
+            <!-- Main Form -->
+            <form id="contentForm" class="space-y-6">
+                <!-- 기본 정보 섹션 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200">기본 정보</h2>
+                    
+                    <!-- Category -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            카테고리 선택 <span class="text-red-500">*</span>
+                        </label>
+                        <select id="category" name="category" required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <option value="">-- 카테고리를 선택하세요 --</option>
                             <option value="fashion">Fashion</option>
                             <option value="beauty">Beauty</option>
@@ -306,128 +217,231 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="isPinned" name="isPinned">
-                            메인 페이지에 고정 (Pinned)
+                    <!-- isPinned -->
+                    <div class="mb-6">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" id="isPinned" name="isPinned" 
+                                   class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm font-semibold text-gray-700">메인 페이지에 고정 (Pinned)</span>
                         </label>
                     </div>
 
-                    <div class="form-group" id="pinnedTypeGroup" style="display: none;">
-                        <label>Pinned 타입 선택 (다중 선택 가능)</label>
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" name="pinnedType" value="hero">
-                                Hero
+                    <!-- Pinned Types -->
+                    <div id="pinnedTypeGroup" class="hidden mb-6 pl-8 border-l-4 border-blue-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Pinned 타입 선택 (다중 선택 가능)</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" name="pinnedType" value="hero" 
+                                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Hero</span>
                             </label>
-                            <label>
-                                <input type="checkbox" name="pinnedType" value="todaysStories">
-                                Today's Stories
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" name="pinnedType" value="todaysStories" 
+                                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Today's Stories</span>
                             </label>
-                            <label>
-                                <input type="checkbox" name="pinnedType" value="mustRead">
-                                Must Read
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" name="pinnedType" value="mustRead" 
+                                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Must Read</span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="titleKo">제목 (한국어) <span class="required">*</span></label>
-                        <input type="text" id="titleKo" name="titleKo" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="titleEn">제목 (English) <span class="required">*</span></label>
-                        <div style="display: flex; align-items: center;">
-                            <input type="text" id="titleEn" name="titleEn" required style="flex: 1;">
-                            <button type="button" class="btn-copy" onclick="copyFromKorean('title')">🌐 한국어에서 가져오기</button>
+                    <!-- Titles -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                제목 (한국어) <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="titleKo" name="titleKo" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="한국어 제목을 입력하세요">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                제목 (English) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex gap-2">
+                                <input type="text" id="titleEn" name="titleEn" required 
+                                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                       placeholder="Enter English title">
+                                <button type="button" onclick="copyFromKorean('title')" 
+                                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition whitespace-nowrap">
+                                    🌐 복사
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="descriptionKo">설명 (한국어) <span class="required">*</span></label>
-                        <textarea id="descriptionKo" name="descriptionKo" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="descriptionEn">설명 (English) <span class="required">*</span></label>
-                        <div style="display: flex; align-items: flex-start;">
-                            <textarea id="descriptionEn" name="descriptionEn" rows="3" required style="flex: 1;"></textarea>
-                            <button type="button" class="btn-copy" onclick="copyFromKorean('description')">🌐 한국어에서 가져오기</button>
+                    <!-- Descriptions -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                설명 (한국어) <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="descriptionKo" name="descriptionKo" required rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                      placeholder="한국어 설명을 입력하세요"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                설명 (English) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex flex-col gap-2">
+                                <textarea id="descriptionEn" name="descriptionEn" required rows="3"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                          placeholder="Enter English description"></textarea>
+                                <button type="button" onclick="copyFromKorean('description')" 
+                                        class="self-end px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
+                                    🌐 복사
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="subcategory">카테고리 세부 <span class="required">*</span> (영어/숫자만)</label>
-                        <input type="text" id="subcategory" name="subcategory" pattern="[a-zA-Z0-9-_]+" required>
+                    <!-- Subcategory & Author -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                카테고리 세부 <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="subcategory" name="subcategory" pattern="[a-zA-Z0-9-_]+" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="영어/숫자만 입력">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                작성자 <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="author" name="author" pattern="[a-zA-Z0-9-_]+" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="영어/숫자만 입력">
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="author">작성자 <span class="required">*</span> (영어/숫자만)</label>
-                        <input type="text" id="author" name="author" pattern="[a-zA-Z0-9-_]+" required>
+                    <!-- Thumbnail Image -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            썸네일 이미지 <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" id="thumbnailImage" name="thumbnailImage" accept=".jpg,.jpeg,.png" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        <div id="thumbnailPreview" class="mt-4"></div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="thumbnailImage">썸네일 이미지 <span class="required">*</span> (jpg, jpeg, png만)</label>
-                        <input type="file" id="thumbnailImage" name="thumbnailImage" accept=".jpg,.jpeg,.png" required>
-                        <div class="thumbnail-preview" id="thumbnailPreview"></div>
+                    <!-- Cultural Badge & Tags -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Cultural Badge (선택)</label>
+                            <input type="text" id="culturalBadge" name="culturalBadge" pattern="[a-zA-Z0-9-_]+" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="영어/숫자만 입력">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">태그 (쉼표로 구분)</label>
+                            <input type="text" id="tags" name="tags" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="tag1, tag2, tag3">
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="culturalBadge">Cultural Badge (선택, 영어/숫자만)</label>
-                        <input type="text" id="culturalBadge" name="culturalBadge" pattern="[a-zA-Z0-9-_]+">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tags">태그 (쉼표로 구분, 영어/숫자만)</label>
-                        <input type="text" id="tags" name="tags" placeholder="예: tag1, tag2, tag3">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="relatedDistrict">관련 지역 (선택)</label>
-                        <select id="relatedDistrict" name="relatedDistrict">
+                    <!-- Related District -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">관련 지역 (선택)</label>
+                        <select id="relatedDistrict" name="relatedDistrict" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <option value="">-- 지역을 선택하세요 --</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- 본문 내용 -->
-                <div class="form-section">
-                    <h2>본문 내용 (한국어) <span class="required">*</span></h2>
-                    <div class="tiptap-wrapper">
+                <!-- 본문 내용 (한국어) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200">
+                        본문 내용 (한국어) <span class="text-red-500">*</span>
+                    </h2>
+                    <div class="tiptap-editor-wrapper">
                         <div class="tiptap-menubar" id="menubarKo"></div>
-                        <div class="tiptap-editor" id="contentKo"></div>
+                        <div id="contentKo"></div>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <h2>본문 내용 (English) <span class="required">*</span></h2>
-                    <div style="margin-bottom: 10px;">
-                        <button type="button" class="btn-copy" onclick="copyFromKorean('content')">🌐 한국어 본문에서 가져오기</button>
+                <!-- 본문 내용 (English) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                    <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-200">
+                        <h2 class="text-xl font-bold text-gray-900">
+                            본문 내용 (English) <span class="text-red-500">*</span>
+                        </h2>
+                        <button type="button" onclick="copyFromKorean('content')" 
+                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
+                            🌐 한국어 본문에서 가져오기
+                        </button>
                     </div>
-                    <div class="tiptap-wrapper">
+                    <div class="tiptap-editor-wrapper">
                         <div class="tiptap-menubar" id="menubarEn"></div>
-                        <div class="tiptap-editor" id="contentEn"></div>
+                        <div id="contentEn"></div>
                     </div>
                 </div>
 
-                <!-- 버튼 -->
-                <div class="button-group">
-                    <button type="button" class="btn-secondary" onclick="resetForm()">초기화</button>
-                    <button type="submit" class="btn-primary">발행하기</button>
+                <!-- Action Buttons -->
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="resetForm()" 
+                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium">
+                        초기화
+                    </button>
+                    <button type="submit" 
+                            class="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition font-medium shadow-lg">
+                        발행하기
+                    </button>
                 </div>
             </form>
 
-            <p class="help-text" style="margin-top: 20px;">
+            <p class="text-sm text-gray-500 text-center mt-8">
                 * 발행하면 등록 요청 파일(TXT)과 이미지가 다운로드됩니다.
             </p>
         </div>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-3">시스템 정보</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>버전: 2.0.0</li>
+                        <li>에디터: Tiptap (Notion-like)</li>
+                        <li>프레임워크: Tailwind CSS</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-3">지원 형식</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>이미지: JPG, JPEG, PNG</li>
+                        <li>출력: JSON, TXT</li>
+                        <li>카테고리: 4개 (Fashion, Beauty, Life, Districts)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-3">문의</h3>
+                    <p class="text-sm text-gray-600">
+                        기술 지원이 필요하시면<br>
+                        개발팀에 문의해주세요.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
+                © 2025 Content Publishing System. All rights reserved.
+            </div>
+        </div>
+    </footer>
 
     <script type="module">
         import { Editor } from 'https://esm.sh/@tiptap/core@2.1.13';
         import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.1.13';
         import Image from 'https://esm.sh/@tiptap/extension-image@2.1.13';
+        import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder@2.1.13';
 
         let editorKo, editorEn;
         let fashionData = [];
@@ -435,64 +449,40 @@
         let lifeData = [];
         let districtsData = [];
 
-        // JSON 데이터 로드 함수 (에러 핸들링 강화)
+        // JSON 데이터 로드 함수 (강화된 에러 핸들링)
         async function loadJSONData() {
             const loadingIndicator = document.getElementById('loadingIndicator');
             
             try {
-                console.log('JSON 파일 로드 시작...');
+                console.log('🚀 JSON 파일 로드 시작...');
                 
-                // JSON 파일들을 개별적으로 로드
-                const fashionResponse = await fetch('./fashion.json').catch(err => {
-                    console.warn('fashion.json 로드 실패, 빈 배열로 초기화:', err);
-                    return { ok: false };
-                });
-                
-                const beautyResponse = await fetch('./beauty.json').catch(err => {
-                    console.warn('beauty.json 로드 실패, 빈 배열로 초기화:', err);
-                    return { ok: false };
-                });
-                
-                const lifeResponse = await fetch('./life.json').catch(err => {
-                    console.warn('life.json 로드 실패, 빈 배열로 초기화:', err);
-                    return { ok: false };
-                });
-                
-                const districtsResponse = await fetch('./districts.json').catch(err => {
-                    console.warn('districts.json 로드 실패, 빈 배열로 초기화:', err);
-                    return { ok: false };
-                });
+                // 각 JSON 파일을 안전하게 로드
+                const loadFile = async (filename) => {
+                    try {
+                        const response = await fetch(`./${filename}`);
+                        if (!response.ok) {
+                            console.warn(`⚠️ ${filename} 로드 실패 (${response.status}), 빈 배열 사용`);
+                            return [];
+                        }
+                        const data = await response.json();
+                        console.log(`✅ ${filename} 로드 성공: ${data.length}개 항목`);
+                        return data;
+                    } catch (error) {
+                        console.warn(`⚠️ ${filename} 로드 실패:`, error.message, '- 빈 배열 사용');
+                        return [];
+                    }
+                };
 
-                // 각 응답 처리
-                if (fashionResponse.ok) {
-                    fashionData = await fashionResponse.json();
-                    console.log('fashion.json 로드 성공:', fashionData.length, '개');
-                } else {
-                    fashionData = [];
-                    console.log('fashion.json 사용 불가, 빈 배열 사용');
-                }
+                // 모든 JSON 파일 병렬 로드
+                [fashionData, beautyData, lifeData, districtsData] = await Promise.all([
+                    loadFile('fashion.json'),
+                    loadFile('beauty.json'),
+                    loadFile('life.json'),
+                    loadFile('districts.json')
+                ]);
 
-                if (beautyResponse.ok) {
-                    beautyData = await beautyResponse.json();
-                    console.log('beauty.json 로드 성공:', beautyData.length, '개');
-                } else {
-                    beautyData = [];
-                    console.log('beauty.json 사용 불가, 빈 배열 사용');
-                }
-
-                if (lifeResponse.ok) {
-                    lifeData = await lifeResponse.json();
-                    console.log('life.json 로드 성공:', lifeData.length, '개');
-                } else {
-                    lifeData = [];
-                    console.log('life.json 사용 불가, 빈 배열 사용');
-                }
-
-                if (districtsResponse.ok) {
-                    districtsData = await districtsResponse.json();
-                    console.log('districts.json 로드 성공:', districtsData.length, '개');
-                    
-                    // 지역 선택 옵션 추가
+                // 지역 선택 옵션 추가
+                if (districtsData.length > 0) {
                     const districtSelect = document.getElementById('relatedDistrict');
                     districtsData.forEach(district => {
                         const option = document.createElement('option');
@@ -500,33 +490,36 @@
                         option.textContent = `${district.nameKo} (${district.nameEn})`;
                         districtSelect.appendChild(option);
                     });
-                } else {
-                    districtsData = [];
-                    console.log('districts.json 사용 불가, 빈 배열 사용');
+                    console.log(`✅ 지역 옵션 ${districtsData.length}개 추가됨`);
                 }
 
-                console.log('JSON 로드 완료, 에디터 초기화 시작...');
+                console.log('✅ JSON 로드 완료, 에디터 초기화 중...');
                 
-                // 로딩 인디케이터 숨기고 폼 표시
+                // UI 전환
                 loadingIndicator.classList.add('hidden');
                 document.getElementById('formContainer').classList.remove('hidden');
                 
                 // 에디터 초기화
                 await initializeEditors();
                 
-                console.log('에디터 초기화 완료');
+                console.log('✅ 시스템 초기화 완료!');
                 
             } catch (error) {
-                console.error('JSON 로드 중 오류 발생:', error);
+                console.error('❌ JSON 로드 중 치명적 오류:', error);
                 loadingIndicator.innerHTML = `
-                    <div class="error-message">
-                        <strong>❌ 데이터 로드 실패</strong><br>
-                        오류 내용: ${error.message}<br>
-                        <small>JSON 파일이 없어도 에디터를 사용할 수 있습니다.</small>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <strong class="text-red-800">데이터 로드 실패</strong>
+                        </div>
+                        <p class="text-sm text-red-700 mb-2">오류: ${error.message}</p>
+                        <p class="text-xs text-red-600">JSON 파일이 없어도 에디터는 사용 가능합니다. 잠시 후 자동으로 진행됩니다...</p>
                     </div>
                 `;
                 
-                // 오류가 있어도 폼은 표시
+                // 오류가 있어도 2초 후 에디터 표시
                 setTimeout(() => {
                     loadingIndicator.classList.add('hidden');
                     document.getElementById('formContainer').classList.remove('hidden');
@@ -535,22 +528,34 @@
             }
         }
 
-        // Tiptap 에디터 초기화
+        // Tiptap 에디터 초기화 (Notion-like 스타일)
         async function initializeEditors() {
             try {
-                console.log('에디터 초기화 중...');
+                console.log('🎨 Notion-like 에디터 초기화 중...');
                 
                 // 한국어 에디터
                 editorKo = new Editor({
                     element: document.querySelector('#contentKo'),
                     extensions: [
-                        StarterKit,
+                        StarterKit.configure({
+                            heading: {
+                                levels: [1, 2, 3]
+                            }
+                        }),
                         Image.configure({
                             inline: true,
                             allowBase64: true
+                        }),
+                        Placeholder.configure({
+                            placeholder: '여기에 내용을 작성하세요... "/" 를 입력하면 명령어를 사용할 수 있습니다.'
                         })
                     ],
-                    content: '<p>여기에 한국어 본문을 작성하세요...</p>',
+                    editorProps: {
+                        attributes: {
+                            class: 'prose prose-sm sm:prose lg:prose-lg focus:outline-none'
+                        }
+                    },
+                    content: '',
                     editable: true,
                     autofocus: false
                 });
@@ -559,13 +564,25 @@
                 editorEn = new Editor({
                     element: document.querySelector('#contentEn'),
                     extensions: [
-                        StarterKit,
+                        StarterKit.configure({
+                            heading: {
+                                levels: [1, 2, 3]
+                            }
+                        }),
                         Image.configure({
                             inline: true,
                             allowBase64: true
+                        }),
+                        Placeholder.configure({
+                            placeholder: 'Type "/" for commands...'
                         })
                     ],
-                    content: '<p>Write your English content here...</p>',
+                    editorProps: {
+                        attributes: {
+                            class: 'prose prose-sm sm:prose lg:prose-lg focus:outline-none'
+                        }
+                    },
+                    content: '',
                     editable: true,
                     autofocus: false
                 });
@@ -574,9 +591,9 @@
                 createMenuBar('menubarKo', editorKo);
                 createMenuBar('menubarEn', editorEn);
                 
-                console.log('에디터 초기화 성공');
+                console.log('✅ 에디터 초기화 완료');
             } catch (error) {
-                console.error('에디터 초기화 오류:', error);
+                console.error('❌ 에디터 초기화 오류:', error);
                 alert('에디터 초기화 중 오류가 발생했습니다: ' + error.message);
             }
         }
@@ -585,45 +602,64 @@
         function createMenuBar(containerId, editor) {
             const container = document.getElementById(containerId);
             
-            const buttons = [
-                { label: 'B', command: () => editor.chain().focus().toggleBold().run(), isActive: 'bold', title: 'Bold' },
-                { label: 'I', command: () => editor.chain().focus().toggleItalic().run(), isActive: 'italic', title: 'Italic' },
-                { label: 'Strike', command: () => editor.chain().focus().toggleStrike().run(), isActive: 'strike', title: 'Strikethrough' },
-                { label: 'H1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: 'heading', title: 'Heading 1' },
-                { label: 'H2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: 'heading', title: 'Heading 2' },
-                { label: 'H3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: 'heading', title: 'Heading 3' },
-                { label: '•', command: () => editor.chain().focus().toggleBulletList().run(), isActive: 'bulletList', title: 'Bullet List' },
-                { label: '1.', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: 'orderedList', title: 'Ordered List' },
-                { label: '"', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: 'blockquote', title: 'Quote' },
-                { label: 'Code', command: () => editor.chain().focus().toggleCode().run(), isActive: 'code', title: 'Inline Code' },
-                { label: 'CodeBlock', command: () => editor.chain().focus().toggleCodeBlock().run(), isActive: 'codeBlock', title: 'Code Block' },
-                { label: '🖼️', command: () => addImageToEditor(editor), isActive: null, title: 'Insert Image' }
+            const buttonGroups = [
+                [
+                    { icon: 'B', command: () => editor.chain().focus().toggleBold().run(), isActive: 'bold', title: 'Bold (Ctrl+B)' },
+                    { icon: 'I', command: () => editor.chain().focus().toggleItalic().run(), isActive: 'italic', title: 'Italic (Ctrl+I)' },
+                    { icon: 'S', command: () => editor.chain().focus().toggleStrike().run(), isActive: 'strike', title: 'Strikethrough' }
+                ],
+                [
+                    { icon: 'H1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: 'heading', title: 'Heading 1' },
+                    { icon: 'H2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: 'heading', title: 'Heading 2' },
+                    { icon: 'H3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: 'heading', title: 'Heading 3' }
+                ],
+                [
+                    { icon: '•', command: () => editor.chain().focus().toggleBulletList().run(), isActive: 'bulletList', title: 'Bullet List' },
+                    { icon: '1.', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: 'orderedList', title: 'Numbered List' }
+                ],
+                [
+                    { icon: '"', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: 'blockquote', title: 'Quote' },
+                    { icon: 'Code', command: () => editor.chain().focus().toggleCode().run(), isActive: 'code', title: 'Inline Code' },
+                    { icon: '{ }', command: () => editor.chain().focus().toggleCodeBlock().run(), isActive: 'codeBlock', title: 'Code Block' }
+                ],
+                [
+                    { icon: '🖼️', command: () => addImageToEditor(editor), isActive: null, title: 'Insert Image' }
+                ]
             ];
 
-            buttons.forEach(btn => {
-                const button = document.createElement('button');
-                button.textContent = btn.label;
-                button.title = btn.title;
-                button.onclick = (e) => {
-                    e.preventDefault();
-                    btn.command();
-                };
-                
-                if (btn.isActive) {
-                    // 에디터 상태 변경 시 활성화 상태 업데이트
-                    const updateActiveState = () => {
-                        if (editor.isActive(btn.isActive)) {
-                            button.classList.add('is-active');
-                        } else {
-                            button.classList.remove('is-active');
-                        }
+            buttonGroups.forEach((group, groupIndex) => {
+                group.forEach(btn => {
+                    const button = document.createElement('button');
+                    button.textContent = btn.icon;
+                    button.title = btn.title;
+                    button.type = 'button';
+                    button.onclick = (e) => {
+                        e.preventDefault();
+                        btn.command();
                     };
                     
-                    editor.on('selectionUpdate', updateActiveState);
-                    editor.on('transaction', updateActiveState);
-                }
+                    if (btn.isActive) {
+                        const updateActiveState = () => {
+                            if (editor.isActive(btn.isActive)) {
+                                button.classList.add('is-active');
+                            } else {
+                                button.classList.remove('is-active');
+                            }
+                        };
+                        
+                        editor.on('selectionUpdate', updateActiveState);
+                        editor.on('transaction', updateActiveState);
+                    }
+                    
+                    container.appendChild(button);
+                });
                 
-                container.appendChild(button);
+                // 그룹 구분선 (마지막 그룹 제외)
+                if (groupIndex < buttonGroups.length - 1) {
+                    const divider = document.createElement('div');
+                    divider.className = 'w-px h-6 bg-gray-300 mx-1';
+                    container.appendChild(divider);
+                }
             });
         }
 
@@ -636,7 +672,7 @@
                 const file = e.target.files[0];
                 if (file) {
                     try {
-                        console.log('이미지 업로드 시작:', file.name);
+                        console.log('📸 이미지 업로드 시작:', file.name);
                         
                         // 이미지 리사이즈
                         const resizedBlob = await resizeImage(file, 1200);
@@ -653,15 +689,14 @@
                         
                         const data = await response.json();
                         if (data.success) {
-                            // 에디터에 이미지 삽입
                             editor.chain().focus().setImage({ src: data.data.url }).run();
-                            console.log('이미지 업로드 성공:', data.data.url);
+                            console.log('✅ 이미지 업로드 성공:', data.data.url);
                         } else {
-                            console.error('이미지 업로드 실패:', data);
+                            console.error('❌ 이미지 업로드 실패:', data);
                             alert('이미지 업로드 실패');
                         }
                     } catch (error) {
-                        console.error('이미지 업로드 오류:', error);
+                        console.error('❌ 이미지 업로드 오류:', error);
                         alert('이미지 업로드 중 오류가 발생했습니다: ' + error.message);
                     }
                 }
@@ -690,9 +725,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        canvas.toBlob((blob) => {
-                            resolve(blob);
-                        }, file.type);
+                        canvas.toBlob((blob) => resolve(blob), file.type);
                     };
                     img.onerror = () => reject(new Error('이미지 로드 실패'));
                     img.src = e.target.result;
@@ -705,7 +738,11 @@
         // isPinned 체크박스 이벤트
         document.getElementById('isPinned').addEventListener('change', function() {
             const pinnedTypeGroup = document.getElementById('pinnedTypeGroup');
-            pinnedTypeGroup.style.display = this.checked ? 'block' : 'none';
+            if (this.checked) {
+                pinnedTypeGroup.classList.remove('hidden');
+            } else {
+                pinnedTypeGroup.classList.add('hidden');
+            }
         });
 
         // 썸네일 미리보기
@@ -716,7 +753,12 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    preview.innerHTML = `<img src="${e.target.result}" alt="썸네일 미리보기">`;
+                    preview.innerHTML = `
+                        <div class="relative inline-block">
+                            <img src="${e.target.result}" alt="썸네일 미리보기" class="max-w-sm rounded-lg shadow-md border border-gray-200">
+                            <div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">미리보기</div>
+                        </div>
+                    `;
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -743,9 +785,9 @@
             if (confirm('모든 입력 내용을 초기화하시겠습니까?')) {
                 document.getElementById('contentForm').reset();
                 document.getElementById('thumbnailPreview').innerHTML = '';
-                document.getElementById('pinnedTypeGroup').style.display = 'none';
-                editorKo.commands.setContent('<p>여기에 한국어 본문을 작성하세요...</p>');
-                editorEn.commands.setContent('<p>Write your English content here...</p>');
+                document.getElementById('pinnedTypeGroup').classList.add('hidden');
+                editorKo.commands.clearContent();
+                editorEn.commands.clearContent();
             }
         };
 
@@ -753,7 +795,6 @@
         document.getElementById('contentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // 필수 필드 검증
             const category = document.getElementById('category').value;
             const titleKo = document.getElementById('titleKo').value;
             const titleEn = document.getElementById('titleEn').value;
@@ -765,29 +806,26 @@
             const contentKoHtml = editorKo.getHTML();
             const contentEnHtml = editorEn.getHTML();
 
+            // 유효성 검사
             if (!category || !titleKo || !titleEn || !descriptionKo || !descriptionEn || 
                 !subcategory || !author || !thumbnailFile) {
                 alert('필수 항목을 모두 입력해주세요.');
                 return;
             }
 
-            // 본문 내용 검증
-            if (contentKoHtml.trim() === '<p>여기에 한국어 본문을 작성하세요...</p>' || 
-                contentKoHtml.trim() === '<p></p>' ||
-                contentKoHtml.trim() === '') {
+            if (!contentKoHtml || contentKoHtml.trim() === '<p></p>' || contentKoHtml.trim() === '') {
                 alert('한국어 본문 내용을 입력해주세요.');
                 return;
             }
 
-            if (contentEnHtml.trim() === '<p>Write your English content here...</p>' ||
-                contentEnHtml.trim() === '<p></p>' ||
-                contentEnHtml.trim() === '') {
+            if (!contentEnHtml || contentEnHtml.trim() === '<p></p>' || contentEnHtml.trim() === '') {
                 alert('영어 본문 내용을 입력해주세요.');
                 return;
             }
 
             try {
-                // isPinned 및 pinnedType 처리
+                console.log('📝 발행 프로세스 시작...');
+
                 const isPinned = document.getElementById('isPinned').checked;
                 const pinnedTypes = [];
                 if (isPinned) {
@@ -796,19 +834,13 @@
                     });
                 }
 
-                // 태그 처리
                 const tagsInput = document.getElementById('tags').value;
                 const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
-
-                // 관련 지역
                 const relatedDistrict = document.getElementById('relatedDistrict').value;
-
-                // Cultural Badge
                 const culturalBadge = document.getElementById('culturalBadge').value;
 
-                console.log('썸네일 이미지 업로드 시작...');
+                console.log('📤 썸네일 이미지 업로드 중...');
                 
-                // 썸네일 이미지 업로드
                 const thumbnailBlob = await resizeImage(thumbnailFile, 1200);
                 const imgbbKey = '4d755673211c39884cb2a812e1c698c7';
                 const formData = new FormData();
@@ -825,13 +857,11 @@
                 }
 
                 const thumbnailUrl = data.data.url;
-                console.log('썸네일 업로드 성공:', thumbnailUrl);
+                console.log('✅ 썸네일 업로드 성공');
 
-                // ID 생성
                 const timestamp = Date.now();
                 const newId = `${category}_${timestamp}`;
 
-                // 데이터 객체 생성
                 const newPost = {
                     id: newId,
                     titleKo: titleKo,
@@ -851,7 +881,6 @@
                     contentEn: contentEnHtml
                 };
 
-                // 선택한 카테고리 데이터에 추가
                 let targetData;
                 if (category === 'fashion') targetData = [...fashionData];
                 else if (category === 'beauty') targetData = [...beautyData];
@@ -860,7 +889,7 @@
 
                 targetData.push(newPost);
 
-                console.log('JSON 파일 생성 중...');
+                console.log('💾 파일 생성 중...');
                 
                 // JSON 파일 다운로드
                 const jsonBlob = new Blob([JSON.stringify(targetData, null, 2)], { type: 'application/json' });
@@ -870,7 +899,7 @@
                 jsonLink.download = `${category}.json`;
                 jsonLink.click();
 
-                // 등록 요청 TXT 파일 생성
+                // TXT 파일 다운로드
                 const requestText = `카테고리: ${category}
 ID: ${newId}
 제목(한국어): ${titleKo}
@@ -884,28 +913,26 @@ ID: ${newId}
                 txtLink.download = `${category}_${newId}_request.txt`;
                 txtLink.click();
 
-                console.log('발행 완료!');
-                alert('발행이 완료되었습니다! 파일이 다운로드됩니다.');
+                console.log('✅ 발행 완료!');
+                alert('✅ 발행이 완료되었습니다! 파일이 다운로드됩니다.');
                 
-                // 메모리 정리
                 setTimeout(() => {
                     URL.revokeObjectURL(jsonUrl);
                     URL.revokeObjectURL(txtUrl);
                 }, 100);
                 
-                // 폼 초기화 확인
                 if (confirm('폼을 초기화하시겠습니까?')) {
                     resetForm();
                 }
             } catch (error) {
-                console.error('발행 오류:', error);
+                console.error('❌ 발행 오류:', error);
                 alert('발행 중 오류가 발생했습니다: ' + error.message);
             }
         });
 
-        // 페이지 로드 시 JSON 데이터 로드
+        // 페이지 로드 시 초기화
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('페이지 로드 완료, 초기화 시작');
+            console.log('🎬 시스템 시작');
             loadJSONData();
         });
     </script>
