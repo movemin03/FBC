@@ -8,8 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Toast UI Editor CSS -->
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
     <style>
         * {
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
@@ -278,6 +276,90 @@
             display: block;
         }
 
+        /* TipTap Editor Styles */
+        .tiptap-editor {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            min-height: 500px;
+        }
+        .tiptap-toolbar {
+            border-bottom: 1px solid #d1d5db;
+            padding: 8px;
+            background: #f9fafb;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .tiptap-toolbar button {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .tiptap-toolbar button:hover {
+            background: #e5e7eb;
+        }
+        .tiptap-toolbar button.is-active {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+        .tiptap-content {
+            padding: 16px;
+            min-height: 450px;
+            outline: none;
+        }
+        .tiptap-content p {
+            margin-bottom: 1em;
+        }
+        .tiptap-content h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .tiptap-content h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .tiptap-content h3 {
+            font-size: 1.25em;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .tiptap-content ul, .tiptap-content ol {
+            padding-left: 2em;
+            margin-bottom: 1em;
+        }
+        .tiptap-content blockquote {
+            border-left: 3px solid #d1d5db;
+            padding-left: 1em;
+            color: #6b7280;
+            margin: 1em 0;
+        }
+        .tiptap-content code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .tiptap-content pre {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 1em;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+        .tiptap-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
         @media (max-width: 768px) {
             .thumbnail-container {
                 flex-direction: column;
@@ -415,11 +497,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="form-label">카테고리 세부 * (영어/숫자만)</label>
-                    <input type="text" id="subcategory" class="form-input" placeholder="예: Fashion Item, Beauty Tip" pattern="[A-Za-z0-9\s]+" required>
+                    <input type="text" id="subcategory" class="form-input" placeholder="예: Fashion Item, Beauty Tip" pattern="[A-Za-z0-9s]+" required>
                 </div>
                 <div>
                     <label class="form-label">작성자 * (영어/숫자만)</label>
-                    <input type="text" id="author" class="form-input" placeholder="Author name" pattern="[A-Za-z0-9\s\-]+" required>
+                    <input type="text" id="author" class="form-input" placeholder="Author name" pattern="[A-Za-z0-9s-]+" required>
                 </div>
                 <div class="md:col-span-2">
                     <label class="form-label">썸네일 이미지 * (jpg, jpeg, png만)</label>
@@ -436,11 +518,11 @@
                 </div>
                 <div>
                     <label class="form-label">Cultural Badge (선택, 영어/숫자만)</label>
-                    <input type="text" id="cultural-badge" class="form-input" placeholder="예: Industrial Chic" pattern="[A-Za-z0-9\s]+">
+                    <input type="text" id="cultural-badge" class="form-input" placeholder="예: Industrial Chic" pattern="[A-Za-z0-9s]+">
                 </div>
                 <div>
                     <label class="form-label">태그 (쉼표로 구분, 영어/숫자만)</label>
-                    <input type="text" id="tags" class="form-input" placeholder="tag1, tag2, tag3" pattern="[A-Za-z0-9\s,]+">
+                    <input type="text" id="tags" class="form-input" placeholder="tag1, tag2, tag3" pattern="[A-Za-z0-9s,]+">
                 </div>
                 <div>
                     <label class="form-label">관련 지역 (선택)</label>
@@ -454,7 +536,10 @@
         <!-- Content Editor (Korean) -->
         <div class="form-section">
             <label class="form-label">본문 내용 (한국어) *</label>
-            <div id="editor-kor"></div>
+            <div class="tiptap-editor">
+                <div class="tiptap-toolbar" id="toolbar-kor"></div>
+                <div class="tiptap-content" id="editor-kor"></div>
+            </div>
         </div>
 
         <!-- Content Editor (English) -->
@@ -464,7 +549,10 @@
                 <button type="button" id="translate-content-btn" class="btn-secondary">🌐 한국어 본문에서 가져오기</button>
             </div>
             <div id="translate-content-status" class="translate-status mb-2"></div>
-            <div id="editor-en"></div>
+            <div class="tiptap-editor">
+                <div class="tiptap-toolbar" id="toolbar-en"></div>
+                <div class="tiptap-content" id="editor-en"></div>
+            </div>
         </div>
 
         <!-- Publish Button -->
@@ -515,10 +603,10 @@
         </div>
     </footer>
 
-    <!-- Toast UI Editor JS -->
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script type="module">
+        import { Editor } from 'https://esm.sh/@tiptap/core@2.1.13'
+        import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.1.13'
 
-    <script>
         // Store uploaded JSON data
         let uploadedData = {
             fashion: [],
@@ -542,7 +630,7 @@
         ];
 
         // Set User Type
-        function setUserType(type) {
+        window.setUserType = function(type) {
             userType = type;
             document.getElementById('user-type-developer').classList.toggle('active', type === 'developer');
             document.getElementById('user-type-general').classList.toggle('active', type === 'general');
@@ -564,7 +652,7 @@
             districtSelect.appendChild(option);
         });
 
-        // Load JSON files from server - FIXED
+        // Load JSON files from server
         async function loadJSONFromServer() {
             const files = {
                 'fashion': '../data/fashion.json',
@@ -587,7 +675,6 @@
                     }
                 } catch (error) {
                     console.warn(`${key}.json 로딩 실패:`, error);
-                    // Initialize with empty data if loading fails
                     if (key === 'pinned') {
                         uploadedData[key] = { hero: [], todayStories: [], mustRead: [] };
                     } else {
@@ -597,7 +684,6 @@
                 }
             }
             
-            // Always show editor even if some files fail to load
             document.getElementById('loading-spinner').classList.remove('active');
             document.getElementById('editor-content').style.display = 'block';
             
@@ -608,7 +694,7 @@
         loadJSONFromServer();
 
         // Clear Thumbnail
-        function clearThumbnail() {
+        window.clearThumbnail = function() {
             thumbnailFile = null;
             document.getElementById('thumbnail-upload').value = '';
             document.getElementById('thumbnail-fake-input').textContent = '이미지 선택...';
@@ -652,7 +738,7 @@
                 field.addEventListener('input', function(e) {
                     const cursorPosition = this.selectionStart;
                     const originalLength = this.value.length;
-                    this.value = this.value.replace(/[^A-Za-z0-9\s,\-]/g, '');
+                    this.value = this.value.replace(/[^A-Za-z0-9s,-]/g, '');
                     const newLength = this.value.length;
                     if (newLength < originalLength) {
                         this.setSelectionRange(cursorPosition - (originalLength - newLength), cursorPosition - (originalLength - newLength));
@@ -661,24 +747,75 @@
             }
         });
 
-        // Initialize Toast UI Editors
-        const editorKor = new toastui.Editor({
-            el: document.querySelector('#editor-kor'),
-            height: '500px',
-            initialEditType: 'wysiwyg',
-            previewStyle: 'vertical',
-            placeholder: '한국어 본문을 입력하세요...',
-            language: 'ko-KR'
+        // Create Toolbar Buttons
+        function createToolbar(editor, toolbarId) {
+            const toolbar = document.getElementById(toolbarId);
+            
+            const buttons = [
+                { label: 'Bold', command: () => editor.chain().focus().toggleBold().run(), isActive: 'bold' },
+                { label: 'Italic', command: () => editor.chain().focus().toggleItalic().run(), isActive: 'italic' },
+                { label: 'Strike', command: () => editor.chain().focus().toggleStrike().run(), isActive: 'strike' },
+                { label: 'H1', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: 'heading' },
+                { label: 'H2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: 'heading' },
+                { label: 'H3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: 'heading' },
+                { label: 'Bullet', command: () => editor.chain().focus().toggleBulletList().run(), isActive: 'bulletList' },
+                { label: 'Ordered', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: 'orderedList' },
+                { label: 'Quote', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: 'blockquote' },
+                { label: 'Code', command: () => editor.chain().focus().toggleCode().run(), isActive: 'code' },
+                { label: 'Code Block', command: () => editor.chain().focus().toggleCodeBlock().run(), isActive: 'codeBlock' },
+                { label: 'HR', command: () => editor.chain().focus().setHorizontalRule().run(), isActive: null },
+                { label: 'Undo', command: () => editor.chain().focus().undo().run(), isActive: null },
+                { label: 'Redo', command: () => editor.chain().focus().redo().run(), isActive: null },
+            ];
+
+            buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.textContent = btn.label;
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    btn.command();
+                });
+                
+                if (btn.isActive) {
+                    editor.on('selectionUpdate', () => {
+                        if (editor.isActive(btn.isActive)) {
+                            button.classList.add('is-active');
+                        } else {
+                            button.classList.remove('is-active');
+                        }
+                    });
+                }
+                
+                toolbar.appendChild(button);
+            });
+        }
+
+        // Initialize TipTap Editors
+        const editorKor = new Editor({
+            element: document.querySelector('#editor-kor'),
+            extensions: [StarterKit],
+            content: '<p>한국어 본문을 입력하세요...</p>',
+            editorProps: {
+                attributes: {
+                    class: 'tiptap-content'
+                }
+            }
         });
 
-        const editorEn = new toastui.Editor({
-            el: document.querySelector('#editor-en'),
-            height: '500px',
-            initialEditType: 'wysiwyg',
-            previewStyle: 'vertical',
-            placeholder: 'Enter English content...',
-            language: 'en-US'
+        const editorEn = new Editor({
+            element: document.querySelector('#editor-en'),
+            extensions: [StarterKit],
+            content: '<p>Enter English content...</p>',
+            editorProps: {
+                attributes: {
+                    class: 'tiptap-content'
+                }
+            }
         });
+
+        // Create toolbars
+        createToolbar(editorKor, 'toolbar-kor');
+        createToolbar(editorEn, 'toolbar-en');
 
         // Reset Button
         document.getElementById('reset-btn').addEventListener('click', function() {
@@ -780,7 +917,7 @@
         document.getElementById('translate-content-btn').addEventListener('click', async function() {
             const contentKor = editorKor.getHTML();
             const statusEl = document.getElementById('translate-content-status');
-            if (!contentKor || contentKor === '<p><br></p>' || contentKor === '<p></p>') {
+            if (!contentKor || contentKor === '<p></p>' || contentKor === '<p><br></p>') {
                 alert('한국어 본문을 먼저 작성해주세요.');
                 return;
             }
@@ -788,10 +925,10 @@
             statusEl.textContent = '번역 중... (본문이 길면 시간이 걸릴 수 있습니다)';
             try {
                 const translatedText = await translateHTML(contentKor);
-                const paragraphs = translatedText.split('\n').filter(p => p.trim());
+                const paragraphs = translatedText.split('
+').filter(p => p.trim());
                 let htmlContent = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
-                editorEn.reset();
-                editorEn.setHTML(htmlContent);
+                editorEn.commands.setContent(htmlContent);
                 statusEl.textContent = '✓ 본문 번역 완료';
                 setTimeout(() => statusEl.textContent = '', 5000);
             } catch (error) {
@@ -824,7 +961,7 @@
 
             const numbers = existingData
                 .map(item => {
-                    const match = item.id.match(/\d+$/);
+                    const match = item.id.match(/d+$/);
                     return match ? parseInt(match[0]) : 0;
                 })
                 .filter(num => !isNaN(num));
@@ -909,11 +1046,11 @@
             const contentKor = editorKor.getHTML();
             const contentEn = editorEn.getHTML();
 
-            if (!contentKor || contentKor === '<p><br></p>' || contentKor === '<p></p>') {
+            if (!contentKor || contentKor === '<p></p>' || contentKor === '<p><br></p>') {
                 alert('한국어 본문을 작성해주세요.');
                 return;
             }
-            if (!contentEn || contentEn === '<p><br></p>' || contentEn === '<p></p>') {
+            if (!contentEn || contentEn === '<p></p>' || contentEn === '<p><br></p>') {
                 alert('영어 본문을 작성해주세요.');
                 return;
             }
@@ -951,7 +1088,6 @@
             };
 
             if (userType === 'developer') {
-                // Developer mode: Download JSON files + Image
                 let categoryData = [...uploadedData[category], categoryEntry];
                 let articleData = [...uploadedData.article, articleEntry];
                 let pinnedData = { ...uploadedData.pinned };
@@ -976,17 +1112,33 @@
                 }
                 downloadImage(thumbnailFile, `${newId}.jpg`);
 
-                alert(`발행이 완료되었습니다!\n\nID: ${newId}\n이미지 경로: ${imagePath}\n\nJSON 파일들과 이미지가 다운로드되었습니다.`);
+                alert(`발행이 완료되었습니다!
+
+ID: ${newId}
+이미지 경로: ${imagePath}
+
+JSON 파일들과 이미지가 다운로드되었습니다.`);
 
             } else {
-                // General user mode: Create request text file + Image
-                let requestText = `article.json 에 추가 요청\n\n`;
+                let requestText = `article.json 에 추가 요청
+
+`;
                 requestText += JSON.stringify(articleEntry, null, 2);
-                requestText += `\n\n${category}.json 에 추가 요청\n\n`;
+                requestText += `
+
+${category}.json 에 추가 요청
+
+`;
                 requestText += JSON.stringify(categoryEntry, null, 2);
-                requestText += `\n\n이미지 업로드 요청\n\n`;
-                requestText += `파일명: ${newId}.jpg\n`;
-                requestText += `경로: ${imagePath}\n`;
+                requestText += `
+
+이미지 업로드 요청
+
+`;
+                requestText += `파일명: ${newId}.jpg
+`;
+                requestText += `경로: ${imagePath}
+`;
 
                 const isPinned = document.getElementById('is-pinned').checked;
                 if (isPinned) {
@@ -996,9 +1148,14 @@
                     if (document.getElementById('pinned-mustRead').checked) pinnedTypes.push('mustRead');
 
                     if (pinnedTypes.length > 0) {
-                        requestText += `\n\npinned.json 에 추가 요청\n\n`;
+                        requestText += `
+
+pinned.json 에 추가 요청
+
+`;
                         pinnedTypes.forEach(type => {
-                            requestText += `${type}: { "source": "${category}", "id": "${newId}" }\n`;
+                            requestText += `${type}: { "source": "${category}", "id": "${newId}" }
+`;
                         });
                     }
                 }
@@ -1006,18 +1163,43 @@
                 downloadText(`content_request_${newId}.txt`, requestText);
                 downloadImage(thumbnailFile, `${newId}.jpg`);
 
-                alert(`등록 요청이 완료되었습니다!\n\nID: ${newId}\n\n요청 파일(TXT)과 이미지가 다운로드되었습니다.\n개발자에게 전달해주세요.`);
+                alert(`등록 요청이 완료되었습니다!
+
+ID: ${newId}
+이미지 경로: ${imagePath}
+
+요청 파일(TXT)과 이미지가 다운로드되었습니다.`);
+            }
+
+            if (confirm('발행이 완료되었습니다. 폼을 초기화하시겠습니까?')) {
+                location.reload();
             }
         });
 
-        document.getElementById('newsletter-submit').addEventListener('click', () => {
-            const email = document.getElementById('newsletter-email').value;
-            if (email) {
-                alert('뉴스레터 신청이 완료되었습니다!');
-                document.getElementById('newsletter-email').value = '';
+        // Language Toggle
+        document.getElementById('lang-toggle').addEventListener('click', function() {
+            const langText = document.getElementById('lang-text');
+            if (langText.textContent === '한국어') {
+                langText.textContent = 'English';
+            } else {
+                langText.textContent = '한국어';
             }
+        });
+
+        // Newsletter Submit
+        document.getElementById('newsletter-submit')?.addEventListener('click', function() {
+            const email = document.getElementById('newsletter-email').value;
+            if (!email) {
+                alert('이메일을 입력해주세요.');
+                return;
+            }
+            if (!/^[^s@]+@[^s@]+.[^s@]+$/.test(email)) {
+                alert('올바른 이메일 형식이 아닙니다.');
+                return;
+            }
+            alert('뉴스레터 구독이 신청되었습니다!');
+            document.getElementById('newsletter-email').value = '';
         });
     </script>
-
 </body>
 </html>
