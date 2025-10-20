@@ -12,6 +12,7 @@
     <style>
         * {
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            word-break: keep-all; /* 한글 어절 단위 줄바꿈 */
         }
         .font-serif, .font-serif * {
             font-family: 'Noto Serif KR', Georgia, serif !important;
@@ -259,7 +260,7 @@
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm">제목 (English) *</label>
-                <div class="flex gap-2">
+                <div class="flex flex-col sm:flex-row gap-2">
                     <input type="text" id="title-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 text-sm" placeholder="Enter English title" required>
                     <button type="button" id="translate-title-btn" class="flex-shrink-0 px-4 py-2.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition font-medium text-sm whitespace-nowrap">🌐 한국어에서 가져오기</button>
                 </div>
@@ -275,7 +276,7 @@
             </div>
             <div>
                 <label class="block font-semibold mb-2 text-sm">설명 (English) *</label>
-                <div class="flex gap-2">
+                <div class="flex flex-col sm:flex-row gap-2">
                     <input type="text" id="desc-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 text-sm" placeholder="Enter English description" required>
                     <button type="button" id="translate-desc-btn" class="flex-shrink-0 px-4 py-2.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition font-medium text-sm whitespace-nowrap">🌐 한국어에서 가져오기</button>
                 </div>
@@ -335,9 +336,9 @@
 
         <!-- Content Editor (English) -->
         <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-            <div class="flex justify-between items-center mb-2">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
                 <label class="block font-semibold text-sm">본문 내용 (English) *</label>
-                <button type="button" id="translate-content-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition font-medium text-sm">🌐 한국어 본문에서 가져오기</button>
+                <button type="button" id="translate-content-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition font-medium text-sm whitespace-nowrap">🌐 한국어 본문에서 가져오기</button>
             </div>
             <div id="translate-content-status" class="text-xs text-gray-600 mb-2 min-h-[16px]"></div>
             <div class="border border-gray-200 rounded-lg overflow-hidden bg-white">
@@ -405,7 +406,7 @@
     import { Markdown } from 'https://esm.sh/tiptap-markdown@0.8.10'
 
     const IMGBB_API_KEY = '4a0d69744fa47d8de59028ec369b7abc';
-    const MAX_IMAGE_WIDTH = 500; // 최대 이미지 폭 500px로 변경
+    const MAX_IMAGE_WIDTH = 500;
 
     let uploadedData = {
         fashion: [], beauty: [], life: [], districts: [], article: [],
@@ -692,7 +693,6 @@
                 if (files.length === 0) return;
 
                 try {
-                    // 슬라이더 기능 제거: 모든 이미지를 개별적으로 추가
                     for (const file of files) {
                         const resizedBlob = await resizeImage(file, MAX_IMAGE_WIDTH);
                         const base64 = await blobToBase64(resizedBlob);
