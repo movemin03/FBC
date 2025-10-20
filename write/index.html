@@ -114,7 +114,7 @@
         }
 
         .ProseMirror img {
-            max-width: 700px;
+            max-width: 500px;
             height: auto;
             border-radius: 4px;
             margin: 1em 0;
@@ -152,22 +152,6 @@
             color: #9ca3af;
             pointer-events: none;
             height: 0;
-        }
-
-        .ProseMirror .image-slider-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 1em auto;
-            padding: 10px;
-            background: #f9fafb;
-            border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            max-width: fit-content;
-        }
-
-        .ProseMirror .image-slider-container img {
-            margin: 0;
         }
     </style>
 </head>
@@ -421,6 +405,7 @@
     import { Markdown } from 'https://esm.sh/tiptap-markdown@0.8.10'
 
     const IMGBB_API_KEY = '4a0d69744fa47d8de59028ec369b7abc';
+    const MAX_IMAGE_WIDTH = 500; // 최대 이미지 폭 500px로 변경
 
     let uploadedData = {
         fashion: [], beauty: [], life: [], districts: [], article: [],
@@ -453,7 +438,7 @@
     };
 
     // Utility Functions
-    const resizeImage = (file, maxWidth = 700) => new Promise((resolve, reject) => {
+    const resizeImage = (file, maxWidth = MAX_IMAGE_WIDTH) => new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = document.createElement('img');
@@ -547,69 +532,6 @@
         reader.onerror = reject;
         reader.readAsDataURL(blob);
     });
-
-    const convertToSliderHTML = (html) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const sliderContainers = doc.querySelectorAll('.image-slider-container[data-slider="true"]');
-
-        sliderContainers.forEach((container, index) => {
-            const images = container.querySelectorAll('img');
-            if (images.length > 1) {
-                const sliderId = `slider-${Date.now()}-${index}`;
-                let sliderHTML = `
-                        <div class="image-slider" id="${sliderId}" style="max-width: 700px; margin: 20px auto; position: relative;">
-                            <div class="slider-container" style="position: relative; overflow: hidden; border-radius: 8px; border: 2px solid #e5e7eb;">
-                                <div class="slider-images" style="display: flex; transition: transform 0.3s ease;" data-current="0">`;
-
-                images.forEach((img) => {
-                    sliderHTML += `<img src="${img.src}" style="width: 700px; height: auto; flex-shrink: 0; display: block;" />`;
-                });
-
-                sliderHTML += `</div>
-                                <button class="slider-btn prev" onclick="slideImage('${sliderId}', -1)" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; z-index: 10; font-size: 24px; display: flex; align-items: center; justify-content: center;">‹</button>
-                                <button class="slider-btn next" onclick="slideImage('${sliderId}', 1)" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; z-index: 10; font-size: 24px; display: flex; align-items: center; justify-content: center;">›</button>
-                            </div>
-                            <div class="slider-dots" style="display: flex; justify-content: center; gap: 8px; margin-top: 10px;">`;
-
-                for (let i = 0; i < images.length; i++) {
-                    sliderHTML += `<span class="slider-dot" onclick="slideTo('${sliderId}', ${i})" style="width: 10px; height: 10px; border-radius: 50%; background: ${i === 0 ? '#3b82f6' : '#d1d5db'}; cursor: pointer;"></span>`;
-                }
-
-                sliderHTML += `</div></div>`;
-                container.outerHTML = sliderHTML;
-            }
-        });
-
-        return doc.body.innerHTML;
-    };
-
-    const getSliderScript = () => `
-<script>
-function slideImage(sliderId, direction) {
-    const slider = document.getElementById(sliderId);
-    if (!slider) return;
-    const container = slider.querySelector('.slider-images');
-    const images = container.querySelectorAll('img');
-    const dots = slider.querySelectorAll('.slider-dot');
-    let current = parseInt(container.getAttribute('data-current') || '0');
-    current += direction;
-    if (current < 0) current = images.length - 1;
-    if (current >= images.length) current = 0;
-    container.style.transform = \`translateX(-\${current * 700}px)\`;
-    container.setAttribute('data-current', current);
-    dots.forEach((dot, i) => { dot.style.background = i === current ? '#3b82f6' : '#d1d5db'; });
-}
-function slideTo(sliderId, index) {
-    const slider = document.getElementById(sliderId);
-    if (!slider) return;
-    const container = slider.querySelector('.slider-images');
-    const dots = slider.querySelectorAll('.slider-dot');
-    container.style.transform = \`translateX(-\${index * 700}px)\`;
-    container.setAttribute('data-current', index);
-    dots.forEach((dot, i) => { dot.style.background = i === index ? '#3b82f6' : '#d1d5db'; });
-}
-<\/script>`;
 
     window.setUserType = (type) => {
         userType = type;
@@ -770,23 +692,15 @@ function slideTo(sliderId, index) {
                 if (files.length === 0) return;
 
                 try {
-                    if (files.length === 1) {
-                        const resizedBlob = await resizeImage(files[0], 700);
+                    // 슬라이더 기능 제거: 모든 이미지를 개별적으로 추가
+                    for (const file of files) {
+                        const resizedBlob = await resizeImage(file, MAX_IMAGE_WIDTH);
                         const base64 = await blobToBase64(resizedBlob);
                         editor.chain().focus().setImage({ src: base64 }).run();
-                    } else {
-                        const imagePromises = files.map(file => resizeImage(file, 700));
-                        const resizedBlobs = await Promise.all(imagePromises);
+                    }
 
-                        let imagesHTML = '<div class="image-slider-container" data-slider="true">';
-                        for (const blob of resizedBlobs) {
-                            const base64 = await blobToBase64(blob);
-                            imagesHTML += `<img src="${base64}" style="max-width: 700px; height: auto; display: inline-block; margin: 5px;" />`;
-                        }
-                        imagesHTML += '</div>';
-
-                        editor.chain().focus().insertContent(imagesHTML).run();
-                        alert(`${files.length}개의 이미지가 추가되었습니다. 발행 후 슬라이더로 표시됩니다.`);
+                    if (files.length > 1) {
+                        alert(`${files.length}개의 이미지가 추가되었습니다.`);
                     }
                 } catch (error) {
                     console.error('Image processing error:', error);
@@ -1066,7 +980,7 @@ function slideTo(sliderId, index) {
             const newId = generateNextId(category);
 
             updateUploadProgress(5, '썸네일 업로드 중...', '');
-            const thumbnailResized = await resizeImage(thumbnailFile, 700);
+            const thumbnailResized = await resizeImage(thumbnailFile, MAX_IMAGE_WIDTH);
             const thumbnailUrl = await uploadToImgBB(thumbnailResized, newId);
 
             const imagesKor = extractBase64Images(contentKor);
@@ -1095,8 +1009,6 @@ function slideTo(sliderId, index) {
 
             contentKor = replaceBase64WithUrls(contentKor, imageMap);
             contentEn = replaceBase64WithUrls(contentEn, imageMap);
-            contentKor = convertToSliderHTML(contentKor) + getSliderScript();
-            contentEn = convertToSliderHTML(contentEn) + getSliderScript();
 
             updateUploadProgress(90, 'ZIP 파일 생성 중...', '거의 완료되었습니다...');
 
@@ -1138,7 +1050,7 @@ function slideTo(sliderId, index) {
                 zip.file(`pinned.json`, JSON.stringify(pinnedData, null, 2));
             }
 
-            zip.file('upload_info.txt', `이미지 업로드 정보\n================\n\n썸네일: ${thumbnailUrl}\n본문 이미지 개수: ${allImages.length}\n\n모든 이미지는 ImgBB에 JPG 포맷(700px, 품질 90%)으로 업로드되었습니다.\n`);
+            zip.file('upload_info.txt', `이미지 업로드 정보\n================\n\n썸네일: ${thumbnailUrl}\n본문 이미지 개수: ${allImages.length}\n\n모든 이미지는 ImgBB에 JPG 포맷(${MAX_IMAGE_WIDTH}px, 품질 90%)으로 업로드되었습니다.\n`);
 
             updateUploadProgress(95, 'ZIP 다운로드 준비 중...', '');
             const content = await zip.generateAsync({ type: 'blob' });
