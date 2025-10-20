@@ -10,746 +10,537 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-        }
-        .font-serif, .font-serif * {
-            font-family: 'Noto Serif KR', Georgia, serif !important;
-        }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            color: #1a1a1a;
-            line-height: 1.6;
+        * { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        .font-serif, .font-serif * { font-family: 'Noto Serif KR', Georgia, serif !important; }
+
+        .article-content p { @apply mb-6 leading-relaxed; }
+        .article-content h2 { @apply text-2xl md:text-3xl font-bold mt-10 md:mt-12 mb-4 md:mb-6; }
+        .article-content h3 { @apply text-xl md:text-2xl font-bold mt-8 md:mt-10 mb-3 md:mb-5; }
+        .article-content img { @apply w-full h-auto my-6 md:my-8 rounded; }
+        .article-content strong { @apply font-bold; }
+        .article-content em { @apply italic; }
+        .article-content a { @apply text-blue-600 underline hover:text-blue-800; }
+        .article-content ul, .article-content ol { @apply ml-6 mb-6; }
+        .article-content ul { @apply list-disc; }
+        .article-content ol { @apply list-decimal; }
+        .article-content li { @apply mb-2; }
+        .article-content blockquote { @apply border-l-4 border-gray-300 pl-4 my-6 italic text-gray-700; }
+
+        /* Swiper Card Carousel Styles (3+ images) - Left Aligned */
+        .image-carousel-container {
+            @apply max-w-full my-8 md:my-12 overflow-hidden;
         }
 
-        .header-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-        }
-        .header-left {
-            justify-self: start;
-        }
-        .header-center {
-            justify-self: center;
-        }
-        .header-right {
-            justify-self: end;
+        .image-carousel {
+            @apply relative;
         }
 
-        /* Article Styles */
-        .article-header {
-            max-width: 800px;
-            margin: 60px auto 40px;
-            padding: 0 20px;
+        .image-carousel .swiper-slide {
+            @apply bg-white rounded-xl shadow-lg overflow-hidden;
+            width: 320px;
+            height: 400px;
         }
 
-        .category-link {
-            color: #666;
-            text-transform: uppercase;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 16px;
+        .image-carousel .swiper-slide img {
+            @apply w-full h-full object-cover m-0;
+            pointer-events: none; /* Prevent image drag */
+            user-select: none; /* Prevent selection */
+            -webkit-user-drag: none; /* Prevent drag on webkit */
         }
 
-        .category-link:hover {
-            color: #000;
+        /* Hide navigation buttons and pagination */
+        .image-carousel .swiper-button-next,
+        .image-carousel .swiper-button-prev,
+        .image-carousel .swiper-pagination {
+            display: none !important;
         }
 
-        .article-title {
-            font-size: 42px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 24px;
+        /* Stacked Images Style (2 images or less) */
+        .image-stack {
+            @apply max-w-3xl mx-auto my-8 md:my-12 space-y-4 md:space-y-6;
         }
 
-        .article-meta {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .article-author {
-            font-weight: 600;
-            color: #000;
-        }
-
-        .share-buttons {
-            display: flex;
-            gap: 12px;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .share-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f5f5f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-        }
-
-        .share-btn:hover {
-            background: #000;
-            color: #fff;
-        }
-
-        .article-content {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
-            font-size: 18px;
-            line-height: 1.8;
-        }
-
-        .article-content p {
-            margin-bottom: 24px;
-        }
-
-        .article-content h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 48px 0 24px;
-        }
-
-        .article-content img {
-            width: 100%;
-            height: auto;
-            margin: 32px 0;
-        }
-
-        .article-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 40px auto;
-            padding: 0 20px;
-            max-width: 800px;
-        }
-
-        .tag {
-            padding: 8px 16px;
-            background: #f5f5f5;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #666;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .tag:hover {
-            background: #000;
-            color: #fff;
-        }
-
-        .related-section {
-            max-width: 800px;
-            margin: 60px auto;
-            padding: 0 20px;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            border-bottom: 2px solid #000;
-            display: inline-block;
-            padding-bottom: 8px;
-            margin-bottom: 24px;
-        }
-
-        .article-card {
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .article-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .article-card-image {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            margin-bottom: 12px;
-        }
-
-        .article-card-category {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .article-card-title {
-            font-size: 16px;
-            font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 8px;
-        }
-
-        .article-card-date {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .sidebar {
-            position: sticky;
-            top: 100px;
-        }
-
-        .sidebar-section {
-            margin-bottom: 40px;
-        }
-
-        .sidebar-section h3 {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #000;
-        }
-
-        .sidebar-item {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .sidebar-item:hover .sidebar-item-title {
-            text-decoration: underline;
-        }
-
-        .sidebar-item-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .sidebar-item-title {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.4;
-        }
-
-        .sidebar-item-date {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
-        }
-
-        html {
-            scroll-behavior: smooth;
+        .image-stack img {
+            @apply w-full h-auto rounded-xl shadow-lg m-0;
         }
 
         @media (max-width: 768px) {
-            .article-title {
-                font-size: 32px;
-            }
-
-            .article-content {
-                font-size: 16px;
+            .image-carousel .swiper-slide {
+                width: 260px;
+                height: 340px;
             }
         }
+
+        html { scroll-behavior: smooth; }
     </style>
 </head>
-<body>
-    <!-- Header -->
-    <header class="bg-white border-b sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="header-container py-3 border-b">
-                <div class="header-left flex items-center space-x-4 text-xs">
-                    <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
-                        <span id="lang-text">English</span>
+<body class="bg-gray-50">
+<!-- Header -->
+<header class="bg-white border-b sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-3 items-center py-3 border-b">
+            <button id="lang-toggle" class="px-2 md:px-3 py-1 text-xs border border-gray-300 hover:bg-gray-100 transition justify-self-start">
+                <span id="lang-text">English</span>
+            </button>
+            <a href="../index.html" class="hover:opacity-80 transition text-center">
+                <h1 class="text-2xl md:text-3xl font-serif font-bold tracking-wider">FBC</h1>
+            </a>
+            <a href="#newsletter-section" class="text-xs hover:text-gray-600 justify-self-end">SUBSCRIBE</a>
+        </div>
+        <nav class="py-3 md:py-4">
+            <ul class="flex items-center justify-center space-x-4 md:space-x-8 text-xs md:text-sm font-medium">
+                <li><a href="../fashion/index.html" class="hover:text-gray-600 transition">FASHION</a></li>
+                <li><a href="../beauty/index.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
+                <li><a href="../life/index.html" class="hover:text-gray-600 transition">LIFE</a></li>
+                <li><a href="../districts/index.html" class="hover:text-gray-600 transition">DISTRICTS</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+    <div class="grid md:grid-cols-12 gap-6 md:gap-8">
+        <!-- Article Content -->
+        <article class="md:col-span-8">
+            <div class="max-w-3xl mx-auto mb-8 md:mb-10">
+                <a href="#" id="article-category" class="text-gray-600 uppercase text-xs font-semibold tracking-wider hover:text-black transition inline-block mb-3 md:mb-4">CATEGORY</a>
+                <h1 id="article-title" class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold leading-tight mb-4 md:mb-6 break-keep"></h1>
+                <div class="flex flex-wrap gap-2 md:gap-4 items-center text-xs md:text-sm text-gray-600 mb-4 md:mb-5">
+                    <span id="article-author" class="font-semibold text-black"></span>
+                    <span>|</span>
+                    <span id="article-date"></span>
+                </div>
+                <div class="flex gap-2 md:gap-3 pb-4 md:pb-5 border-b border-gray-200">
+                    <button id="copy-link" title="링크 복사" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" class="md:w-[18px] md:h-[18px]"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                    <button id="share-btn" title="공유하기" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" class="md:w-[18px] md:h-[18px]"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                     </button>
                 </div>
-                <div class="header-center">
-                    <a href="../index.html" class="hover:opacity-80 transition">
-                        <h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1>
-                    </a>
+            </div>
+
+            <div id="article-content" class="article-content max-w-3xl mx-auto text-base md:text-lg leading-relaxed text-gray-800"></div>
+            <div id="article-tags" class="flex flex-wrap gap-2 mt-8 md:mt-10 max-w-3xl mx-auto"></div>
+
+            <!-- Related Articles -->
+            <section class="mt-12 md:mt-16 max-w-3xl mx-auto">
+                <h2 class="text-xs md:text-sm font-bold tracking-widest uppercase border-b-2 border-black inline-block pb-2 mb-4 md:mb-6">Related Articles</h2>
+                <div id="related-articles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+            </section>
+
+            <!-- Latest Articles -->
+            <section class="mt-12 md:mt-16 max-w-3xl mx-auto">
+                <h2 class="text-xs md:text-sm font-bold tracking-widest uppercase border-b-2 border-black inline-block pb-2 mb-4 md:mb-6">Latest Articles</h2>
+                <div id="latest-articles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+            </section>
+        </article>
+
+        <!-- Sidebar -->
+        <aside class="md:col-span-4">
+            <div class="sticky top-24 space-y-8 md:space-y-10">
+                <div>
+                    <h3 class="text-xs md:text-sm font-bold tracking-widest uppercase mb-3 md:mb-4 pb-2 border-b-2 border-black">Popular Articles</h3>
+                    <div id="popular-articles"></div>
                 </div>
-                <div class="header-right flex items-center space-x-4 text-xs">
-                    <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
+                <div>
+                    <h3 class="text-xs md:text-sm font-bold tracking-widest uppercase mb-3 md:mb-4 pb-2 border-b-2 border-black">Must Read</h3>
+                    <div id="must-read-articles"></div>
                 </div>
             </div>
-            <nav class="py-4">
-                <ul class="flex items-center justify-center space-x-6 md:space-x-8 text-sm font-medium">
-                    <li><a href="../fashion/index.html" class="hover:text-gray-600 transition">FASHION</a></li>
-                    <li><a href="../beauty/index.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
-                    <li><a href="../life/index.html" class="hover:text-gray-600 transition">LIFE</a></li>
-                    <li><a href="../districts/index.html" class="hover:text-gray-600 transition relative">DISTRICTS</a></li>
+        </aside>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-black text-white py-10 md:py-12 mt-16 md:mt-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
+            <div>
+                <h3 class="font-serif text-xl md:text-2xl font-bold mb-3 md:mb-4">FBC</h3>
+                <p class="text-xs md:text-sm text-gray-400">Fashion, Beauty, Culture<br>with Cultural Translation</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-2 md:mb-3 text-xs md:text-sm">CATEGORIES</h4>
+                <ul class="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-400">
+                    <li><a href="../fashion/index.html" class="hover:text-white transition">Fashion</a></li>
+                    <li><a href="../beauty/index.html" class="hover:text-white transition">Beauty</a></li>
+                    <li><a href="../life/index.html" class="hover:text-white transition">Life & Culture</a></li>
+                    <li><a href="../districts/index.html" class="hover:text-white transition">Districts</a></li>
                 </ul>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-12">
-        <div class="grid md:grid-cols-12 gap-8">
-            <!-- Article Content (Left: 8 columns) -->
-            <article class="md:col-span-8">
-                <div class="article-header">
-                    <a href="#" class="category-link" id="article-category">CATEGORY</a>
-                    <h1 class="article-title font-serif" id="article-title"></h1>
-                    <div class="article-meta">
-                        <span class="article-author" id="article-author"></span>
-                        <span>|</span>
-                        <span id="article-date"></span>
-                    </div>
-                    <div class="share-buttons">
-                        <button class="share-btn" id="copy-link" title="링크 복사">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                            </svg>
-                        </button>
-                        <button class="share-btn" id="share-btn" title="공유하기">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="article-content" id="article-content">
-                    <!-- Content will be loaded here -->
-                </div>
-
-                <div class="article-tags" id="article-tags">
-                    <!-- Tags will be loaded here -->
-                </div>
-
-                <!-- Related Articles -->
-                <div class="related-section">
-                    <h2 class="section-title">Related Articles</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" id="related-articles">
-                        <!-- Related articles will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Latest Articles -->
-                <div class="related-section">
-                    <h2 class="section-title">Latest Articles</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" id="latest-articles">
-                        <!-- Latest articles will be loaded here -->
-                    </div>
-                </div>
-            </article>
-
-            <!-- Sidebar (Right: 4 columns) -->
-            <aside class="md:col-span-4">
-                <div class="sidebar">
-                    <!-- Popular Articles -->
-                    <div class="sidebar-section">
-                        <h3>Popular Articles</h3>
-                        <div id="popular-articles">
-                            <!-- Popular articles will be loaded here -->
-                        </div>
-                    </div>
-
-                    <!-- Must Read -->
-                    <div class="sidebar-section">
-                        <h3>Must Read</h3>
-                        <div id="must-read-articles">
-                            <!-- Must read articles will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-black text-white py-12">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <h3 class="font-serif text-2xl font-bold mb-4">FBC</h3>
-                    <p class="text-sm text-gray-400">Fashion, Beauty, Culture<br>with Cultural Translation</p>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3 text-sm">CATEGORIES</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="../fashion/index.html" class="hover:text-white">Fashion</a></li>
-                        <li><a href="../beauty/index.html" class="hover:text-white">Beauty</a></li>
-                        <li><a href="../life/index.html" class="hover:text-white">Life & Culture</a></li>
-                        <li><a href="../districts/index.html" class="hover:text-white">Districts</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3 text-sm">ABOUT</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="../about/index.html" class="hover:text-white">About FBC</a></li>
-                    </ul>
-                </div>
-                <div id="newsletter-section">
-                    <h4 class="font-bold mb-3 text-sm">NEWSLETTER</h4>
-                    <p class="text-sm text-gray-400 mb-3">Get weekly K-fashion insights</p>
-                    <div class="flex">
-                        <input type="email" id="newsletter-email" placeholder="Your email" class="px-3 py-2 bg-gray-800 text-sm flex-1 focus:outline-none">
-                        <button id="newsletter-submit" class="px-4 py-2 bg-white text-black text-sm font-medium">→</button>
-                    </div>
+            </div>
+            <div>
+                <h4 class="font-bold mb-2 md:mb-3 text-xs md:text-sm">ABOUT</h4>
+                <ul class="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-400">
+                    <li><a href="../about/index.html" class="hover:text-white transition">About FBC</a></li>
+                </ul>
+            </div>
+            <div id="newsletter-section">
+                <h4 class="font-bold mb-2 md:mb-3 text-xs md:text-sm">NEWSLETTER</h4>
+                <p class="text-xs md:text-sm text-gray-400 mb-2 md:mb-3">Get weekly K-fashion insights</p>
+                <div class="flex">
+                    <input type="email" id="newsletter-email" placeholder="Your email" class="px-2 md:px-3 py-1.5 md:py-2 bg-gray-800 text-xs md:text-sm flex-1 focus:outline-none">
+                    <button id="newsletter-submit" class="px-3 md:px-4 py-1.5 md:py-2 bg-white text-black text-xs md:text-sm font-medium hover:bg-gray-200 transition">→</button>
                 </div>
             </div>
-            <div class="border-t border-gray-800 pt-6 text-center text-xs text-gray-500">
-                © 2025 FBC Creators. All rights reserved.
-            </div>
         </div>
-    </footer>
+        <div class="border-t border-gray-800 pt-4 md:pt-6 text-center text-xs text-gray-500">© 2025 FBC Creators. All rights reserved.</div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    let currentArticle = null;
-    let allArticles = {};
-    let articleData = [];
-    let currentLang = 'en';
-    let relatedArticlesData = [];
-    let latestArticlesData = [];
-    let popularArticlesData = [];
-    let mustReadArticlesData = [];
+    const state = {
+        currentArticle: null,
+        allArticles: {},
+        articleData: [],
+        currentLang: localStorage.getItem('fbc_language') || (navigator.language?.toLowerCase().includes('ko') ? 'ko' : 'en'),
+        swiperInstances: []
+    };
 
-    // Initialize Language with localStorage
-    function initializeLanguage() {
-        const savedLang = localStorage.getItem('fbc_language');
-        if (savedLang) {
-            currentLang = savedLang;
-        } else {
-            const browserLang = navigator.language || navigator.userLanguage;
-            currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
-            localStorage.setItem('fbc_language', currentLang);
-        }
-        document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
-    }
+    const CATEGORY_MAP = { fs: 'fashion', by: 'beauty', lf: 'life', ds: 'districts' };
+    const $ = (id) => document.getElementById(id);
+    const getCategoryFromId = (id) => CATEGORY_MAP[id.substring(0, 2).toLowerCase()] || 'fashion';
 
-    // Get category from ID
-    function getCategoryFromId(id) {
-        const prefix = id.substring(0, 2).toLowerCase();
-        const categoryMap = {
-            'fs': 'fashion',
-            'by': 'beauty',
-            'lf': 'life',
-            'ds': 'districts'
-        };
-        return categoryMap[prefix] || 'fashion';
-    }
-
-    // Language toggle
-    document.getElementById('lang-toggle').addEventListener('click', function() {
-        currentLang = currentLang === 'en' ? 'ko' : 'en';
-        document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
-        localStorage.setItem('fbc_language', currentLang);
-        if (currentArticle) {
-            updateLanguage();
-        }
-    });
-
-    function updateLanguage() {
-        // Update article title
-        document.getElementById('article-title').textContent =
-            currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
-
-        // Update article content
-        const article = articleData.find(a => a.id === currentArticle.id);
-        if (article) {
-            const htmlContent = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
-            if (htmlContent) {
-                document.getElementById('article-content').innerHTML = htmlContent;
-            }
-        }
-
-        // Update related articles
-        renderArticleGrid('related-articles', relatedArticlesData);
-        renderArticleGrid('latest-articles', latestArticlesData);
-        renderSidebarItems('popular-articles', popularArticlesData);
-        renderSidebarItems('must-read-articles', mustReadArticlesData);
-    }
-
-    // Get article info from URL query parameters
-    function getArticleInfo() {
+    const getArticleInfo = () => {
         const params = new URLSearchParams(window.location.search);
         const category = params.get('category');
         const articleId = params.get('id');
+        return category && articleId ? { category, articleId } : null;
+    };
 
-        if (category && articleId) {
-            return { category, articleId };
+    // Fixed image URL path - relative to article folder
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return '';
+        // If already a full URL (ImgBB or external), return as-is
+        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+            return imagePath;
         }
-        return null;
-    }
+        // For local images starting with img/, prepend ../ to go up from article folder
+        if (imagePath.startsWith('img/')) {
+            return '../' + imagePath;
+        }
+        // If it doesn't start with img/, assume it's already relative
+        return imagePath;
+    };
 
-    // Load all data
-    async function loadData() {
+    // Handle image error with fallback
+    const handleImageError = (img) => {
+        const src = img.src;
+        // If WebP failed, try JPG
+        if (src.endsWith('.webp')) {
+            const fallback = src.replace('.webp', '.jpg');
+            img.onerror = () => {
+                // If JPG also fails, try PNG
+                const pngFallback = src.replace('.webp', '.png');
+                img.onerror = () => img.style.display = 'none';
+                img.src = pngFallback;
+            };
+            img.src = fallback;
+        } else {
+            img.style.display = 'none';
+        }
+    };
+
+    // Make handleImageError global for inline onerror
+    window.handleImageError = handleImageError;
+
+    // Convert consecutive images: 3+ = Swiper carousel, 2 or less = stacked
+    const convertConsecutiveImages = (html) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const body = doc.body;
+
+        const allNodes = Array.from(body.childNodes);
+        const groups = [];
+        let currentGroup = [];
+
+        // Group consecutive images
+        allNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'IMG') {
+                currentGroup.push(node);
+            } else if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+                // Skip empty text nodes between images
+            } else {
+                // Non-image, non-empty node
+                if (currentGroup.length >= 2) {
+                    groups.push([...currentGroup]);
+                }
+                currentGroup = [];
+            }
+        });
+
+        // Don't forget the last group
+        if (currentGroup.length >= 2) {
+            groups.push(currentGroup);
+        }
+
+        // Replace each group with appropriate layout
+        groups.forEach((group, idx) => {
+            const imageCount = group.length;
+
+            if (imageCount >= 3) {
+                // 3+ images: Use Swiper carousel (left-aligned, no buttons/pagination)
+                const carouselId = `carousel-${Date.now()}-${idx}`;
+                const carouselHTML = `
+                    <div class="image-carousel-container">
+                        <div class="swiper image-carousel" id="${carouselId}" data-count="${imageCount}">
+                            <div class="swiper-wrapper">
+                                ${group.map(img => `
+                                    <div class="swiper-slide">
+                                        <img src="${img.src}" alt="${img.alt || ''}" draggable="false" onerror="handleImageError(this)">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const temp = document.createElement('div');
+                temp.innerHTML = carouselHTML;
+                const carouselElement = temp.firstElementChild;
+
+                group[0].replaceWith(carouselElement);
+                group.slice(1).forEach(img => img.remove());
+            } else {
+                // 2 images: Use simple stacked layout
+                const stackHTML = `
+                    <div class="image-stack">
+                        ${group.map(img => `
+                            <img src="${img.src}" alt="${img.alt || ''}" onerror="handleImageError(this)">
+                        `).join('')}
+                    </div>
+                `;
+
+                const temp = document.createElement('div');
+                temp.innerHTML = stackHTML;
+                const stackElement = temp.firstElementChild;
+
+                group[0].replaceWith(stackElement);
+                group.slice(1).forEach(img => img.remove());
+            }
+        });
+
+        return body.innerHTML;
+    };
+
+    // Initialize Swiper carousels after content is inserted
+    const initializeCarousels = () => {
+        // Destroy previous instances
+        state.swiperInstances.forEach(swiper => swiper.destroy());
+        state.swiperInstances = [];
+
+        // Initialize new instances (only for 3+ images)
+        document.querySelectorAll('.image-carousel').forEach(carousel => {
+            const imageCount = parseInt(carousel.dataset.count || '0');
+
+            // Left-aligned, infinite loop, swipe/drag only
+            const swiper = new Swiper('#' + carousel.id, {
+                slidesPerView: 'auto',
+                spaceBetween: 16,
+                centeredSlides: false, // Left align
+                loop: true, // Infinite loop
+                freeMode: false, // Snap to slides
+                grabCursor: true, // Show grab cursor
+                // No navigation or pagination
+                navigation: false,
+                pagination: false,
+                breakpoints: {
+                    640: {
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        spaceBetween: 24,
+                    },
+                }
+            });
+            state.swiperInstances.push(swiper);
+        });
+    };
+
+    // Update content
+    const updateArticleContent = () => {
+        const { currentArticle, articleData, currentLang } = state;
+
+        $('article-title').textContent = currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
+
+        const article = articleData.find(a => a.id === currentArticle.id);
+        if (article) {
+            let html = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
+            if (html) {
+                // Fix image paths in HTML before processing
+                html = html.replace(/src="img\//g, 'src="../img/');
+                // Convert consecutive images (3+ = carousel, 2 = stack)
+                html = convertConsecutiveImages(html);
+                // Add error handling to all remaining images
+                html = html.replace(/<img/g, '<img onerror="handleImageError(this)"');
+                $('article-content').innerHTML = html;
+
+                // Initialize Swiper carousels after DOM update
+                setTimeout(initializeCarousels, 100);
+            } else {
+                $('article-content').innerHTML = '<p>콘텐츠를 불러올 수 없습니다.</p>';
+            }
+        }
+    };
+
+    // Render functions
+    const renderArticleGrid = (containerId, articles) => {
+        const container = $(containerId);
+        if (!articles?.length) {
+            container.innerHTML = `<p class="text-gray-500 text-sm">${state.currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No related articles.'}</p>`;
+            return;
+        }
+
+        container.innerHTML = articles.map(article => {
+            const category = getCategoryFromId(article.id);
+            const img = getImageUrl(article.image);
+            const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+
+            return `
+                <a href="index.html?category=${category}&id=${article.id}" class="group block">
+                    <div class="aspect-square overflow-hidden mb-2 md:mb-3 rounded">
+                        <img src="${img}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="handleImageError(this)">
+                    </div>
+                    <div class="text-xs text-gray-500 uppercase mb-1 md:mb-2">${article.category || ''}</div>
+                    <h3 class="font-semibold text-sm md:text-base leading-snug mb-1 md:mb-2 group-hover:underline break-words">${title}</h3>
+                    <div class="text-xs text-gray-400">${article.date || ''}</div>
+                </a>
+            `;
+        }).join('');
+    };
+
+    const renderSidebarItems = (containerId, articles) => {
+        const container = $(containerId);
+        if (!articles?.length) {
+            container.innerHTML = `<p class="text-gray-500 text-xs md:text-sm">${state.currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.'}</p>`;
+            return;
+        }
+
+        container.innerHTML = articles.map(article => {
+            const category = getCategoryFromId(article.id);
+            const img = getImageUrl(article.image);
+            const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+
+            return `
+                <a href="index.html?category=${category}&id=${article.id}" class="flex gap-2 md:gap-3 mb-4 md:mb-5 group">
+                    <img src="${img}" alt="${title}" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded" onerror="handleImageError(this)">
+                    <div>
+                        <div class="text-xs md:text-sm font-semibold leading-snug mb-1 group-hover:underline break-words">${title}</div>
+                        <div class="text-xs text-gray-400">${article.date || ''}</div>
+                    </div>
+                </a>
+            `;
+        }).join('');
+    };
+
+    // Load data
+    const loadData = async () => {
         try {
-            const [fashionRes, beautyRes, lifeRes, districtsRes, articleRes] = await Promise.all([
-                fetch('../data/fashion.json'),
-                fetch('../data/beauty.json'),
-                fetch('../data/life.json'),
-                fetch('../data/districts.json'),
-                fetch('../data/article.json')
+            const [fashion, beauty, life, districts, article] = await Promise.all([
+                fetch('../data/fashion.json').then(r => r.json()),
+                fetch('../data/beauty.json').then(r => r.json()),
+                fetch('../data/life.json').then(r => r.json()),
+                fetch('../data/districts.json').then(r => r.json()),
+                fetch('../data/article.json').then(r => r.json())
             ]);
 
-            const fashion = await fashionRes.json();
-            const beauty = await beautyRes.json();
-            const life = await lifeRes.json();
-            const districts = await districtsRes.json();
-            articleData = await articleRes.json();
+            state.allArticles = { fashion, beauty, life, districts };
+            state.articleData = article;
 
-            allArticles = {
-                fashion: fashion,
-                beauty: beauty,
-                life: life,
-                districts: districts
-            };
-
-            const articleInfo = getArticleInfo();
-            if (articleInfo) {
-                loadArticle(articleInfo.category, articleInfo.articleId);
-            } else {
-                window.location.href = '../index.html';
-            }
+            const info = getArticleInfo();
+            info ? loadArticle(info.category, info.articleId) : window.location.href = '../index.html';
         } catch (error) {
-            console.error('Error loading data:', error);
-            alert('데이터를 불러올 수 없습니다: ' + error.message);
+            console.error('Error:', error);
+            alert('데이터를 불러올 수 없습니다.');
         }
-    }
+    };
 
-    // Load article
-    function loadArticle(category, articleId) {
-        const categoryData = allArticles[category];
+    const loadArticle = async (category, articleId) => {
+        const categoryData = state.allArticles[category];
+        if (!categoryData) return window.location.href = '../index.html';
 
-        if (!categoryData) {
-            console.error('Category not found:', category);
-            window.location.href = '../index.html';
-            return;
-        }
+        state.currentArticle = categoryData.find(a => a.id === articleId);
+        if (!state.currentArticle) return window.location.href = '../index.html';
 
-        currentArticle = categoryData.find(article => article.id === articleId);
+        $('article-category').textContent = state.currentArticle.category;
+        $('article-category').href = `../${category}/index.html`;
+        $('article-author').textContent = state.currentArticle.author;
+        $('article-date').textContent = state.currentArticle.date;
+        document.title = `${state.currentArticle.title_kor} - FBC`;
 
-        if (!currentArticle) {
-            console.error('Article not found:', articleId);
-            window.location.href = '../index.html';
-            return;
-        }
+        updateArticleContent();
 
-        // article.json에서 콘텐츠 찾기
-        const article = articleData.find(a => a.id === articleId);
-
-        // Set article data
-        document.getElementById('article-category').textContent = currentArticle.category;
-        document.getElementById('article-category').href = `../${category}/index.html`;
-        document.getElementById('article-title').textContent =
-            currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
-        document.getElementById('article-author').textContent = currentArticle.author;
-        document.getElementById('article-date').textContent = currentArticle.date;
-
-        document.title = `${currentArticle.title_kor} - FBC Creators Magazine`;
-
-        // Set content
-        if (article) {
-            const htmlContent = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
-            if (htmlContent) {
-                document.getElementById('article-content').innerHTML = htmlContent;
-            } else {
-                document.getElementById('article-content').innerHTML =
-                    '<p>콘텐츠를 불러올 수 없습니다.</p>';
-            }
-        } else {
-            document.getElementById('article-content').innerHTML =
-                '<p>콘텐츠를 불러올 수 없습니다.</p>';
+        if (state.currentArticle.tags?.length) {
+            $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
+                `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
+            ).join('');
         }
 
-        // Set tags
-        const tagsContainer = document.getElementById('article-tags');
-        tagsContainer.innerHTML = '';
-        if (currentArticle.tags && currentArticle.tags.length > 0) {
-            currentArticle.tags.forEach(tag => {
-                const tagElement = document.createElement('a');
-                tagElement.href = `#tag-${tag}`;
-                tagElement.className = 'tag';
-                tagElement.textContent = `#${tag}`;
-                tagsContainer.appendChild(tagElement);
-            });
-        }
+        const allArticles = Object.values(state.allArticles).flat();
 
-        // Load related content
-        loadRelatedArticles(category);
-        loadLatestArticles();
-        loadPopularArticles(category);
-        loadMustReadArticles();
-    }
+        const related = allArticles.filter(a =>
+            a.id !== articleId && a.tags?.some(t => state.currentArticle.tags?.includes(t))
+        ).slice(0, 3);
 
-    // Load related articles (태그 기반)
-    function loadRelatedArticles(category) {
-        const allCategoryArticles = Object.values(allArticles).flat();
-        relatedArticlesData = allCategoryArticles
-            .filter(article =>
-                article.id !== currentArticle.id &&
-                article.tags && currentArticle.tags &&
-                article.tags.some(tag => currentArticle.tags.includes(tag))
-            )
-            .slice(0, 3);
+        const latest = allArticles.filter(a => a.id !== articleId)
+            .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
 
-        renderArticleGrid('related-articles', relatedArticlesData);
-    }
+        const popular = categoryData.filter(a => a.id !== articleId)
+            .sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
 
-    // Load latest articles
-    function loadLatestArticles() {
-        const allCategoryArticles = Object.values(allArticles).flat();
-        latestArticlesData = allCategoryArticles
-            .filter(article => article.id !== currentArticle.id)
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 3);
-
-        renderArticleGrid('latest-articles', latestArticlesData);
-    }
-
-    // Load popular articles (같은 카테고리 views 기반)
-    function loadPopularArticles(category) {
-        const categoryData = allArticles[category];
-        if (!categoryData) return;
-
-        popularArticlesData = categoryData
-            .filter(article => article.id !== currentArticle.id)
-            .sort((a, b) => (b.views || 0) - (a.views || 0))
-            .slice(0, 5);
-
-        renderSidebarItems('popular-articles', popularArticlesData);
-    }
-
-    // Load must read articles
-    async function loadMustReadArticles() {
         try {
-            const pinnedRes = await fetch('../data/pinned.json');
-            const pinned = await pinnedRes.json();
-
-            const allCategoryArticles = Object.values(allArticles).flat();
-            mustReadArticlesData = pinned.mustRead
-                .map(item => allCategoryArticles.find(article => article.id === item.id))
-                .filter(Boolean)
-                .filter(article => article.id !== currentArticle.id)
-                .slice(0, 5);
-
-            renderSidebarItems('must-read-articles', mustReadArticlesData);
-        } catch (error) {
-            console.error('Error loading must read:', error);
-        }
-    }
-
-    // Render article grid
-    function renderArticleGrid(containerId, articles) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        if (!articles || articles.length === 0) {
-            const noArticlesText = currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No related articles.';
-            container.innerHTML = `<p class="text-gray-500">${noArticlesText}</p>`;
-            return;
+            const pinned = await fetch('../data/pinned.json').then(r => r.json());
+            const mustRead = pinned.mustRead?.map(item => allArticles.find(a => a.id === item.id))
+                .filter(Boolean).filter(a => a.id !== articleId).slice(0, 5) || [];
+            renderSidebarItems('must-read-articles', mustRead);
+        } catch (e) {
+            console.error('Must read error:', e);
         }
 
-        articles.forEach(article => {
-            const category = getCategoryFromId(article.id);
+        renderArticleGrid('related-articles', related);
+        renderArticleGrid('latest-articles', latest);
+        renderSidebarItems('popular-articles', popular);
+    };
 
-            const card = document.createElement('a');
-            card.href = `index.html?category=${category}&id=${article.id}`;
-            card.className = 'article-card';
-            card.innerHTML = `
-                <img src="../${article.image}" alt="${article.title_kor || ''}" class="article-card-image" onerror="this.style.display='none'">
-                <div class="article-card-category">${article.category || ''}</div>
-                <h3 class="article-card-title">${currentLang === 'ko' ? (article.title_kor || '') : (article.title_en || '')}</h3>
-                <div class="article-card-date">${article.date || ''}</div>
-            `;
-            container.appendChild(card);
-        });
-    }
+    // Event handlers
+    $('lang-toggle').onclick = () => {
+        state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
+        $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+        localStorage.setItem('fbc_language', state.currentLang);
+        updateArticleContent();
+        loadArticle(getCategoryFromId(state.currentArticle.id), state.currentArticle.id);
+    };
 
-    // Render sidebar items
-    function renderSidebarItems(containerId, articles) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
+    $('copy-link').onclick = async () => {
+        await navigator.clipboard.writeText(location.href);
+        alert(state.currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
+    };
 
-        container.innerHTML = '';
-
-        if (!articles || articles.length === 0) {
-            const noArticlesText = currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.';
-            container.innerHTML = `<p class="text-gray-500 text-sm">${noArticlesText}</p>`;
-            return;
-        }
-
-        articles.forEach(article => {
-            const category = getCategoryFromId(article.id);
-
-            const item = document.createElement('a');
-            item.href = `index.html?category=${category}&id=${article.id}`;
-            item.className = 'sidebar-item';
-            item.innerHTML = `
-                <img src="../${article.image}" alt="${article.title_kor || ''}" class="sidebar-item-image" onerror="this.style.display='none'">
-                <div>
-                    <div class="sidebar-item-title">${currentLang === 'ko' ? (article.title_kor || '') : (article.title_en || '')}</div>
-                    <div class="sidebar-item-date">${article.date || ''}</div>
-                </div>
-            `;
-            container.appendChild(item);
-        });
-    }
-
-    // Share functionality
-    document.getElementById('copy-link').addEventListener('click', () => {
-        navigator.clipboard.writeText(window.location.href);
-        const message = currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!';
-        alert(message);
-    });
-
-    document.getElementById('share-btn').addEventListener('click', () => {
-        if (navigator.share && currentArticle) {
+    $('share-btn').onclick = () => {
+        if (navigator.share) {
             navigator.share({
-                title: currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en,
-                url: window.location.href
+                title: state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en,
+                url: location.href
             });
         } else {
-            const message = currentLang === 'ko' ? '이 브라우저는 공유 기능을 지원하지 않습니다.' : 'Share is not supported in this browser.';
-            alert(message);
+            alert(state.currentLang === 'ko' ? '공유 기능을 지원하지 않습니다.' : 'Share not supported.');
         }
-    });
+    };
 
-    // Newsletter
-    document.getElementById('newsletter-submit').addEventListener('click', () => {
-        const email = document.getElementById('newsletter-email').value;
+    $('newsletter-submit').onclick = () => {
+        const email = $('newsletter-email').value;
         if (email) {
-            const message = currentLang === 'ko' ? '뉴스레터 신청이 완료되었습니다!' : 'Thank you for subscribing!';
-            alert(message);
-            document.getElementById('newsletter-email').value = '';
+            alert(state.currentLang === 'ko' ? '뉴스레터 신청 완료!' : 'Thank you!');
+            $('newsletter-email').value = '';
         }
-    });
-
-    // Smooth scroll to newsletter section
-    document.querySelector('a[href="#newsletter-section"]').addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('newsletter-section').scrollIntoView({ behavior: 'smooth' });
-    });
+    };
 
     // Initialize
-    initializeLanguage();
+    $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+    localStorage.setItem('fbc_language', state.currentLang);
     loadData();
 </script>
-
-
 </body>
 </html>

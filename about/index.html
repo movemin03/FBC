@@ -16,23 +16,31 @@
         .font-serif, .font-serif * {
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
+
+        /* Skeleton Loading */
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
         }
-        
-        .header-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
+
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+            background-size: 800px 104px;
         }
-        .header-left {
-            justify-self: start;
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
         }
-        .header-center {
-            justify-self: center;
+
+        .image-container img {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
-        .header-right {
-            justify-self: end;
+
+        .image-container img.loaded {
+            opacity: 1;
         }
 
         html {
@@ -44,44 +52,15 @@
             height: 300px;
         }
 
+        .swiper-slide {
+            position: relative;
+            overflow: hidden;
+        }
+
         .swiper-slide img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        #main-title {
-            word-break: keep-all;  /* 단어 중간에서 줄바꿈 방지 */
-            overflow-wrap: break-word;  /* 긴 단어는 공백에서 줄바꿈 */
-        }
-
-
-        .mission-section {
-            background: #f9fafb;
-            padding: 80px 0;
-            margin: 60px 0;
-        }
-
-        .mission-card {
-            background: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .mission-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        }
-
-        .team-member {
-            text-align: center;
-            padding: 24px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .team-member:hover {
-            border-color: #000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -90,18 +69,18 @@
 <!-- Header -->
 <header class="bg-white border-b sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="header-container py-3 border-b">
-            <div class="header-left flex items-center space-x-4 text-xs">
+        <div class="grid grid-cols-3 items-center py-3 border-b">
+            <div class="flex items-center space-x-4 text-xs">
                 <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
                     <span id="lang-text">English</span>
                 </button>
             </div>
-            <div class="header-center">
+            <div class="justify-self-center">
                 <a href="../index.html" class="hover:opacity-80 transition">
                     <h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1>
                 </a>
             </div>
-            <div class="header-right flex items-center space-x-4 text-xs">
+            <div class="justify-self-end flex items-center space-x-4 text-xs">
                 <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
             </div>
         </div>
@@ -117,27 +96,23 @@
 </header>
 
 <!-- Main Content -->
-<main class="pt-20 pb-0">
-    <div class="container max-w-6xl mx-auto px-4">
-        
+<main class="pt-12 md:pt-20 pb-0">
+    <div class="max-w-6xl mx-auto px-4">
+
         <!-- Title Section -->
-        <div class="text-center mb-10">
-            <h2 class="text-4xl font-serif font-bold mb-4" id="main-title"></h2>
+        <div class="text-center mb-8 md:mb-10">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold break-words" id="main-title"></h2>
         </div>
 
         <!-- Intro Section -->
         <div class="max-w-4xl mx-auto">
-            <div id="intro-content" class="space-y-6 text-lg leading-relaxed">
-                <!-- Intro paragraphs will be loaded here -->
-            </div>
+            <div id="intro-content" class="space-y-6 text-base md:text-lg leading-relaxed"></div>
         </div>
 
         <!-- Slider Section -->
-        <div class="mt-16 mb-8">
+        <div class="mt-12 md:mt-16 mb-8">
             <div class="swiper aboutSwiper">
-                <div class="swiper-wrapper" id="slider-content">
-                    <!-- Slides will be loaded here -->
-                </div>
+                <div class="swiper-wrapper" id="slider-content"></div>
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
             </div>
@@ -146,22 +121,18 @@
     </div>
 
     <!-- Mission Section (Full Width with Background) -->
-    <section class="mission-section">
-        <div class="container max-w-6xl mx-auto px-4">
-            <h3 class="text-3xl font-serif font-bold text-center mb-12" id="mission-title"></h3>
-            <div class="grid md:grid-cols-3 gap-8" id="missions-content">
-                <!-- Mission cards will be loaded here -->
-            </div>
+    <section class="bg-gray-50 py-16 md:py-20 my-12 md:my-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <h3 class="text-2xl md:text-3xl font-serif font-bold text-center mb-8 md:mb-12" id="mission-title"></h3>
+            <div class="grid md:grid-cols-3 gap-6 md:gap-8" id="missions-content"></div>
         </div>
     </section>
 
-    <div class="container max-w-6xl mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4">
         <!-- Team Section -->
-        <div class="mt-20 mb-16">
-            <h3 class="text-3xl font-serif font-bold text-center mb-12" id="team-title"></h3>
-            <div class="grid md:grid-cols-3 gap-8" id="team-content">
-                <!-- Team members will be loaded here -->
-            </div>
+        <div class="mt-16 md:mt-20 mb-12 md:mb-16">
+            <h3 class="text-2xl md:text-3xl font-serif font-bold text-center mb-8 md:mb-12" id="team-title"></h3>
+            <div class="grid md:grid-cols-3 gap-6 md:gap-8" id="team-content"></div>
         </div>
     </div>
 </main>
@@ -177,16 +148,16 @@
             <div>
                 <h4 class="font-bold mb-3 text-sm">CATEGORIES</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="../fashion/index.html" class="hover:text-white">Fashion</a></li>
-                    <li><a href="../beauty/index.html" class="hover:text-white">Beauty</a></li>
-                    <li><a href="../life/index.html" class="hover:text-white">Life & Culture</a></li>
-                    <li><a href="../districts/index.html" class="hover:text-white">Districts</a></li>
+                    <li><a href="../fashion/index.html" class="hover:text-white transition">Fashion</a></li>
+                    <li><a href="../beauty/index.html" class="hover:text-white transition">Beauty</a></li>
+                    <li><a href="../life/index.html" class="hover:text-white transition">Life & Culture</a></li>
+                    <li><a href="../districts/index.html" class="hover:text-white transition">Districts</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-3 text-sm">ABOUT</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="../about/index.html" class="hover:text-white">About FBC</a></li>
+                    <li><a href="../about/index.html" class="hover:text-white transition">About FBC</a></li>
                 </ul>
             </div>
             <div id="newsletter-section">
@@ -194,7 +165,7 @@
                 <p class="text-sm text-gray-400 mb-3">Get weekly K-fashion insights</p>
                 <div class="flex">
                     <input type="email" id="newsletter-email" placeholder="Your email" class="px-3 py-2 bg-gray-800 text-sm flex-1 focus:outline-none">
-                    <button id="newsletter-submit" class="px-4 py-2 bg-white text-black text-sm font-medium">→</button>
+                    <button id="newsletter-submit" class="px-4 py-2 bg-white text-black text-sm font-medium hover:bg-gray-200 transition">→</button>
                 </div>
             </div>
         </div>
@@ -206,146 +177,168 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-// Language State with localStorage
-let currentLang = 'en';
-let aboutData = null;
+    (function() {
+        'use strict';
 
-// Initialize Language
-function initializeLanguage() {
-    const savedLang = localStorage.getItem('fbc_language');
-    if (savedLang) {
-        currentLang = savedLang;
-    } else {
-        const browserLang = navigator.language || navigator.userLanguage;
-        currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
-        localStorage.setItem('fbc_language', currentLang);
-    }
-    document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
-}
+        // State Management
+        const state = {
+            currentLang: 'en',
+            aboutData: null,
+            swiperInstance: null
+        };
 
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
-    initializeLanguage();
-    await loadData();
-    setupLanguageToggle();
-    renderContent();
-    initializeSwiper();
-});
+        const $ = (id) => document.getElementById(id);
 
-// Load Data
-async function loadData() {
-    try {
-        const response = await fetch('../data/about.json');
-        aboutData = await response.json();
-    } catch (error) {
-        console.error('Error loading about data:', error);
-    }
-}
+        // Image Loading with Skeleton
+        const createImageWithSkeleton = (src, alt) => {
+            return `
+            <div class="image-container w-full h-full">
+                <div class="skeleton w-full h-full absolute inset-0"></div>
+                <img src="${src}"
+                     alt="${alt}"
+                     class="w-full h-full object-cover"
+                     loading="lazy"
+                     onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
+                     onerror="this.classList.add('loaded'); this.previousElementSibling?.remove(); this.style.display='none';">
+            </div>
+        `;
+        };
 
-// Setup Language Toggle
-function setupLanguageToggle() {
-    const langToggle = document.getElementById('lang-toggle');
-    const langText = document.getElementById('lang-text');
+        // Initialize Language (Session → System)
+        function initializeLanguage() {
+            const savedLang = sessionStorage.getItem('fbc_language');
+            if (savedLang) {
+                state.currentLang = savedLang;
+            } else {
+                const browserLang = navigator.language || navigator.userLanguage;
+                state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+                sessionStorage.setItem('fbc_language', state.currentLang);
+            }
+            $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+        }
 
-    langToggle.addEventListener('click', () => {
-        currentLang = currentLang === 'en' ? 'ko' : 'en';
-        langText.textContent = currentLang === 'en' ? 'English' : '한국어';
-        localStorage.setItem('fbc_language', currentLang);
-        renderContent();
-    });
-}
+        // Load Data
+        async function loadData() {
+            try {
+                const response = await fetch('../data/about.json');
+                state.aboutData = await response.json();
+            } catch (error) {
+                console.error('Error loading about data:', error);
+                alert('데이터를 불러올 수 없습니다.');
+            }
+        }
 
-// Render Content
-function renderContent() {
-    if (!aboutData) return;
+        // Setup Language Toggle
+        function setupLanguageToggle() {
+            $('lang-toggle').addEventListener('click', () => {
+                state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
+                $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+                sessionStorage.setItem('fbc_language', state.currentLang);
+                renderContent();
+            });
+        }
 
-    // Main title
-    document.getElementById('main-title').textContent =
-        currentLang === 'ko' ? aboutData.title_ko : aboutData.title_en;
+        // Render Content
+        function renderContent() {
+            if (!state.aboutData) return;
 
-    // Intro paragraphs
-    const introContent = document.getElementById('intro-content');
-    const introParagraphs = currentLang === 'ko' ? aboutData.intro_ko : aboutData.intro_en;
-    introContent.innerHTML = introParagraphs.map(p => `<p>${p}</p>`).join('');
+            const { currentLang, aboutData } = state;
 
-    // Mission title
-    document.getElementById('mission-title').textContent =
-        currentLang === 'ko' ? aboutData.mission_title_ko : aboutData.mission_title_en;
+            // Main title
+            $('main-title').textContent = currentLang === 'ko' ? aboutData.title_ko : aboutData.title_en;
 
-    // Missions
-    const missionsContent = document.getElementById('missions-content');
-    missionsContent.innerHTML = aboutData.missions.map(mission => `
-        <div class="mission-card p-8 border border-gray-200 rounded-lg">
-            <h4 class="text-xl font-bold mb-4">${currentLang === 'ko' ? mission.title_ko : mission.title_en}</h4>
-            <p class="text-gray-600 leading-relaxed">${currentLang === 'ko' ? mission.desc_ko : mission.desc_en}</p>
-        </div>
-    `).join('');
+            // Intro paragraphs
+            const introParagraphs = currentLang === 'ko' ? aboutData.intro_ko : aboutData.intro_en;
+            $('intro-content').innerHTML = introParagraphs.map(p => `<p>${p}</p>`).join('');
 
-    // Team title
-    document.getElementById('team-title').textContent =
-        currentLang === 'ko' ? aboutData.team_title_ko : aboutData.team_title_en;
+            // Mission title
+            $('mission-title').textContent = currentLang === 'ko' ? aboutData.mission_title_ko : aboutData.mission_title_en;
 
-    // Team members (이메일 추가됨)
-    const teamContent = document.getElementById('team-content');
-    teamContent.innerHTML = aboutData.team_members.map(member => `
-        <div class="team-member">
-            <h4 class="text-xl font-bold mb-2">${currentLang === 'ko' ? member.name_ko : member.name_en}</h4>
-            <p class="text-gray-600 mb-1">${currentLang === 'ko' ? member.role_ko : member.role_en}</p>
-            <p class="text-sm text-gray-500 mb-2">${currentLang === 'ko' ? member.major_ko : member.major_en}</p>
-            <a href="mailto:${member.email}" class="text-sm text-blue-600 hover:underline">${member.email}</a>
-        </div>
-    `).join('');
-}
+            // Missions
+            $('missions-content').innerHTML = aboutData.missions.map(mission => `
+            <div class="bg-white p-6 md:p-8 border border-gray-200 rounded-lg hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+                <h4 class="text-lg md:text-xl font-bold mb-3 md:mb-4">${currentLang === 'ko' ? mission.title_ko : mission.title_en}</h4>
+                <p class="text-sm md:text-base text-gray-600 leading-relaxed">${currentLang === 'ko' ? mission.desc_ko : mission.desc_en}</p>
+            </div>
+        `).join('');
 
+            // Team title
+            $('team-title').textContent = currentLang === 'ko' ? aboutData.team_title_ko : aboutData.team_title_en;
 
-// Initialize Swiper
-function initializeSwiper() {
-    if (!aboutData) return;
-    
-    // Render slides
-    const sliderContent = document.getElementById('slider-content');
-    sliderContent.innerHTML = aboutData.slides.map(slide => `
+            // Team members
+            $('team-content').innerHTML = aboutData.team_members.map(member => `
+            <div class="text-center p-6 border border-gray-200 rounded-lg hover:border-black hover:shadow-lg transition-all duration-300">
+                <h4 class="text-lg md:text-xl font-bold mb-2">${currentLang === 'ko' ? member.name_ko : member.name_en}</h4>
+                <p class="text-sm md:text-base text-gray-600 mb-1">${currentLang === 'ko' ? member.role_ko : member.role_en}</p>
+                <p class="text-xs md:text-sm text-gray-500 mb-2">${currentLang === 'ko' ? member.major_ko : member.major_en}</p>
+                <a href="mailto:${member.email}" class="text-xs md:text-sm text-blue-600 hover:underline transition">${member.email}</a>
+            </div>
+        `).join('');
+        }
+
+        // Initialize Swiper
+        function initializeSwiper() {
+            if (!state.aboutData) return;
+
+            // Render slides with skeleton loading (URL이 이미 완전한 경로인 경우 그대로 사용)
+            $('slider-content').innerHTML = state.aboutData.slides.map(slide => `
         <div class="swiper-slide">
-            <img src="../${slide}" alt="FBC Magazine">
+            ${createImageWithSkeleton(slide, 'FBC Magazine')}
         </div>
     `).join('');
-    
-    // Initialize Swiper
-    new Swiper('.aboutSwiper', {
-        slidesPerView: 1,
-        spaceBetween: 10,
-        loop: true,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        breakpoints: {
-            640: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-            },
-            1024: {
-                slidesPerView: 3,
-                spaceBetween: 30,
-            },
-        },
-    });
-}
 
-// Newsletter Subscription
-document.getElementById('newsletter-submit').addEventListener('click', () => {
-    const email = document.getElementById('newsletter-email').value;
-    if (email && email.includes('@')) {
-        alert(currentLang === 'en' 
-            ? 'Thank you for subscribing!' 
-            : '구독해 주셔서 감사합니다!');
-        document.getElementById('newsletter-email').value = '';
-    } else {
-        alert(currentLang === 'en' 
-            ? 'Please enter a valid email address.' 
-            : '유효한 이메일 주소를 입력해주세요.');
-    }
-});
+            // Destroy previous instance
+            if (state.swiperInstance) {
+                state.swiperInstance.destroy(true, true);
+            }
+
+            // Initialize Swiper
+            state.swiperInstance = new Swiper('.aboutSwiper', {
+                slidesPerView: 1,
+                spaceBetween: 10,
+                loop: true,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+        }
+
+        // Newsletter Subscription
+        function setupNewsletter() {
+            $('newsletter-submit').addEventListener('click', () => {
+                const email = $('newsletter-email').value;
+                if (email && email.includes('@')) {
+                    alert(state.currentLang === 'en' ? 'Thank you for subscribing!' : '구독해 주셔서 감사합니다!');
+                    $('newsletter-email').value = '';
+                } else {
+                    alert(state.currentLang === 'en' ? 'Please enter a valid email address.' : '유효한 이메일 주소를 입력해주세요.');
+                }
+            });
+        }
+
+        // Initialize
+        async function init() {
+            initializeLanguage();
+            await loadData();
+            setupLanguageToggle();
+            setupNewsletter();
+            renderContent();
+            initializeSwiper();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    })();
 </script>
 
 </body>

@@ -25,6 +25,7 @@
             min-height: 70vh;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
         .hero-slide {
             position: absolute;
@@ -151,7 +152,6 @@
             border-radius: 2px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-
         .cultural-badge {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -399,6 +399,13 @@
         function loadSessionPreferences() {
             const storedAutoSelect = sessionStorage.getItem('autoSelectEnabled');
             const storedDistrict = sessionStorage.getItem('currentDistrict');
+            const storedLang = sessionStorage.getItem('currentLang');
+
+            // 세션에 저장된 언어 설정이 있으면 우선 사용
+            if (storedLang !== null) {
+                currentLang = storedLang;
+                document.getElementById('lang-text').textContent = currentLang === 'kor' ? '한국어' : 'English';
+            }
 
             if (storedAutoSelect !== null) {
                 autoSelectEnabled = storedAutoSelect === 'true';
@@ -413,6 +420,7 @@
         function saveSessionPreferences() {
             sessionStorage.setItem('autoSelectEnabled', autoSelectEnabled);
             sessionStorage.setItem('currentDistrict', currentDistrict);
+            sessionStorage.setItem('currentLang', currentLang);
         }
 
         // Load All Data
@@ -454,8 +462,13 @@
 
         // Initialize Page
         function initializePage() {
-            detectSystemLanguage();
+            // 세션 데이터를 먼저 로드하고, 없으면 시스템 언어 감지
             loadSessionPreferences();
+
+            // 세션에 언어 설정이 없는 경우에만 시스템 언어 감지
+            if (sessionStorage.getItem('currentLang') === null) {
+                detectSystemLanguage();
+            }
 
             initializeHeroSlides();
             startHeroRotation();
@@ -525,6 +538,18 @@
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
             });
+
+            // Hero 클릭 이벤트 추가
+            heroSection.addEventListener('click', (e) => {
+                // indicator나 다른 요소 클릭 시 제외
+                if (e.target.classList.contains('hero-indicator')) {
+                    return;
+                }
+
+                const hero = heroSlides[currentHeroIndex];
+                const category = getCategoryFromId(hero.id);
+                window.location.href = `article/index.html?category=${category}&id=${hero.id}`;
+            });
         }
 
         // Handle Swipe
@@ -565,7 +590,8 @@
                 <div class="hero-slide ${index === 0 ? 'active' : ''}"
                     style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')` : 'none'}"
                     data-index="${index}"
-                    data-image="${hero.image}">
+                    data-image="${hero.image}"
+                    data-id="${hero.id}">
                 </div>
             `).join('');
 
@@ -575,7 +601,8 @@
             `).join('');
 
             document.querySelectorAll('.hero-indicator').forEach(indicator => {
-                indicator.addEventListener('click', () => {
+                indicator.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Hero 클릭 이벤트와 분리
                     const index = parseInt(indicator.getAttribute('data-index'));
                     clearInterval(heroInterval);
                     goToSlide(index);
@@ -1004,6 +1031,9 @@
                 currentLang = 'kor';
                 document.getElementById('lang-text').textContent = '한국어';
             }
+
+            // 언어 설정을 세션에 저장
+            saveSessionPreferences();
 
             renderHero();
             renderLocationSection();

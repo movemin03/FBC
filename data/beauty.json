@@ -7,7 +7,7 @@
     "desc_kor": "피부 본연의 빛을 살리는 메이크업",
     "desc_en": "Makeup that highlights skin's natural glow",
     "category": "Beauty Trend",
-    "image": "img/beauty/by00001.jpg",
+    "image": "https://i.ibb.co/GfRrHfSv/by00001.webp",
     "tags": [
       "makeup",
       "glow",
@@ -16,7 +16,9 @@
     "cultural_badge": null,
     "date": "2025-10-09",
     "author": "Lee Ji-hye",
-    "views": 4664
+    "views": 4664,
+    "image_display_url": "https://i.ibb.co/zWZt6Wvh/by00001.webp",
+    "image_delete_url": "https://ibb.co/Y4hV04s7/f9e4356efa6de9399eee278c14275550"
   },
   {
     "id": "by00002",
@@ -26,7 +28,7 @@
     "desc_kor": "인더스트리얼 공간에서 만나는 네일 아트",
     "desc_en": "Nail art meets industrial space",
     "category": "Beauty Spot",
-    "image": "img/beauty/by00002.jpg",
+    "image": "https://i.ibb.co/JR3ZNcDR/by00002.webp",
     "tags": [
       "nail",
       "salon",
@@ -35,7 +37,9 @@
     "cultural_badge": null,
     "date": "2025-10-08",
     "author": "Park Soo-jin",
-    "views": 66190
+    "views": 66190,
+    "image_display_url": "https://i.ibb.co/LzNKM0Vz/by00002.webp",
+    "image_delete_url": "https://ibb.co/jvJtd8nv/c61b21ba29e05601192dc8d13555c316"
   },
   {
     "id": "by00003",
@@ -45,7 +49,7 @@
     "desc_kor": "계절 변화에 맞는 피부 관리",
     "desc_en": "Skin care for seasonal changes",
     "category": "Beauty Item",
-    "image": "img/beauty/by00003.jpg",
+    "image": "https://i.ibb.co/zd6Q04q/by00003.webp",
     "tags": [
       "skincare",
       "fall",
@@ -54,7 +58,9 @@
     "cultural_badge": null,
     "date": "2025-10-07",
     "author": "Choi Min-ah",
-    "views": 1287
+    "views": 1287,
+    "image_display_url": "https://i.ibb.co/05smdGH/by00003.webp",
+    "image_delete_url": "https://ibb.co/r9dF1wD/af0f2f9a269cfd185307496e2442f4e8"
   },
   {
     "id": "by00004",
@@ -64,7 +70,7 @@
     "desc_kor": "심플함 속에 담긴 세련미",
     "desc_en": "Sophistication in simplicity",
     "category": "Beauty Trend",
-    "image": "img/beauty/by00004.jpg",
+    "image": "https://i.ibb.co/8nHFYDTS/by00004.webp",
     "tags": [
       "hair",
       "minimal",
@@ -73,7 +79,9 @@
     "cultural_badge": null,
     "date": "2025-10-06",
     "author": "Jung Hye-won",
-    "views": 4174
+    "views": 4174,
+    "image_display_url": "https://i.ibb.co/V0sXwWrP/by00004.webp",
+    "image_delete_url": "https://ibb.co/vCS2XxgK/8bac44e5974f3de5e029381c8f828b47"
   },
   {
     "id": "by00005",
@@ -83,7 +91,7 @@
     "desc_kor": "한국식 뷰티의 문화적 배경",
     "desc_en": "Cultural background of Korean beauty",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00005.jpg",
+    "image": "https://i.ibb.co/bj2Tyrg9/by00005.webp",
     "tags": [
       "k-beauty",
       "routine",
@@ -92,7 +100,9 @@
     "cultural_badge": "Cultural Translation",
     "date": "2025-10-05",
     "author": "Kim Yu-na",
-    "views": 9535
+    "views": 9535,
+    "image_display_url": "https://i.ibb.co/nqn9VDsJ/by00005.webp",
+    "image_delete_url": "https://ibb.co/LDJmqCz7/9f87a16ce91d6f84e21301a415eef599"
   },
   {
     "id": "by00006",
@@ -102,7 +112,7 @@
     "desc_kor": "따뜻한 톤의 가을 메이크업",
     "desc_en": "Warm-toned fall makeup",
     "category": "Beauty Trend",
-    "image": "img/beauty/by00006.jpg",
+    "image": "https://i.ibb.co/fYW3QYBp/by00006.webp",
     "tags": [
       "makeup",
       "fall",
@@ -111,7 +121,9 @@
     "cultural_badge": null,
     "date": "2025-10-04",
     "author": "Lee Seo-yeon",
-    "views": 63925
+    "views": 63925,
+    "image_display_url": "https://i.ibb.co/pvTHnvGz/by00006.webp",
+    "image_delete_url": "https://ibb.co/LzyTvzbt/64eb2ff4b514737a6bca8d7c887095d6"
   },
   {
     "id": "by00007",
@@ -121,7 +133,7 @@
     "desc_kor": "외국인 관광객이 가장 많이 찾는 제품",
     "desc_en": "Most sought products by foreign tourists",
     "category": "Beauty Item",
-    "image": "img/beauty/by00007.jpg",
+    "image": "https://i.ibb.co/23vLGw4w/by00007.webp",
     "tags": [
       "olive young",
       "bestseller",
@@ -130,7 +142,9 @@
     "cultural_badge": "Cultural Translation",
     "date": "2025-10-03",
     "author": "Kim Hyun-joo",
-    "views": 78080
+    "views": 78080,
+    "image_display_url": "https://i.ibb.co/whSb5TmT/by00007.webp",
+    "image_delete_url": "https://ibb.co/F45fR9T9/9dfef4cef2be14bdeddee05bc894538b"
   },
   {
     "id": "by00008",
@@ -140,7 +154,7 @@
     "desc_kor": "건조한 계절을 위한 필수템",
     "desc_en": "Essential for dry season",
     "category": "Beauty Item",
-    "image": "img/beauty/by00008.jpg",
+    "image": "https://i.ibb.co/WpKwgTDF/by00008.webp",
     "tags": [
       "moisturizer",
       "cream",
@@ -149,7 +163,9 @@
     "cultural_badge": null,
     "date": "2025-10-02",
     "author": "Park Min-ji",
-    "views": 6106
+    "views": 6106,
+    "image_display_url": "https://i.ibb.co/QjmRr58n/by00008.webp",
+    "image_delete_url": "https://ibb.co/PzCnwST4/f72a67e388ef689897432df7c7232a52"
   },
   {
     "id": "by00009",
@@ -159,7 +175,7 @@
     "desc_kor": "눈매를 살리는 테크닉",
     "desc_en": "Techniques to enhance your eyes",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00009.jpg",
+    "image": "https://i.ibb.co/PvTBNJ7m/by00009.webp",
     "tags": [
       "eyeliner",
       "makeup",
@@ -168,7 +184,9 @@
     "cultural_badge": null,
     "date": "2025-10-01",
     "author": "Choi Jung-woo",
-    "views": 36133
+    "views": 36133,
+    "image_display_url": "https://i.ibb.co/tTZy4n7m/by00009.webp",
+    "image_delete_url": "https://ibb.co/rRbnmqC7/2f993fabbe458a4bccf2febec5d9f401"
   },
   {
     "id": "by00010",
@@ -178,7 +196,7 @@
     "desc_kor": "도심 속 힐링 공간",
     "desc_en": "Healing space in the city",
     "category": "Beauty Spot",
-    "image": "img/beauty/by00010.jpg",
+    "image": "https://i.ibb.co/YFBJ7bhM/by00010.webp",
     "tags": [
       "spa",
       "wellness",
@@ -187,7 +205,9 @@
     "cultural_badge": null,
     "date": "2025-09-30",
     "author": "Lee Min-ho",
-    "views": 97658
+    "views": 97658,
+    "image_display_url": "https://i.ibb.co/nNM4sRjv/by00010.webp",
+    "image_delete_url": "https://ibb.co/xtqwS360/0eb8f07917c34c56521afe6257efade4"
   },
   {
     "id": "by00011",
@@ -197,7 +217,7 @@
     "desc_kor": "365일 필수 스킨케어",
     "desc_en": "Essential skincare for 365 days",
     "category": "Beauty Item",
-    "image": "img/beauty/by00011.jpg",
+    "image": "https://i.ibb.co/C3YGyYDf/by00011.webp",
     "tags": [
       "sunscreen",
       "skincare",
@@ -206,7 +226,9 @@
     "cultural_badge": null,
     "date": "2025-09-29",
     "author": "Kim So-young",
-    "views": 52635
+    "views": 52635,
+    "image_display_url": "https://i.ibb.co/FLyT1yCF/by00011.webp",
+    "image_delete_url": "https://ibb.co/fzywWyLs/8816a1b65660643ea570e17307289a22"
   },
   {
     "id": "by00012",
@@ -216,7 +238,7 @@
     "desc_kor": "나에게 맞는 립 제품 찾기",
     "desc_en": "Finding the right lip product for you",
     "category": "Beauty Item",
-    "image": "img/beauty/by00012.jpg",
+    "image": "https://i.ibb.co/3yJJVC8Z/by00012.webp",
     "tags": [
       "lipstick",
       "tint",
@@ -225,7 +247,9 @@
     "cultural_badge": null,
     "date": "2025-09-28",
     "author": "Jung Da-eun",
-    "views": 76792
+    "views": 76792,
+    "image_display_url": "https://i.ibb.co/pvmmNLsF/by00012.webp",
+    "image_delete_url": "https://ibb.co/DDqqmR62/c3d03eae810a5c5ae64ced78d07fc670"
   },
   {
     "id": "by00013",
@@ -235,7 +259,7 @@
     "desc_kor": "세계가 사랑하는 한국 화장품",
     "desc_en": "Korean cosmetics loved by the world",
     "category": "Beauty News",
-    "image": "img/beauty/by00013.jpg",
+    "image": "https://i.ibb.co/j9KTsvCk/by00013.webp",
     "tags": [
       "k-beauty",
       "export",
@@ -244,7 +268,9 @@
     "cultural_badge": "Cultural Translation",
     "date": "2025-09-27",
     "author": "Park Ji-won",
-    "views": 869
+    "views": 869,
+    "image_display_url": "https://i.ibb.co/7xcXLJ3t/by00013.webp",
+    "image_delete_url": "https://ibb.co/wZHRjNnh/0065b22278cf62b250bc2dc94dc585cd"
   },
   {
     "id": "by00014",
@@ -254,7 +280,7 @@
     "desc_kor": "깨끗한 피부를 위한 필수 케어",
     "desc_en": "Essential care for clean skin",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00014.jpg",
+    "image": "https://i.ibb.co/nNnkjdBG/by00014.webp",
     "tags": [
       "pore",
       "skincare",
@@ -263,7 +289,9 @@
     "cultural_badge": null,
     "date": "2025-09-26",
     "author": "Lee Ji-hye",
-    "views": 99227
+    "views": 99227,
+    "image_display_url": "https://i.ibb.co/v6QzkyhF/by00014.webp",
+    "image_delete_url": "https://ibb.co/NdmYKDrv/4a1ebb98d854177bd26652a005da3648"
   },
   {
     "id": "by00015",
@@ -273,7 +301,7 @@
     "desc_kor": "효과를 극대화하는 팁",
     "desc_en": "Tips to maximize effectiveness",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00015.jpg",
+    "image": "https://i.ibb.co/V08rzJKr/by00015.webp",
     "tags": [
       "sheet mask",
       "skincare",
@@ -282,7 +310,9 @@
     "cultural_badge": null,
     "date": "2025-09-25",
     "author": "Choi Hye-jin",
-    "views": 18681
+    "views": 18681,
+    "image_display_url": "https://i.ibb.co/RGWZsY5Z/by00015.webp",
+    "image_delete_url": "https://ibb.co/j9FBQbpB/8180863b08e8c89df952917e1ee7be22"
   },
   {
     "id": "by00016",
@@ -292,7 +322,7 @@
     "desc_kor": "젊은 감성의 네일 디자인",
     "desc_en": "Youthful nail designs",
     "category": "Beauty Trend",
-    "image": "img/beauty/by00016.jpg",
+    "image": "https://i.ibb.co/1Y3QT5fw/by00016.webp",
     "tags": [
       "nail art",
       "hongdae",
@@ -301,7 +331,9 @@
     "cultural_badge": null,
     "date": "2025-09-24",
     "author": "Kim Yu-na",
-    "views": 36602
+    "views": 36602,
+    "image_display_url": "https://i.ibb.co/xKyL60SR/by00016.webp",
+    "image_delete_url": "https://ibb.co/PsRjgnZf/2ff656338b57f8176195a537c2b17fe5"
   },
   {
     "id": "by00017",
@@ -311,7 +343,7 @@
     "desc_kor": "시간대별 최적화된 관리법",
     "desc_en": "Optimized care by time of day",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00017.jpg",
+    "image": "https://i.ibb.co/0RtT0c0W/by00017.webp",
     "tags": [
       "routine",
       "skincare",
@@ -320,7 +352,9 @@
     "cultural_badge": null,
     "date": "2025-09-23",
     "author": "Lee Seo-yeon",
-    "views": 97194
+    "views": 97194,
+    "image_display_url": "https://i.ibb.co/KpwdtXtQ/by00017.webp",
+    "image_delete_url": "https://ibb.co/q35KHdH4/9077149a79b37241710f0d1b81fbbf3b"
   },
   {
     "id": "by00018",
@@ -330,7 +364,7 @@
     "desc_kor": "베이스 메이크업의 선택",
     "desc_en": "Choosing base makeup",
     "category": "Beauty Item",
-    "image": "img/beauty/by00018.jpg",
+    "image": "https://i.ibb.co/cSfbtFwX/by00018.webp",
     "tags": [
       "bb cream",
       "cc cream",
@@ -339,7 +373,9 @@
     "cultural_badge": null,
     "date": "2025-09-22",
     "author": "Park Soo-jin",
-    "views": 26780
+    "views": 26780,
+    "image_display_url": "https://i.ibb.co/HfwNYzCp/by00018.webp",
+    "image_delete_url": "https://ibb.co/YFnD8kXT/3a21797e00dad0864d30674b98abbc62"
   },
   {
     "id": "by00019",
@@ -349,7 +385,7 @@
     "desc_kor": "얼굴형에 맞는 눈썹 그리기",
     "desc_en": "Drawing eyebrows for face shape",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00019.jpg",
+    "image": "https://i.ibb.co/WpcqCy1S/by00019.webp",
     "tags": [
       "eyebrow",
       "makeup",
@@ -358,7 +394,9 @@
     "cultural_badge": null,
     "date": "2025-09-21",
     "author": "Jung Hye-won",
-    "views": 22604
+    "views": 22604,
+    "image_display_url": "https://i.ibb.co/7NG8hWF7/by00019.webp",
+    "image_delete_url": "https://ibb.co/k6hkZ8FY/f86173fb059d9eb6ccd960c3ed883835"
   },
   {
     "id": "by00020",
@@ -368,7 +406,7 @@
     "desc_kor": "K-뷰티 쇼핑의 성지",
     "desc_en": "Sacred place of K-beauty shopping",
     "category": "Beauty Spot",
-    "image": "img/beauty/by00020.jpg",
+    "image": "https://i.ibb.co/WNqVp1JF/by00020.webp",
     "tags": [
       "myeongdong",
       "shopping",
@@ -377,7 +415,9 @@
     "cultural_badge": "Cultural Translation",
     "date": "2025-09-20",
     "author": "Kim Hyun-joo",
-    "views": 91520
+    "views": 91520,
+    "image_display_url": "https://i.ibb.co/rKTdfJrM/by00020.webp",
+    "image_delete_url": "https://ibb.co/CpNPsFGv/fd0ded274533e99dc27a163a754d418f"
   },
   {
     "id": "by00021",
@@ -387,7 +427,7 @@
     "desc_kor": "스킨케어 제품의 올바른 이해",
     "desc_en": "Proper understanding of skincare products",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00021.jpg",
+    "image": "https://i.ibb.co/xStrncbB/by00021.webp",
     "tags": [
       "essence",
       "serum",
@@ -396,7 +436,9 @@
     "cultural_badge": null,
     "date": "2025-09-19",
     "author": "Park Min-ji",
-    "views": 55962
+    "views": 55962,
+    "image_display_url": "https://i.ibb.co/ccSsWp9Z/by00021.webp",
+    "image_delete_url": "https://ibb.co/0jRz0WL6/c4ab48a2760e8ca898ce8994468f8dfa"
   },
   {
     "id": "by00022",
@@ -406,7 +448,7 @@
     "desc_kor": "K-뷰티가 만든 혁신",
     "desc_en": "Innovation created by K-beauty",
     "category": "Beauty Item",
-    "image": "img/beauty/by00022.jpg",
+    "image": "https://i.ibb.co/rGK0Qd4B/by00022.webp",
     "tags": [
       "cushion",
       "foundation",
@@ -415,7 +457,9 @@
     "cultural_badge": "Cultural Translation",
     "date": "2025-09-18",
     "author": "Choi Min-ah",
-    "views": 37619
+    "views": 37619,
+    "image_display_url": "https://i.ibb.co/Z6RXf2WQ/by00022.webp",
+    "image_delete_url": "https://ibb.co/Kjch5KFt/72815522eca63b6816841c3e969984f2"
   },
   {
     "id": "by00023",
@@ -425,7 +469,7 @@
     "desc_kor": "피부 타입별 각질 관리",
     "desc_en": "Exfoliation for different skin types",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00023.jpg",
+    "image": "https://i.ibb.co/70J7vqw/by00023.webp",
     "tags": [
       "exfoliation",
       "skincare",
@@ -434,7 +478,9 @@
     "cultural_badge": null,
     "date": "2025-09-17",
     "author": "Lee Min-ho",
-    "views": 19278
+    "views": 19278,
+    "image_display_url": "https://i.ibb.co/3Pyt1nD/by00023.webp",
+    "image_delete_url": "https://ibb.co/yxnL0rw/471042a0226cf394e215e90313ec78b2"
   },
   {
     "id": "by00024",
@@ -444,7 +490,7 @@
     "desc_kor": "수분 충전 집중 관리",
     "desc_en": "Intensive hydration care",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00024.jpg",
+    "image": "https://i.ibb.co/BDB24Lt/by00024.webp",
     "tags": [
       "winter",
       "dry skin",
@@ -453,7 +499,9 @@
     "cultural_badge": null,
     "date": "2025-09-16",
     "author": "Kim So-young",
-    "views": 10331
+    "views": 10331,
+    "image_display_url": "https://i.ibb.co/rPH2bkm/by00024.webp",
+    "image_delete_url": "https://ibb.co/d9D4bBr/f6bcf89aa2d441cc6b96e7d79637b016"
   },
   {
     "id": "by00025",
@@ -463,7 +511,7 @@
     "desc_kor": "다양한 룩을 만드는 방법",
     "desc_en": "Creating various looks",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00025.jpg",
+    "image": "https://i.ibb.co/1YvcXRh9/by00025.webp",
     "tags": [
       "eyeshadow",
       "palette",
@@ -472,7 +520,9 @@
     "cultural_badge": null,
     "date": "2025-09-15",
     "author": "Jung Da-eun",
-    "views": 6314
+    "views": 6314,
+    "image_display_url": "https://i.ibb.co/p60qK4G3/by00025.webp",
+    "image_delete_url": "https://ibb.co/HLFZPG1r/0aed2a2364f29d2658470a8d5cca364e"
   },
   {
     "id": "by00026",
@@ -482,7 +532,7 @@
     "desc_kor": "전통에서 찾은 뷰티 비결",
     "desc_en": "Beauty secrets found in tradition",
     "category": "Beauty Item",
-    "image": "img/beauty/by00026.jpg",
+    "image": "https://i.ibb.co/N2MrjW34/by00026.webp",
     "tags": [
       "herbal",
       "traditional",
@@ -491,7 +541,9 @@
     "cultural_badge": "Cultural Translation",
     "date": "2025-09-14",
     "author": "Park Ji-won",
-    "views": 28248
+    "views": 28248,
+    "image_display_url": "https://i.ibb.co/7tqQWrz9/by00026.webp",
+    "image_delete_url": "https://ibb.co/nMFBcQ0W/a69f4ffbc26b48de2a3e854579d65cbf"
   },
   {
     "id": "by00027",
@@ -501,7 +553,7 @@
     "desc_kor": "결점 커버의 모든 것",
     "desc_en": "Everything about covering imperfections",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00027.jpg",
+    "image": "https://i.ibb.co/4Rq8JZYp/by00027.webp",
     "tags": [
       "concealer",
       "makeup",
@@ -510,7 +562,9 @@
     "cultural_badge": null,
     "date": "2025-09-13",
     "author": "Lee Ji-hye",
-    "views": 62434
+    "views": 62434,
+    "image_display_url": "https://i.ibb.co/zVMXNh7Z/by00027.webp",
+    "image_delete_url": "https://ibb.co/3m3pkyMc/a1e6c7731b3cf83672a66c86d4129210"
   },
   {
     "id": "by00028",
@@ -520,7 +574,7 @@
     "desc_kor": "모든 스킨케어의 시작",
     "desc_en": "Beginning of all skincare",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00028.jpg",
+    "image": "https://i.ibb.co/FqzvxFVh/by00028.webp",
     "tags": [
       "cleansing",
       "skincare",
@@ -529,7 +583,9 @@
     "cultural_badge": null,
     "date": "2025-09-12",
     "author": "Choi Hye-jin",
-    "views": 72926
+    "views": 72926,
+    "image_display_url": "https://i.ibb.co/HpqvFjdK/by00028.webp",
+    "image_delete_url": "https://ibb.co/DgQXVZp1/2e26cabe1697023bed3e21e79d38ce13"
   },
   {
     "id": "by00029",
@@ -539,7 +595,7 @@
     "desc_kor": "아티스트들이 모이는 헤어샵",
     "desc_en": "Hair salons where artists gather",
     "category": "Beauty Spot",
-    "image": "img/beauty/by00029.jpg",
+    "image": "https://i.ibb.co/gZnDfrM3/by00029.webp",
     "tags": [
       "hair salon",
       "seongsu",
@@ -548,7 +604,9 @@
     "cultural_badge": null,
     "date": "2025-09-11",
     "author": "Kim Yu-na",
-    "views": 43009
+    "views": 43009,
+    "image_display_url": "https://i.ibb.co/Dfq7v1Dt/by00029.webp",
+    "image_delete_url": "https://ibb.co/B21gQfVt/8418c0e78d7a0b99f06ad7be6fd3ecae"
   },
   {
     "id": "by00030",
@@ -558,7 +616,7 @@
     "desc_kor": "얼굴 윤곽을 살리는 메이크업",
     "desc_en": "Makeup to enhance facial contours",
     "category": "Beauty Guide",
-    "image": "img/beauty/by00030.jpg",
+    "image": "https://i.ibb.co/dJHPwmTJ/by00030.webp",
     "tags": [
       "highlighter",
       "shading",
@@ -567,6 +625,8 @@
     "cultural_badge": null,
     "date": "2025-09-10",
     "author": "Lee Seo-yeon",
-    "views": 11091
+    "views": 11091,
+    "image_display_url": "https://i.ibb.co/h1TBJY61/by00030.webp",
+    "image_delete_url": "https://ibb.co/PzVcvDLz/81754bdea724a93205ea22f08c455722"
   }
 ]

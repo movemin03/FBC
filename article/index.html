@@ -13,6 +13,33 @@
         * { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
         .font-serif, .font-serif * { font-family: 'Noto Serif KR', Georgia, serif !important; }
 
+        /* Skeleton Loading */
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+            background-size: 800px 104px;
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .image-container img.loaded {
+            opacity: 1;
+        }
+
+        /* Article Content Styles */
         .article-content p { @apply mb-6 leading-relaxed; }
         .article-content h2 { @apply text-2xl md:text-3xl font-bold mt-10 md:mt-12 mb-4 md:mb-6; }
         .article-content h3 { @apply text-xl md:text-2xl font-bold mt-8 md:mt-10 mb-3 md:mb-5; }
@@ -26,69 +53,57 @@
         .article-content li { @apply mb-2; }
         .article-content blockquote { @apply border-l-4 border-gray-300 pl-4 my-6 italic text-gray-700; }
 
-        /* Swiper Card Carousel Styles (3+ images) - Left Aligned */
-        .image-carousel-container {
-            @apply max-w-full my-8 md:my-12 overflow-hidden;
-        }
-
-        .image-carousel {
-            @apply relative;
-        }
-
+        /* Image Carousel (3+ images) */
+        .image-carousel-container { @apply max-w-full my-8 md:my-12 overflow-hidden; }
+        .image-carousel { @apply relative; }
         .image-carousel .swiper-slide {
             @apply bg-white rounded-xl shadow-lg overflow-hidden;
             width: 320px;
             height: 400px;
         }
-
         .image-carousel .swiper-slide img {
             @apply w-full h-full object-cover m-0;
-            pointer-events: none; /* Prevent image drag */
-            user-select: none; /* Prevent selection */
-            -webkit-user-drag: none; /* Prevent drag on webkit */
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
         }
-
-        /* Hide navigation buttons and pagination */
         .image-carousel .swiper-button-next,
         .image-carousel .swiper-button-prev,
-        .image-carousel .swiper-pagination {
-            display: none !important;
-        }
+        .image-carousel .swiper-pagination { display: none !important; }
 
-        /* Stacked Images Style (2 images or less) */
-        .image-stack {
-            @apply max-w-3xl mx-auto my-8 md:my-12 space-y-4 md:space-y-6;
-        }
-
-        .image-stack img {
-            @apply w-full h-auto rounded-xl shadow-lg m-0;
-        }
+        /* Stacked Images (2 or less) */
+        .image-stack { @apply max-w-3xl mx-auto my-8 md:my-12 space-y-4 md:space-y-6; }
+        .image-stack img { @apply w-full h-auto rounded-xl shadow-lg m-0; }
 
         @media (max-width: 768px) {
-            .image-carousel .swiper-slide {
-                width: 260px;
-                height: 340px;
-            }
+            .image-carousel .swiper-slide { width: 260px; height: 340px; }
         }
 
         html { scroll-behavior: smooth; }
     </style>
 </head>
 <body class="bg-gray-50">
+
 <!-- Header -->
 <header class="bg-white border-b sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-3 items-center py-3 border-b">
-            <button id="lang-toggle" class="px-2 md:px-3 py-1 text-xs border border-gray-300 hover:bg-gray-100 transition justify-self-start">
-                <span id="lang-text">English</span>
-            </button>
-            <a href="../index.html" class="hover:opacity-80 transition text-center">
-                <h1 class="text-2xl md:text-3xl font-serif font-bold tracking-wider">FBC</h1>
-            </a>
-            <a href="#newsletter-section" class="text-xs hover:text-gray-600 justify-self-end">SUBSCRIBE</a>
+            <div class="flex items-center space-x-4 text-xs">
+                <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
+                    <span id="lang-text">English</span>
+                </button>
+            </div>
+            <div class="justify-self-center">
+                <a href="../index.html" class="hover:opacity-80 transition">
+                    <h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1>
+                </a>
+            </div>
+            <div class="justify-self-end flex items-center space-x-4 text-xs">
+                <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
+            </div>
         </div>
-        <nav class="py-3 md:py-4">
-            <ul class="flex items-center justify-center space-x-4 md:space-x-8 text-xs md:text-sm font-medium">
+        <nav class="py-4">
+            <ul class="flex items-center justify-center space-x-6 md:space-x-8 text-sm font-medium">
                 <li><a href="../fashion/index.html" class="hover:text-gray-600 transition">FASHION</a></li>
                 <li><a href="../beauty/index.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
                 <li><a href="../life/index.html" class="hover:text-gray-600 transition">LIFE</a></li>
@@ -105,17 +120,17 @@
         <article class="md:col-span-8">
             <div class="max-w-3xl mx-auto mb-8 md:mb-10">
                 <a href="#" id="article-category" class="text-gray-600 uppercase text-xs font-semibold tracking-wider hover:text-black transition inline-block mb-3 md:mb-4">CATEGORY</a>
-                <h1 id="article-title" class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold leading-tight mb-4 md:mb-6 break-keep"></h1>
+                <h1 id="article-title" class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold leading-tight mb-4 md:mb-6 break-words"></h1>
                 <div class="flex flex-wrap gap-2 md:gap-4 items-center text-xs md:text-sm text-gray-600 mb-4 md:mb-5">
                     <span id="article-author" class="font-semibold text-black"></span>
                     <span>|</span>
                     <span id="article-date"></span>
                 </div>
                 <div class="flex gap-2 md:gap-3 pb-4 md:pb-5 border-b border-gray-200">
-                    <button id="copy-link" title="링크 복사" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center">
+                    <button id="copy-link" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center">
                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" class="md:w-[18px] md:h-[18px]"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                     </button>
-                    <button id="share-btn" title="공유하기" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center">
+                    <button id="share-btn" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center">
                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" class="md:w-[18px] md:h-[18px]"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                     </button>
                 </div>
@@ -178,7 +193,7 @@
             </div>
             <div id="newsletter-section">
                 <h4 class="font-bold mb-2 md:mb-3 text-xs md:text-sm">NEWSLETTER</h4>
-                <p class="text-xs md:text-sm text-gray-400 mb-2 md:mb-3">Get weekly K-fashion insights</p>
+                <p class="text-xs md:text-sm text-gray-400 mb-2 md:mb-3">Get weekly insights</p>
                 <div class="flex">
                     <input type="email" id="newsletter-email" placeholder="Your email" class="px-2 md:px-3 py-1.5 md:py-2 bg-gray-800 text-xs md:text-sm flex-1 focus:outline-none">
                     <button id="newsletter-submit" class="px-3 md:px-4 py-1.5 md:py-2 bg-white text-black text-xs md:text-sm font-medium hover:bg-gray-200 transition">→</button>
@@ -191,356 +206,336 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    const state = {
-        currentArticle: null,
-        allArticles: {},
-        articleData: [],
-        currentLang: localStorage.getItem('fbc_language') || (navigator.language?.toLowerCase().includes('ko') ? 'ko' : 'en'),
-        swiperInstances: []
-    };
+    (function() {
+        'use strict';
 
-    const CATEGORY_MAP = { fs: 'fashion', by: 'beauty', lf: 'life', ds: 'districts' };
-    const $ = (id) => document.getElementById(id);
-    const getCategoryFromId = (id) => CATEGORY_MAP[id.substring(0, 2).toLowerCase()] || 'fashion';
+        // State Management
+        const state = {
+            currentArticle: null,
+            allArticles: {},
+            articleData: [],
+            currentLang: 'en',
+            swiperInstances: []
+        };
 
-    const getArticleInfo = () => {
-        const params = new URLSearchParams(window.location.search);
-        const category = params.get('category');
-        const articleId = params.get('id');
-        return category && articleId ? { category, articleId } : null;
-    };
+        const CATEGORY_MAP = { fs: 'fashion', by: 'beauty', lf: 'life', ds: 'districts' };
+        const $ = (id) => document.getElementById(id);
+        const getCategoryFromId = (id) => CATEGORY_MAP[id.substring(0, 2).toLowerCase()] || 'fashion';
 
-    // Fixed image URL path - relative to article folder
-    const getImageUrl = (imagePath) => {
-        if (!imagePath) return '';
-        // If already a full URL (ImgBB or external), return as-is
-        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-            return imagePath;
-        }
-        // For local images starting with img/, prepend ../ to go up from article folder
-        if (imagePath.startsWith('img/')) {
-            return '../' + imagePath;
-        }
-        // If it doesn't start with img/, assume it's already relative
-        return imagePath;
-    };
-
-    // Handle image error with fallback
-    const handleImageError = (img) => {
-        const src = img.src;
-        // If WebP failed, try JPG
-        if (src.endsWith('.webp')) {
-            const fallback = src.replace('.webp', '.jpg');
-            img.onerror = () => {
-                // If JPG also fails, try PNG
-                const pngFallback = src.replace('.webp', '.png');
-                img.onerror = () => img.style.display = 'none';
-                img.src = pngFallback;
-            };
-            img.src = fallback;
-        } else {
-            img.style.display = 'none';
-        }
-    };
-
-    // Make handleImageError global for inline onerror
-    window.handleImageError = handleImageError;
-
-    // Convert consecutive images: 3+ = Swiper carousel, 2 or less = stacked
-    const convertConsecutiveImages = (html) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const body = doc.body;
-
-        const allNodes = Array.from(body.childNodes);
-        const groups = [];
-        let currentGroup = [];
-
-        // Group consecutive images
-        allNodes.forEach(node => {
-            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'IMG') {
-                currentGroup.push(node);
-            } else if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
-                // Skip empty text nodes between images
+        // Initialize Language (Session → System)
+        function initializeLanguage() {
+            const savedLang = sessionStorage.getItem('fbc_language');
+            if (savedLang) {
+                state.currentLang = savedLang;
             } else {
-                // Non-image, non-empty node
-                if (currentGroup.length >= 2) {
-                    groups.push([...currentGroup]);
-                }
-                currentGroup = [];
+                const browserLang = navigator.language || navigator.userLanguage;
+                state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+                sessionStorage.setItem('fbc_language', state.currentLang);
             }
-        });
-
-        // Don't forget the last group
-        if (currentGroup.length >= 2) {
-            groups.push(currentGroup);
+            $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
         }
 
-        // Replace each group with appropriate layout
-        groups.forEach((group, idx) => {
-            const imageCount = group.length;
+        // Image Loading with Skeleton
+        const createImageWithSkeleton = (src, alt, classes = '') => {
+            return `
+            <div class="image-container w-full h-full">
+                <div class="skeleton w-full h-full absolute inset-0"></div>
+                <img src="${src}"
+                     alt="${alt}"
+                     class="${classes}"
+                     loading="lazy"
+                     onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
+                     onerror="handleImageError(this)">
+            </div>
+        `;
+        };
 
-            if (imageCount >= 3) {
-                // 3+ images: Use Swiper carousel (left-aligned, no buttons/pagination)
-                const carouselId = `carousel-${Date.now()}-${idx}`;
-                const carouselHTML = `
+        // Handle Image Error
+        window.handleImageError = (img) => {
+            const src = img.src;
+            if (src.endsWith('.webp')) {
+                img.onerror = () => {
+                    img.onerror = () => img.style.display = 'none';
+                    img.src = src.replace('.webp', '.png');
+                };
+                img.src = src.replace('.webp', '.jpg');
+            } else {
+                img.style.display = 'none';
+            }
+            img.classList.add('loaded');
+            img.previousElementSibling?.remove();
+        };
+
+        // Get Article Info
+        const getArticleInfo = () => {
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('category');
+            const articleId = params.get('id');
+            return category && articleId ? { category, articleId } : null;
+        };
+
+        // Get Image URL (handle ImgBB URLs)
+        const getImageUrl = (imagePath) => {
+            if (!imagePath) return 'https://placehold.co/800x600/e5e5e5/666666?text=FBC';
+            if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
+            return imagePath.startsWith('img/') ? '../' + imagePath : imagePath;
+        };
+
+        // Convert Consecutive Images
+        const convertConsecutiveImages = (html) => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const body = doc.body;
+            const allNodes = Array.from(body.childNodes);
+            const groups = [];
+            let currentGroup = [];
+
+            allNodes.forEach(node => {
+                if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'IMG') {
+                    currentGroup.push(node);
+                } else if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+                    // Skip
+                } else {
+                    if (currentGroup.length >= 2) groups.push([...currentGroup]);
+                    currentGroup = [];
+                }
+            });
+            if (currentGroup.length >= 2) groups.push(currentGroup);
+
+            groups.forEach((group, idx) => {
+                if (group.length >= 3) {
+                    const carouselId = `carousel-${Date.now()}-${idx}`;
+                    const carouselHTML = `
                     <div class="image-carousel-container">
-                        <div class="swiper image-carousel" id="${carouselId}" data-count="${imageCount}">
+                        <div class="swiper image-carousel" id="${carouselId}" data-count="${group.length}">
                             <div class="swiper-wrapper">
                                 ${group.map(img => `
                                     <div class="swiper-slide">
-                                        <img src="${img.src}" alt="${img.alt || ''}" draggable="false" onerror="handleImageError(this)">
+                                        ${createImageWithSkeleton(img.src, img.alt || '', 'w-full h-full object-cover')}
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
                     </div>
                 `;
-
-                const temp = document.createElement('div');
-                temp.innerHTML = carouselHTML;
-                const carouselElement = temp.firstElementChild;
-
-                group[0].replaceWith(carouselElement);
-                group.slice(1).forEach(img => img.remove());
-            } else {
-                // 2 images: Use simple stacked layout
-                const stackHTML = `
+                    const temp = document.createElement('div');
+                    temp.innerHTML = carouselHTML;
+                    group[0].replaceWith(temp.firstElementChild);
+                    group.slice(1).forEach(img => img.remove());
+                } else {
+                    const stackHTML = `
                     <div class="image-stack">
-                        ${group.map(img => `
-                            <img src="${img.src}" alt="${img.alt || ''}" onerror="handleImageError(this)">
-                        `).join('')}
+                        ${group.map(img => createImageWithSkeleton(img.src, img.alt || '', 'w-full h-auto')).join('')}
                     </div>
                 `;
-
-                const temp = document.createElement('div');
-                temp.innerHTML = stackHTML;
-                const stackElement = temp.firstElementChild;
-
-                group[0].replaceWith(stackElement);
-                group.slice(1).forEach(img => img.remove());
-            }
-        });
-
-        return body.innerHTML;
-    };
-
-    // Initialize Swiper carousels after content is inserted
-    const initializeCarousels = () => {
-        // Destroy previous instances
-        state.swiperInstances.forEach(swiper => swiper.destroy());
-        state.swiperInstances = [];
-
-        // Initialize new instances (only for 3+ images)
-        document.querySelectorAll('.image-carousel').forEach(carousel => {
-            const imageCount = parseInt(carousel.dataset.count || '0');
-
-            // Left-aligned, infinite loop, swipe/drag only
-            const swiper = new Swiper('#' + carousel.id, {
-                slidesPerView: 'auto',
-                spaceBetween: 16,
-                centeredSlides: false, // Left align
-                loop: true, // Infinite loop
-                freeMode: false, // Snap to slides
-                grabCursor: true, // Show grab cursor
-                // No navigation or pagination
-                navigation: false,
-                pagination: false,
-                breakpoints: {
-                    640: {
-                        spaceBetween: 20,
-                    },
-                    1024: {
-                        spaceBetween: 24,
-                    },
+                    const temp = document.createElement('div');
+                    temp.innerHTML = stackHTML;
+                    group[0].replaceWith(temp.firstElementChild);
+                    group.slice(1).forEach(img => img.remove());
                 }
             });
-            state.swiperInstances.push(swiper);
-        });
-    };
 
-    // Update content
-    const updateArticleContent = () => {
-        const { currentArticle, articleData, currentLang } = state;
+            return body.innerHTML;
+        };
 
-        $('article-title').textContent = currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
+        // Initialize Swiper Carousels
+        const initializeCarousels = () => {
+            state.swiperInstances.forEach(swiper => swiper.destroy());
+            state.swiperInstances = [];
 
-        const article = articleData.find(a => a.id === currentArticle.id);
-        if (article) {
-            let html = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
-            if (html) {
-                // Fix image paths in HTML before processing
-                html = html.replace(/src="img\//g, 'src="../img/');
-                // Convert consecutive images (3+ = carousel, 2 = stack)
-                html = convertConsecutiveImages(html);
-                // Add error handling to all remaining images
-                html = html.replace(/<img/g, '<img onerror="handleImageError(this)"');
-                $('article-content').innerHTML = html;
+            document.querySelectorAll('.image-carousel').forEach(carousel => {
+                const swiper = new Swiper('#' + carousel.id, {
+                    slidesPerView: 'auto',
+                    spaceBetween: 16,
+                    loop: true,
+                    grabCursor: true,
+                    navigation: false,
+                    pagination: false,
+                    breakpoints: {
+                        640: { spaceBetween: 20 },
+                        1024: { spaceBetween: 24 }
+                    }
+                });
+                state.swiperInstances.push(swiper);
+            });
+        };
 
-                // Initialize Swiper carousels after DOM update
-                setTimeout(initializeCarousels, 100);
-            } else {
-                $('article-content').innerHTML = '<p>콘텐츠를 불러올 수 없습니다.</p>';
+        // Update Article Content
+        const updateArticleContent = () => {
+            const { currentArticle, articleData, currentLang } = state;
+            $('article-title').textContent = currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
+
+            const article = articleData.find(a => a.id === currentArticle.id);
+            if (article) {
+                let html = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
+                if (html) {
+                    html = html.replace(/src="img\//g, 'src="../img/');
+                    html = convertConsecutiveImages(html);
+                    html = html.replace(/<img/g, '<img onerror="handleImageError(this)"');
+                    $('article-content').innerHTML = html;
+                    setTimeout(initializeCarousels, 100);
+                } else {
+                    $('article-content').innerHTML = '<p>콘텐츠를 불러올 수 없습니다.</p>';
+                }
             }
-        }
-    };
+        };
 
-    // Render functions
-    const renderArticleGrid = (containerId, articles) => {
-        const container = $(containerId);
-        if (!articles?.length) {
-            container.innerHTML = `<p class="text-gray-500 text-sm">${state.currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No related articles.'}</p>`;
-            return;
-        }
+        // Render Functions
+        const renderArticleGrid = (containerId, articles) => {
+            const container = $(containerId);
+            if (!articles?.length) {
+                container.innerHTML = `<p class="text-gray-500 text-sm">${state.currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No articles.'}</p>`;
+                return;
+            }
 
-        container.innerHTML = articles.map(article => {
-            const category = getCategoryFromId(article.id);
-            const img = getImageUrl(article.image);
-            const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
-
-            return `
+            container.innerHTML = articles.map(article => {
+                const category = getCategoryFromId(article.id);
+                const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+                return `
                 <a href="index.html?category=${category}&id=${article.id}" class="group block">
-                    <div class="aspect-square overflow-hidden mb-2 md:mb-3 rounded">
-                        <img src="${img}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="handleImageError(this)">
+                    <div class="aspect-square overflow-hidden mb-2 md:mb-3 rounded bg-gray-100">
+                        ${createImageWithSkeleton(getImageUrl(article.image_display_url || article.image), title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300')}
                     </div>
                     <div class="text-xs text-gray-500 uppercase mb-1 md:mb-2">${article.category || ''}</div>
-                    <h3 class="font-semibold text-sm md:text-base leading-snug mb-1 md:mb-2 group-hover:underline break-words">${title}</h3>
+                    <h3 class="font-semibold text-sm md:text-base leading-snug mb-1 md:mb-2 group-hover:underline line-clamp-2">${title}</h3>
                     <div class="text-xs text-gray-400">${article.date || ''}</div>
                 </a>
             `;
-        }).join('');
-    };
+            }).join('');
+        };
 
-    const renderSidebarItems = (containerId, articles) => {
-        const container = $(containerId);
-        if (!articles?.length) {
-            container.innerHTML = `<p class="text-gray-500 text-xs md:text-sm">${state.currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.'}</p>`;
-            return;
-        }
+        const renderSidebarItems = (containerId, articles) => {
+            const container = $(containerId);
+            if (!articles?.length) {
+                container.innerHTML = `<p class="text-gray-500 text-xs md:text-sm">${state.currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.'}</p>`;
+                return;
+            }
 
-        container.innerHTML = articles.map(article => {
-            const category = getCategoryFromId(article.id);
-            const img = getImageUrl(article.image);
-            const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
-
-            return `
+            container.innerHTML = articles.map(article => {
+                const category = getCategoryFromId(article.id);
+                const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+                return `
                 <a href="index.html?category=${category}&id=${article.id}" class="flex gap-2 md:gap-3 mb-4 md:mb-5 group">
-                    <img src="${img}" alt="${title}" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded" onerror="handleImageError(this)">
-                    <div>
-                        <div class="text-xs md:text-sm font-semibold leading-snug mb-1 group-hover:underline break-words">${title}</div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded overflow-hidden bg-gray-100">
+                        ${createImageWithSkeleton(getImageUrl(article.image_display_url || article.image), title, 'w-full h-full object-cover')}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs md:text-sm font-semibold leading-snug mb-1 group-hover:underline line-clamp-2">${title}</div>
                         <div class="text-xs text-gray-400">${article.date || ''}</div>
                     </div>
                 </a>
             `;
-        }).join('');
-    };
+            }).join('');
+        };
 
-    // Load data
-    const loadData = async () => {
-        try {
-            const [fashion, beauty, life, districts, article] = await Promise.all([
-                fetch('../data/fashion.json').then(r => r.json()),
-                fetch('../data/beauty.json').then(r => r.json()),
-                fetch('../data/life.json').then(r => r.json()),
-                fetch('../data/districts.json').then(r => r.json()),
-                fetch('../data/article.json').then(r => r.json())
-            ]);
+        // Load Data
+        const loadData = async () => {
+            try {
+                const [fashion, beauty, life, districts, article] = await Promise.all([
+                    fetch('../data/fashion.json').then(r => r.json()),
+                    fetch('../data/beauty.json').then(r => r.json()),
+                    fetch('../data/life.json').then(r => r.json()),
+                    fetch('../data/districts.json').then(r => r.json()),
+                    fetch('../data/article.json').then(r => r.json())
+                ]);
 
-            state.allArticles = { fashion, beauty, life, districts };
-            state.articleData = article;
+                state.allArticles = { fashion, beauty, life, districts };
+                state.articleData = article;
 
-            const info = getArticleInfo();
-            info ? loadArticle(info.category, info.articleId) : window.location.href = '../index.html';
-        } catch (error) {
-            console.error('Error:', error);
-            alert('데이터를 불러올 수 없습니다.');
-        }
-    };
+                const info = getArticleInfo();
+                info ? loadArticle(info.category, info.articleId) : window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('데이터를 불러올 수 없습니다.');
+            }
+        };
 
-    const loadArticle = async (category, articleId) => {
-        const categoryData = state.allArticles[category];
-        if (!categoryData) return window.location.href = '../index.html';
+        const loadArticle = async (category, articleId) => {
+            const categoryData = state.allArticles[category];
+            if (!categoryData) return window.location.href = '../index.html';
 
-        state.currentArticle = categoryData.find(a => a.id === articleId);
-        if (!state.currentArticle) return window.location.href = '../index.html';
+            state.currentArticle = categoryData.find(a => a.id === articleId);
+            if (!state.currentArticle) return window.location.href = '../index.html';
 
-        $('article-category').textContent = state.currentArticle.category;
-        $('article-category').href = `../${category}/index.html`;
-        $('article-author').textContent = state.currentArticle.author;
-        $('article-date').textContent = state.currentArticle.date;
-        document.title = `${state.currentArticle.title_kor} - FBC`;
+            $('article-category').textContent = state.currentArticle.category;
+            $('article-category').href = `../${category}/index.html`;
+            $('article-author').textContent = state.currentArticle.author;
+            $('article-date').textContent = state.currentArticle.date;
+            document.title = `${state.currentArticle.title_kor} - FBC`;
 
-        updateArticleContent();
+            updateArticleContent();
 
-        if (state.currentArticle.tags?.length) {
-            $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
-                `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
-            ).join('');
-        }
+            if (state.currentArticle.tags?.length) {
+                $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
+                    `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
+                ).join('');
+            }
 
-        const allArticles = Object.values(state.allArticles).flat();
+            const allArticles = Object.values(state.allArticles).flat();
 
-        const related = allArticles.filter(a =>
-            a.id !== articleId && a.tags?.some(t => state.currentArticle.tags?.includes(t))
-        ).slice(0, 3);
+            const related = allArticles.filter(a =>
+                a.id !== articleId && a.tags?.some(t => state.currentArticle.tags?.includes(t))
+            ).slice(0, 3);
 
-        const latest = allArticles.filter(a => a.id !== articleId)
-            .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+            const latest = allArticles.filter(a => a.id !== articleId)
+                .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
 
-        const popular = categoryData.filter(a => a.id !== articleId)
-            .sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+            const popular = categoryData.filter(a => a.id !== articleId)
+                .sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
 
-        try {
-            const pinned = await fetch('../data/pinned.json').then(r => r.json());
-            const mustRead = pinned.mustRead?.map(item => allArticles.find(a => a.id === item.id))
-                .filter(Boolean).filter(a => a.id !== articleId).slice(0, 5) || [];
-            renderSidebarItems('must-read-articles', mustRead);
-        } catch (e) {
-            console.error('Must read error:', e);
-        }
+            try {
+                const pinned = await fetch('../data/pinned.json').then(r => r.json());
+                const mustRead = pinned.mustRead?.map(item => allArticles.find(a => a.id === item.id))
+                    .filter(Boolean).filter(a => a.id !== articleId).slice(0, 5) || [];
+                renderSidebarItems('must-read-articles', mustRead);
+            } catch (e) {
+                console.error('Must read error:', e);
+            }
 
-        renderArticleGrid('related-articles', related);
-        renderArticleGrid('latest-articles', latest);
-        renderSidebarItems('popular-articles', popular);
-    };
+            renderArticleGrid('related-articles', related);
+            renderArticleGrid('latest-articles', latest);
+            renderSidebarItems('popular-articles', popular);
+        };
 
-    // Event handlers
-    $('lang-toggle').onclick = () => {
-        state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
-        $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
-        localStorage.setItem('fbc_language', state.currentLang);
-        updateArticleContent();
-        loadArticle(getCategoryFromId(state.currentArticle.id), state.currentArticle.id);
-    };
+        // Event Handlers
+        $('lang-toggle').onclick = () => {
+            state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
+            $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+            sessionStorage.setItem('fbc_language', state.currentLang);
+            updateArticleContent();
+            loadArticle(getCategoryFromId(state.currentArticle.id), state.currentArticle.id);
+        };
 
-    $('copy-link').onclick = async () => {
-        await navigator.clipboard.writeText(location.href);
-        alert(state.currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
-    };
+        $('copy-link').onclick = async () => {
+            await navigator.clipboard.writeText(location.href);
+            alert(state.currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
+        };
 
-    $('share-btn').onclick = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en,
-                url: location.href
-            });
-        } else {
-            alert(state.currentLang === 'ko' ? '공유 기능을 지원하지 않습니다.' : 'Share not supported.');
-        }
-    };
+        $('share-btn').onclick = () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en,
+                    url: location.href
+                });
+            } else {
+                alert(state.currentLang === 'ko' ? '공유 기능을 지원하지 않습니다.' : 'Share not supported.');
+            }
+        };
 
-    $('newsletter-submit').onclick = () => {
-        const email = $('newsletter-email').value;
-        if (email) {
-            alert(state.currentLang === 'ko' ? '뉴스레터 신청 완료!' : 'Thank you!');
-            $('newsletter-email').value = '';
-        }
-    };
+        $('newsletter-submit').onclick = () => {
+            const email = $('newsletter-email').value;
+            if (email && email.includes('@')) {
+                alert(state.currentLang === 'ko' ? '뉴스레터 신청 완료!' : 'Thank you!');
+                $('newsletter-email').value = '';
+            } else {
+                alert(state.currentLang === 'ko' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email.');
+            }
+        };
 
-    // Initialize
-    $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
-    localStorage.setItem('fbc_language', state.currentLang);
-    loadData();
+        // Initialize
+        initializeLanguage();
+        loadData();
+    })();
 </script>
 </body>
 </html>

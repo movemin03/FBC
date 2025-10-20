@@ -15,111 +15,44 @@
         .font-serif, .font-serif * {
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
+        
+        /* Skeleton Loading Animation */
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
         }
-
-        .header-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
+        
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+            background-size: 800px 104px;
         }
-        .header-left {
-            justify-self: start;
+        
+        .image-container {
+            position: relative;
+            overflow: hidden;
         }
-        .header-center {
-            justify-self: center;
+        
+        .image-container img {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
-        .header-right {
-            justify-self: end;
+        
+        .image-container img.loaded {
+            opacity: 1;
         }
-        .category-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            background: black;
-            color: white;
-        }
-
-        .cultural-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 3px 10px;
-            font-size: 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-        }
-
+        
         .fade-in {
             animation: fadeIn 0.6s ease-in;
         }
-
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .filter-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
-        }
-        .filter-badge:hover {
-            border-color: #000;
-            background: #f9fafb;
-        }
-        .filter-badge.active {
-            background: black;
-            color: white;
-            border-color: black;
-        }
-
         html {
             scroll-behavior: smooth;
-        }
-        /* 모바일 반응형 스타일 */
-        @media (max-width: 768px) {
-            .hero-article .absolute {
-                padding: 24px 16px !important;  /* 데스크탑 p-8(32px)에서 줄임 */
-            }
-
-            .hero-article h2 {
-                font-size: 24px !important;  /* 데스크탑 3xl-4xl(36-48px)에서 줄임 */
-                line-height: 1.3 !important;
-                margin-bottom: 12px !important;
-                word-break: keep-all;
-                overflow-wrap: break-word;
-            }
-
-            .hero-article p:first-of-type {  /* 설명 텍스트 */
-                font-size: 14px !important;  /* 데스크탑 lg(18px)에서 줄임 */
-                line-height: 1.4 !important;
-                margin-bottom: 8px !important;
-            }
-
-            .hero-article p:last-of-type {  /* 날짜/저자 텍스트 */
-                font-size: 11px !important;  /* 데스크탑 sm(14px)에서 줄임 */
-            }
-
-            .category-badge {
-                font-size: 10px !important;
-                padding: 3px 10px !important;
-            }
-
-            .cultural-badge {
-                font-size: 9px !important;
-                padding: 2px 8px !important;
-            }
         }
     </style>
 </head>
@@ -128,27 +61,27 @@
 <!-- Header -->
 <header class="bg-white border-b sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="header-container py-3 border-b">
-            <div class="header-left flex items-center space-x-4 text-xs">
+        <div class="grid grid-cols-3 items-center py-3 border-b">
+            <div class="flex items-center space-x-4 text-xs">
                 <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
                     <span id="lang-text">English</span>
                 </button>
             </div>
-            <div class="header-center">
+            <div class="justify-self-center">
                 <a href="../index.html" class="hover:opacity-80 transition">
                     <h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1>
                 </a>
             </div>
-            <div class="header-right flex items-center space-x-4 text-xs">
+            <div class="justify-self-end flex items-center space-x-4 text-xs">
                 <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
             </div>
         </div>
         <nav class="py-4">
             <ul class="flex items-center justify-center space-x-6 md:space-x-8 text-sm font-medium">
-                <li><a href="../fashion/index.html" class="hover:text-gray-600 transition border-b-2 border-black pb-1">FASHION</a></li>
+                <li><a href="../fashion/index.html" class="border-b-2 border-black pb-1">FASHION</a></li>
                 <li><a href="../beauty/index.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
                 <li><a href="../life/index.html" class="hover:text-gray-600 transition">LIFE</a></li>
-                <li><a href="../districts/index.html" class="hover:text-gray-600 transition relative">DISTRICTS</a></li>
+                <li><a href="../districts/index.html" class="hover:text-gray-600 transition">DISTRICTS</a></li>
             </ul>
         </nav>
     </div>
@@ -156,7 +89,7 @@
 
 <!-- Main Content -->
 <main class="max-w-7xl mx-auto px-4 py-12">
-
+    
     <!-- Page Title -->
     <div class="mb-8">
         <h2 class="text-4xl font-serif font-bold mb-2">Fashion</h2>
@@ -166,49 +99,43 @@
     <!-- Filter Tabs -->
     <div class="mb-12">
         <div class="flex flex-wrap gap-3 mb-6">
-            <button class="filter-badge active" data-filter="all" data-type="category">All</button>
-            <button class="filter-badge" data-filter="Fashion Trend" data-type="category">Fashion Trend</button>
-            <button class="filter-badge" data-filter="Fashion Item" data-type="category">Fashion Item</button>
-            <button class="filter-badge" data-filter="Street Fashion" data-type="category">Street Fashion</button>
-            <button class="filter-badge" data-filter="Shopping Guide" data-type="category">Shopping Guide</button>
-            <button class="filter-badge" data-filter="Fashion Week" data-type="category">Fashion Week</button>
-            <button class="filter-badge" data-filter="Traditional Fashion" data-type="category">Traditional Fashion</button>
-            <button class="filter-badge" data-filter="Fashion News" data-type="category">Fashion News</button>
+            <button class="px-4 py-2 text-xs font-semibold border rounded-full transition-all bg-black text-white border-black" data-filter="all" data-type="category">All</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Fashion Trend" data-type="category">Fashion Trend</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Fashion Item" data-type="category">Fashion Item</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Street Fashion" data-type="category">Street Fashion</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Shopping Guide" data-type="category">Shopping Guide</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Fashion Week" data-type="category">Fashion Week</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Traditional Fashion" data-type="category">Traditional Fashion</button>
+            <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Fashion News" data-type="category">Fashion News</button>
         </div>
         <div class="border-t pt-4">
             <p class="text-sm text-gray-500 mb-2">Filter by Cultural Badge:</p>
             <div class="flex flex-wrap gap-3">
-                <button class="filter-badge" data-filter="all" data-type="cultural">All</button>
-                <button class="filter-badge" data-filter="Industrial Chic" data-type="cultural">Industrial Chic</button>
-                <button class="filter-badge" data-filter="Cultural Translation" data-type="cultural">Cultural Translation</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="all" data-type="cultural">All</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Industrial Chic" data-type="cultural">Industrial Chic</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Cultural Translation" data-type="cultural">Cultural Translation</button>
             </div>
         </div>
     </div>
 
     <!-- Hero Featured Article -->
     <section class="mb-16">
-        <div id="hero-article" class="hero-article">
-            <!-- Dynamic hero content -->
-        </div>
+        <div id="hero-article"></div>
     </section>
 
-    <!-- Featured Articles Grid (Top 4) -->
+    <!-- Featured Articles Grid -->
     <section class="mb-16">
-        <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Dynamic featured articles -->
-        </div>
+        <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
     </section>
 
     <!-- Latest Stories -->
-    <section class="mb-16" id="latest-section" style="display: none;">
+    <section class="mb-16 hidden" id="latest-section">
         <h3 class="text-2xl font-serif font-bold mb-6">Latest Stories</h3>
-        <div id="latest-articles" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Dynamic latest articles -->
-        </div>
+        <div id="latest-articles" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
     </section>
 
     <!-- Load More Button -->
-    <div class="text-center mb-12" id="load-more-container" style="display: none;">
+    <div class="text-center mb-12 hidden" id="load-more-container">
         <button id="load-more" class="px-8 py-3 bg-black text-white font-medium hover:bg-gray-800 transition">
             <span id="load-more-text">Load More</span>
         </button>
@@ -255,256 +182,236 @@
 </footer>
 
 <script>
-// Language State with localStorage
-let currentLang = 'en';
-
-// Initialize Language
-function initializeLanguage() {
-    const savedLang = localStorage.getItem('fbc_language');
-    if (savedLang) {
-        currentLang = savedLang;
-    } else {
-        const browserLang = navigator.language || navigator.userLanguage;
-        currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
-        localStorage.setItem('fbc_language', currentLang);
+(function() {
+    'use strict';
+    
+    // State Management
+    const state = {
+        currentLang: 'en',
+        fashionData: [],
+        filteredData: [],
+        currentFilter: { type: 'category', value: 'all' },
+        displayedArticles: 13,
+        articlesPerLoad: 12
+    };
+    
+    const prefixMap = { 'fs': 'fashion', 'by': 'beauty', 'lf': 'life', 'ds': 'districts' };
+    
+    // Utility Functions
+    const getCategoryFromId = (id) => prefixMap[id.substring(0, 2)] || 'fashion';
+    const buildArticleUrl = (id) => `../article/index.html?category=${getCategoryFromId(id)}&id=${id}`;
+    
+    // Image Loading with Skeleton
+    function createImageWithSkeleton(src, alt, imgClass = '') {
+        return `
+            <div class="image-container w-full h-full">
+                <div class="skeleton w-full h-full absolute inset-0"></div>
+                <img src="${src}" 
+                     alt="${alt}" 
+                     class="${imgClass}" 
+                     loading="lazy"
+                     onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
+                     onerror="this.src='https://placehold.co/1200x675/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
+            </div>
+        `;
     }
-    document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
-}
 
-// Fashion Data
-let fashionData = [];
-let filteredData = [];
-let currentFilter = { type: 'category', value: 'all' };
-let displayedArticles = 13;
-const articlesPerLoad = 12;
-
-// ID Prefix Mapping
-const prefixMap = {
-    'fs': 'fashion',
-    'by': 'beauty',
-    'lf': 'life',
-    'ds': 'districts'
-};
-
-// Get Category from ID
-function getCategoryFromId(id) {
-    const prefix = id.substring(0, 2);
-    return prefixMap[prefix] || 'fashion';
-}
-
-// Build Article URL
-function buildArticleUrl(id) {
-    const category = getCategoryFromId(id);
-    return `../article/index.html?category=${category}&id=${id}`;
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
-    initializeLanguage();
-    await loadFashionData();
-    setupLanguageToggle();
-    setupFilterButtons();
-    setupLoadMore();
-    applyFilter();
-});
-
-// Load Fashion Data
-async function loadFashionData() {
-    try {
-        const response = await fetch('../data/fashion.json');
-        fashionData = await response.json();
-        filteredData = [...fashionData];
-    } catch (error) {
-        console.error('Error loading fashion data:', error);
-        fashionData = [];
-        filteredData = [];
+    // Language Management
+    function initializeLanguage() {
+        const savedLang = sessionStorage.getItem('fbc_language');
+        if (savedLang) {
+            state.currentLang = savedLang;
+        } else {
+            const browserLang = navigator.language || navigator.userLanguage;
+            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+            sessionStorage.setItem('fbc_language', state.currentLang);
+        }
+        document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
     }
-}
 
-// Setup Language Toggle
-function setupLanguageToggle() {
-    const langToggle = document.getElementById('lang-toggle');
-    const langText = document.getElementById('lang-text');
-
-    langToggle.addEventListener('click', () => {
-        currentLang = currentLang === 'en' ? 'ko' : 'en';
-        langText.textContent = currentLang === 'en' ? 'English' : '한국어';
-        localStorage.setItem('fbc_language', currentLang);
-        updateTexts();
-        renderPage();
-    });
-}
-
-// Setup Filter Buttons
-function setupFilterButtons() {
-    const filterButtons = document.querySelectorAll('.filter-badge');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const filterType = button.dataset.type;
-            const filterValue = button.dataset.filter;
-
-            // Update active state within the same type
-            document.querySelectorAll(`[data-type="${filterType}"]`).forEach(btn => {
-                btn.classList.remove('active');
-            });
-            button.classList.add('active');
-
-            currentFilter = { type: filterType, value: filterValue };
-            displayedArticles = 12;
-            applyFilter();
+    function setupLanguageToggle() {
+        const langToggle = document.getElementById('lang-toggle');
+        langToggle.addEventListener('click', () => {
+            state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
+            document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+            sessionStorage.setItem('fbc_language', state.currentLang);
+            updateTexts();
+            renderPage();
         });
-    });
-}
-
-// Apply Filter
-function applyFilter() {
-    if (currentFilter.type === 'category') {
-        if (currentFilter.value === 'all') {
-            filteredData = [...fashionData];
-        } else {
-            filteredData = fashionData.filter(article => article.category === currentFilter.value);
-        }
-    } else if (currentFilter.type === 'cultural') {
-        if (currentFilter.value === 'all') {
-            filteredData = [...fashionData];
-        } else {
-            filteredData = fashionData.filter(article => article.cultural_badge === currentFilter.value);
+    }
+    
+    // Data Loading
+    async function loadFashionData() {
+        try {
+            const response = await fetch('../data/fashion.json');
+            state.fashionData = await response.json();
+            state.filteredData = [...state.fashionData];
+        } catch (error) {
+            console.error('Error loading fashion data:', error);
+            state.fashionData = [];
+            state.filteredData = [];
         }
     }
-
-    // Sort by date (newest first)
-    filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    renderPage();
-}
-
-// Setup Load More
-function setupLoadMore() {
-    document.getElementById('load-more').addEventListener('click', () => {
-        displayedArticles += articlesPerLoad;
-        renderLatestStories();
-    });
-}
-
-// Render Entire Page
-function renderPage() {
-    updateTexts();
-    renderHeroArticle();
-    renderFeaturedGrid();
-    renderLatestStories();
-}
-
-// Update Text Content Based on Language
-function updateTexts() {
-    document.getElementById('load-more-text').textContent = currentLang === 'en' ? 'Load More' : '더 보기';
-}
-
-// Render Hero Article
-function renderHeroArticle() {
-    if (filteredData.length === 0) {
-        document.getElementById('hero-article').innerHTML = '';
-        return;
+    
+    // Filter Management
+    function setupFilterButtons() {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filterType = button.dataset.type;
+                const filterValue = button.dataset.filter;
+                
+                // Update active state
+                document.querySelectorAll(`[data-type="${filterType}"]`).forEach(btn => {
+                    btn.classList.remove('bg-black', 'text-white', 'border-black');
+                    btn.classList.add('bg-white', 'border-gray-300');
+                });
+                button.classList.add('bg-black', 'text-white', 'border-black');
+                button.classList.remove('bg-white', 'border-gray-300');
+                
+                state.currentFilter = { type: filterType, value: filterValue };
+                state.displayedArticles = 13;
+                applyFilter();
+            });
+        });
     }
-
-    const hero = filteredData[0];
-    const title = currentLang === 'en' ? hero.title_en : hero.title_kor;
-    const desc = currentLang === 'en' ? hero.desc_en : hero.desc_kor;
-
-    document.getElementById('hero-article').innerHTML = `
-        <a href="${buildArticleUrl(hero.id)}" class="block relative group">
-            <div class="aspect-[16/9] overflow-hidden bg-gray-100">
-                <img src="../${hero.image}" alt="${title}"
-                     class="w-full h-full object-cover"
-                     onerror="this.src='https://placehold.co/1200x675/e5e5e5/666666?text=FBC'">
-            </div>
-            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8">
-                <div class="flex items-center space-x-2 mb-3">
-                    <span class="category-badge">${hero.category}</span>
-                    ${hero.cultural_badge ? `<span class="cultural-badge">${hero.cultural_badge}</span>` : ''}
+    
+    function applyFilter() {
+        const { type, value } = state.currentFilter;
+        
+        if (type === 'category') {
+            state.filteredData = value === 'all' 
+                ? [...state.fashionData]
+                : state.fashionData.filter(article => article.category === value);
+        } else if (type === 'cultural') {
+            state.filteredData = value === 'all'
+                ? [...state.fashionData]
+                : state.fashionData.filter(article => article.cultural_badge === value);
+        }
+        
+        state.filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderPage();
+    }
+    
+    // Render Functions
+    function renderHeroArticle() {
+        const heroContainer = document.getElementById('hero-article');
+        if (state.filteredData.length === 0) {
+            heroContainer.innerHTML = '';
+            return;
+        }
+        
+        const hero = state.filteredData[0];
+        const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
+        const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
+        
+        heroContainer.innerHTML = `
+            <a href="${buildArticleUrl(hero.id)}" class="block relative group">
+                <div class="aspect-video overflow-hidden bg-gray-100 relative">
+                    ${createImageWithSkeleton(hero.image_display_url, title, 'w-full h-full object-cover')}
                 </div>
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-white mb-2">${title}</h2>
-                <p class="text-white/90 text-lg mb-3">${desc}</p>
-                <p class="text-white/70 text-sm">${hero.date} · ${hero.author}</p>
-            </div>
-        </a>
-    `;
-}
-
-// Render Featured Grid (Next 4 articles)
-function renderFeaturedGrid() {
-    const articles = filteredData.slice(1, 5);
-    const html = articles.map(article => createArticleCard(article, 'small')).join('');
-    document.getElementById('featured-grid').innerHTML = html;
-}
-
-// Render Latest Stories
-function renderLatestStories() {
-    const articles = filteredData.slice(5, displayedArticles);
-    const latestSection = document.getElementById('latest-section');
-    const loadMoreContainer = document.getElementById('load-more-container');
-
-    if (articles.length === 0) {
-        latestSection.style.display = 'none';
-        loadMoreContainer.style.display = 'none';
-        return;
-    }
-
-    latestSection.style.display = 'block';
-    const html = articles.map(article => createArticleCard(article, 'small')).join('');
-    document.getElementById('latest-articles').innerHTML = html;
-
-    // Show/Hide Load More Button
-    if (displayedArticles >= filteredData.length) {
-        loadMoreContainer.style.display = 'none';
-    } else {
-        loadMoreContainer.style.display = 'block';
-    }
-}
-
-// Create Article Card
-function createArticleCard(article, size = 'medium') {
-    const title = currentLang === 'en' ? article.title_en : article.title_kor;
-    const desc = currentLang === 'en' ? article.desc_en : article.desc_kor;
-
-    const aspectRatio = size === 'small' ? 'aspect-[3/2]' : 'aspect-[4/3]';
-    const titleSize = size === 'small' ? 'text-base' : 'text-lg';
-
-    return `
-        <article class="fade-in">
-            <a href="${buildArticleUrl(article.id)}" class="block group">
-                <div class="${aspectRatio} overflow-hidden bg-gray-100 mb-4 relative">
-                    <img src="../${article.image}" alt="${title}"
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                         onerror="this.src='https://placehold.co/800x600/e5e5e5/666666?text=FBC'">
-                    ${article.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${article.cultural_badge}</span>` : ''}
-                </div>
-                <div>
-                    <div class="flex items-center space-x-2 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wide">${article.category}</span>
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="inline-block px-3 py-1 text-[10px] md:text-[11px] font-semibold uppercase tracking-wide bg-black text-white">${hero.category}</span>
+                        ${hero.cultural_badge ? `<span class="inline-block px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${hero.cultural_badge}</span>` : ''}
                     </div>
-                    <h3 class="${titleSize} font-bold mb-2 group-hover:text-gray-600 transition line-clamp-2">${title}</h3>
-                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">${desc}</p>
-                    <p class="text-xs text-gray-500">${article.date} · ${article.author}</p>
+                    <h2 class="text-xl md:text-3xl lg:text-4xl font-serif font-bold text-white mb-2 break-words">${title}</h2>
+                    <p class="text-sm md:text-lg text-white/90 mb-3 line-clamp-2">${desc}</p>
+                    <p class="text-xs md:text-sm text-white/70">${hero.date} · ${hero.author}</p>
                 </div>
             </a>
-        </article>
-    `;
-}
-
-// Newsletter Subscription
-document.getElementById('newsletter-submit').addEventListener('click', () => {
-    const email = document.getElementById('newsletter-email').value;
-    if (email && email.includes('@')) {
-        alert(currentLang === 'en'
-            ? 'Thank you for subscribing!'
-            : '구독해 주셔서 감사합니다!');
-        document.getElementById('newsletter-email').value = '';
-    } else {
-        alert(currentLang === 'en'
-            ? 'Please enter a valid email address.'
-            : '유효한 이메일 주소를 입력해주세요.');
+        `;
     }
-});
+    
+    function renderFeaturedGrid() {
+        const articles = state.filteredData.slice(1, 5);
+        document.getElementById('featured-grid').innerHTML = articles.map(article => createArticleCard(article)).join('');
+    }
+    
+    function renderLatestStories() {
+        const articles = state.filteredData.slice(5, state.displayedArticles);
+        const latestSection = document.getElementById('latest-section');
+        const loadMoreContainer = document.getElementById('load-more-container');
+        
+        if (articles.length === 0) {
+            latestSection.classList.add('hidden');
+            loadMoreContainer.classList.add('hidden');
+            return;
+        }
+        
+        latestSection.classList.remove('hidden');
+        document.getElementById('latest-articles').innerHTML = articles.map(article => createArticleCard(article)).join('');
+        
+        loadMoreContainer.classList.toggle('hidden', state.displayedArticles >= state.filteredData.length);
+    }
+    
+    function createArticleCard(article) {
+        const title = state.currentLang === 'en' ? article.title_en : article.title_kor;
+        const desc = state.currentLang === 'en' ? article.desc_en : article.desc_kor;
+        
+        return `
+            <article class="fade-in">
+                <a href="${buildArticleUrl(article.id)}" class="block group">
+                    <div class="aspect-[3/2] overflow-hidden bg-gray-100 mb-4 relative rounded-sm">
+                        ${createImageWithSkeleton(article.image_display_url, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        ${article.cultural_badge ? `<span class="absolute top-3 left-3 inline-block px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${article.cultural_badge}</span>` : ''}
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wide text-gray-700">${article.category}</span>
+                        <h3 class="text-base font-bold my-2 group-hover:text-gray-600 transition line-clamp-2">${title}</h3>
+                        <p class="text-sm text-gray-600 mb-2 line-clamp-2">${desc}</p>
+                        <p class="text-xs text-gray-500">${article.date} · ${article.author}</p>
+                    </div>
+                </a>
+            </article>
+        `;
+    }
+    
+    function renderPage() {
+        updateTexts();
+        renderHeroArticle();
+        renderFeaturedGrid();
+        renderLatestStories();
+    }
+    
+    function updateTexts() {
+        document.getElementById('load-more-text').textContent = state.currentLang === 'en' ? 'Load More' : '더 보기';
+    }
+    
+    // Load More
+    function setupLoadMore() {
+        document.getElementById('load-more').addEventListener('click', () => {
+            state.displayedArticles += state.articlesPerLoad;
+            renderLatestStories();
+        });
+    }
+    
+    // Newsletter
+    function setupNewsletter() {
+        document.getElementById('newsletter-submit').addEventListener('click', () => {
+            const email = document.getElementById('newsletter-email').value;
+            if (email && email.includes('@')) {
+                alert(state.currentLang === 'en' ? 'Thank you for subscribing!' : '구독해 주셔서 감사합니다!');
+                document.getElementById('newsletter-email').value = '';
+            } else {
+                alert(state.currentLang === 'en' ? 'Please enter a valid email address.' : '유효한 이메일 주소를 입력해주세요.');
+            }
+        });
+    }
+    
+    // Initialize
+    async function init() {
+        initializeLanguage();
+        await loadFashionData();
+        setupLanguageToggle();
+        setupFilterButtons();
+        setupLoadMore();
+        setupNewsletter();
+        applyFilter();
+    }
+    
+    document.addEventListener('DOMContentLoaded', init);
+})();
 </script>
 
 </body>

@@ -15,76 +15,31 @@
         .font-serif, .font-serif * {
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
+        
+        /* Skeleton Loading Animation */
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
         }
         
-        .header-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-        }
-        .header-left {
-            justify-self: start;
-        }
-        .header-center {
-            justify-self: center;
-        }
-        .header-right {
-            justify-self: end;
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+            background-size: 800px 104px;
         }
         
-        .hero-article {
+        .image-container {
             position: relative;
             overflow: hidden;
         }
-        .hero-article img {
-            transition: transform 0.5s ease;
-        }
-        .hero-article:hover img {
-            transform: scale(1.05);
+        
+        .image-container img {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
         
-        .category-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            background: black;
-            color: white;
-        }
-        
-        .cultural-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 3px 10px;
-            font-size: 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-        }
-        
-        .district-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
-        }
-        .district-badge:hover {
-            border-color: #000;
-            background: #f9fafb;
-        }
-        .district-badge.active {
-            background: black;
-            color: white;
-            border-color: black;
+        .image-container img.loaded {
+            opacity: 1;
         }
         
         .fade-in {
@@ -96,50 +51,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .filter-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
-        }
-        .filter-badge:hover {
-            border-color: #000;
-            background: #f9fafb;
-        }
-        .filter-badge.active {
-            background: black;
-            color: white;
-            border-color: black;
-        }
-
         html {
             scroll-behavior: smooth;
-        }
-
-        .district-section {
-            border-top: 3px solid #000;
-            padding-top: 32px;
-            margin-bottom: 48px;
-        }
-
-        .district-header {
-            margin-bottom: 24px;
-        }
-
-        .district-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .district-desc {
-            color: #666;
-            font-size: 16px;
         }
     </style>
 </head>
@@ -148,18 +61,18 @@
 <!-- Header -->
 <header class="bg-white border-b sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="header-container py-3 border-b">
-            <div class="header-left flex items-center space-x-4 text-xs">
+        <div class="grid grid-cols-3 items-center py-3 border-b">
+            <div class="flex items-center space-x-4 text-xs">
                 <button id="lang-toggle" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
                     <span id="lang-text">English</span>
                 </button>
             </div>
-            <div class="header-center">
+            <div class="justify-self-center">
                 <a href="../index.html" class="hover:opacity-80 transition">
                     <h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1>
                 </a>
             </div>
-            <div class="header-right flex items-center space-x-4 text-xs">
+            <div class="justify-self-end flex items-center space-x-4 text-xs">
                 <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
             </div>
         </div>
@@ -168,7 +81,7 @@
                 <li><a href="../fashion/index.html" class="hover:text-gray-600 transition">FASHION</a></li>
                 <li><a href="../beauty/index.html" class="hover:text-gray-600 transition">BEAUTY</a></li>
                 <li><a href="../life/index.html" class="hover:text-gray-600 transition">LIFE</a></li>
-                <li><a href="../districts/index.html" class="hover:text-gray-600 transition relative border-b-2 border-black pb-1">DISTRICTS</a></li>
+                <li><a href="../districts/index.html" class="border-b-2 border-black pb-1">DISTRICTS</a></li>
             </ul>
         </nav>
     </div>
@@ -179,40 +92,57 @@
     
     <!-- Page Title -->
     <div class="mb-8">
-        <h2 class="text-4xl font-serif font-bold mb-2">Districts</h2>
-        <p class="text-gray-600">Explore Seoul's unique neighborhoods and culture</p>
+        <h2 class="text-4xl font-serif font-bold mb-2">Seoul Districts</h2>
+        <p class="text-gray-600">Discover Seoul's unique neighborhoods and local culture</p>
     </div>
 
-    <!-- District Filter -->
+    <!-- Filter Tabs -->
     <div class="mb-12">
-        <div class="flex flex-wrap gap-3 mb-6">
-            <button class="district-badge active" data-district="all">All Districts</button>
-            <button class="district-badge" data-district="dsm00001">Seongsu</button>
-            <button class="district-badge" data-district="dsm00002">Hannam</button>
-            <button class="district-badge" data-district="dsm00003">Hongdae</button>
-            <button class="district-badge" data-district="dsm00004">Myeongdong</button>
+        <!-- District Filter -->
+        <div class="mb-6">
+            <p class="text-sm text-gray-500 mb-2">Filter by District:</p>
+            <div class="flex flex-wrap gap-3">
+                <button class="px-4 py-2 text-xs font-semibold border rounded-full transition-all bg-black text-white border-black" data-filter="all" data-type="district">All Districts</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="dsm00001" data-type="district">Seongsu</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="dsm00002" data-type="district">Hannam</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="dsm00003" data-type="district">Hongdae</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="dsm00004" data-type="district">Myeongdong</button>
+            </div>
         </div>
+        
+        <!-- Category Filter -->
         <div class="border-t pt-4">
             <p class="text-sm text-gray-500 mb-2">Filter by Category:</p>
             <div class="flex flex-wrap gap-3">
-                <button class="filter-badge active" data-filter="all" data-type="category">All</button>
-                <button class="filter-badge" data-filter="Fashion Guide" data-type="category">Fashion Guide</button>
-                <button class="filter-badge" data-filter="Culture" data-type="category">Culture</button>
-                <button class="filter-badge" data-filter="Food" data-type="category">Food</button>
-                <button class="filter-badge" data-filter="Shopping" data-type="category">Shopping</button>
-                <button class="filter-badge" data-filter="Art" data-type="category">Art</button>
-                <button class="filter-badge" data-filter="Beauty" data-type="category">Beauty</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="all" data-type="category">All Categories</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Fashion" data-type="category">Fashion</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Food" data-type="category">Food</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Culture" data-type="category">Culture</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Beauty" data-type="category">Beauty</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Shopping" data-type="category">Shopping</button>
+                <button class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-full hover:border-black hover:bg-gray-50 transition-all bg-white" data-filter="Art" data-type="category">Art</button>
             </div>
         </div>
     </div>
 
-    <!-- Districts Content -->
-    <div id="districts-content">
-        <!-- Dynamic districts content will be loaded here -->
-    </div>
+    <!-- Hero Featured Article -->
+    <section class="mb-16">
+        <div id="hero-article"></div>
+    </section>
+
+    <!-- Featured Articles Grid -->
+    <section class="mb-16">
+        <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </section>
+
+    <!-- Latest Stories -->
+    <section class="mb-16 hidden" id="latest-section">
+        <h3 class="text-2xl font-serif font-bold mb-6">Latest Stories</h3>
+        <div id="latest-articles" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    </section>
 
     <!-- Load More Button -->
-    <div class="text-center mb-12" id="load-more-container" style="display: none;">
+    <div class="text-center mb-12 hidden" id="load-more-container">
         <button id="load-more" class="px-8 py-3 bg-black text-white font-medium hover:bg-gray-800 transition">
             <span id="load-more-text">Load More</span>
         </button>
@@ -259,251 +189,238 @@
 </footer>
 
 <script>
-// Language State with localStorage
-let currentLang = 'en';
-
-// Initialize Language
-function initializeLanguage() {
-    const savedLang = localStorage.getItem('fbc_language');
-    if (savedLang) {
-        currentLang = savedLang;
-    } else {
-        const browserLang = navigator.language || navigator.userLanguage;
-        currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
-        localStorage.setItem('fbc_language', currentLang);
+(function() {
+    'use strict';
+    
+    // State Management
+    const state = {
+        currentLang: 'en',
+        districtsData: [],
+        filteredData: [],
+        currentFilter: { district: 'all', category: 'all' },
+        displayedArticles: 13,
+        articlesPerLoad: 12
+    };
+    
+    const prefixMap = { 'fs': 'fashion', 'by': 'beauty', 'lf': 'life', 'ds': 'districts' };
+    
+    // Utility Functions
+    const getCategoryFromId = (id) => prefixMap[id.substring(0, 2)] || 'districts';
+    const buildArticleUrl = (id) => `../article/index.html?category=${getCategoryFromId(id)}&id=${id}`;
+    
+    // Image Loading with Skeleton
+    function createImageWithSkeleton(src, alt, imgClass = '') {
+        return `
+            <div class="image-container w-full h-full">
+                <div class="skeleton w-full h-full absolute inset-0"></div>
+                <img src="${src}" 
+                     alt="${alt}" 
+                     class="${imgClass}" 
+                     loading="lazy"
+                     onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
+                     onerror="this.src='https://placehold.co/1200x675/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
+            </div>
+        `;
     }
-    document.getElementById('lang-text').textContent = currentLang === 'en' ? 'English' : '한국어';
-}
 
-// Data
-let districtsData = [];
-let districtMetaData = [];
-let filteredData = [];
-let currentDistrictFilter = 'all';
-let currentCategoryFilter = 'all';
-let displayedArticles = 10;
-const articlesPerLoad = 10;
-
-// ID Prefix Mapping
-const prefixMap = {
-    'fs': 'fashion',
-    'by': 'beauty',
-    'lf': 'life',
-    'ds': 'districts'
-};
-
-// Get Category from ID
-function getCategoryFromId(id) {
-    const prefix = id.substring(0, 2);
-    return prefixMap[prefix] || 'districts';
-}
-
-// Build Article URL
-function buildArticleUrl(id) {
-    const category = getCategoryFromId(id);
-    return `../article/index.html?category=${category}&id=${id}`;
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
-    initializeLanguage();
-    await loadData();
-    setupLanguageToggle();
-    setupDistrictButtons();
-    setupCategoryButtons();
-    setupLoadMore();
-    applyFilter();
-});
-
-// Load Data
-async function loadData() {
-    try {
-        const [districtsRes, metaRes] = await Promise.all([
-            fetch('../data/districts.json'),
-            fetch('../data/district_meta.json')
-        ]);
-        districtsData = await districtsRes.json();
-        districtMetaData = await metaRes.json();
-        filteredData = [...districtsData];
-    } catch (error) {
-        console.error('Error loading data:', error);
-        districtsData = [];
-        districtMetaData = [];
-        filteredData = [];
+    // Language Management
+    function initializeLanguage() {
+        const savedLang = sessionStorage.getItem('fbc_language');
+        if (savedLang) {
+            state.currentLang = savedLang;
+        } else {
+            const browserLang = navigator.language || navigator.userLanguage;
+            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+            sessionStorage.setItem('fbc_language', state.currentLang);
+        }
+        document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
     }
-}
 
-// Setup Language Toggle
-function setupLanguageToggle() {
-    const langToggle = document.getElementById('lang-toggle');
-    const langText = document.getElementById('lang-text');
-    
-    langToggle.addEventListener('click', () => {
-        currentLang = currentLang === 'en' ? 'ko' : 'en';
-        langText.textContent = currentLang === 'en' ? 'English' : '한국어';
-        localStorage.setItem('fbc_language', currentLang);
-        updateTexts();
-        renderContent();
-    });
-}
-
-// Setup District Buttons
-function setupDistrictButtons() {
-    const buttons = document.querySelectorAll('.district-badge');
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            currentDistrictFilter = button.dataset.district;
-            displayedArticles = 10;
-            
-            buttons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            applyFilter();
+    function setupLanguageToggle() {
+        const langToggle = document.getElementById('lang-toggle');
+        langToggle.addEventListener('click', () => {
+            state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
+            document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+            sessionStorage.setItem('fbc_language', state.currentLang);
+            updateTexts();
+            renderPage();
         });
-    });
-}
-
-// Setup Category Buttons
-function setupCategoryButtons() {
-    const buttons = document.querySelectorAll('.filter-badge');
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            currentCategoryFilter = button.dataset.filter;
-            displayedArticles = 10;
-            
-            document.querySelectorAll('.filter-badge').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            applyFilter();
-        });
-    });
-}
-
-// Apply Filter
-function applyFilter() {
-    filteredData = districtsData.filter(article => {
-        const districtMatch = currentDistrictFilter === 'all' || article.district_id === currentDistrictFilter;
-        const categoryMatch = currentCategoryFilter === 'all' || article.category === currentCategoryFilter;
-        return districtMatch && categoryMatch;
-    });
+    }
     
-    filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
-    renderContent();
-}
-
-// Setup Load More
-function setupLoadMore() {
-    document.getElementById('load-more').addEventListener('click', () => {
-        displayedArticles += articlesPerLoad;
-        renderContent();
-    });
-}
-
-// Update Text Content Based on Language
-function updateTexts() {
-    document.getElementById('load-more-text').textContent = currentLang === 'en' ? 'Load More' : '더 보기';
-}
-
-// Render Content
-function renderContent() {
-    const container = document.getElementById('districts-content');
-    container.innerHTML = '';
-    
-    if (currentDistrictFilter === 'all') {
-        // Show all districts grouped
-        districtMetaData.forEach(district => {
-            const districtArticles = filteredData.filter(a => a.district_id === district.district_id).slice(0, displayedArticles);
-            if (districtArticles.length > 0) {
-                renderDistrictSection(container, district, districtArticles);
-            }
-        });
-    } else {
-        // Show single district
-        const district = districtMetaData.find(d => d.district_id === currentDistrictFilter);
-        if (district) {
-            const districtArticles = filteredData.slice(0, displayedArticles);
-            renderDistrictSection(container, district, districtArticles);
+    // Data Loading
+    async function loadDistrictsData() {
+        try {
+            const response = await fetch('../data/districts.json');
+            state.districtsData = await response.json();
+            state.filteredData = [...state.districtsData];
+        } catch (error) {
+            console.error('Error loading districts data:', error);
+            state.districtsData = [];
+            state.filteredData = [];
         }
     }
     
-    // Show/Hide Load More Button
-    const loadMoreContainer = document.getElementById('load-more-container');
-    if (displayedArticles >= filteredData.length || filteredData.length === 0) {
-        loadMoreContainer.style.display = 'none';
-    } else {
-        loadMoreContainer.style.display = 'block';
+    // Filter Management
+    function setupFilterButtons() {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filterType = button.dataset.type;
+                const filterValue = button.dataset.filter;
+                
+                // Update active state
+                document.querySelectorAll(`[data-type="${filterType}"]`).forEach(btn => {
+                    btn.classList.remove('bg-black', 'text-white', 'border-black');
+                    btn.classList.add('bg-white', 'border-gray-300');
+                });
+                button.classList.add('bg-black', 'text-white', 'border-black');
+                button.classList.remove('bg-white', 'border-gray-300');
+                
+                // Update filter state
+                if (filterType === 'district') {
+                    state.currentFilter.district = filterValue;
+                } else if (filterType === 'category') {
+                    state.currentFilter.category = filterValue;
+                }
+                
+                state.displayedArticles = 13;
+                applyFilter();
+            });
+        });
     }
-}
-
-// Render District Section
-function renderDistrictSection(container, district, articles) {
-    const section = document.createElement('section');
-    section.className = 'district-section';
     
-    const districtTitle = currentLang === 'ko' ? district.title_kor : district.title_en;
-    const districtDesc = currentLang === 'ko' ? district.desc_kor : district.desc_en;
+    function applyFilter() {
+        const { district, category } = state.currentFilter;
+        
+        state.filteredData = state.districtsData.filter(article => {
+            const districtMatch = district === 'all' || article.district_id === district;
+            const categoryMatch = category === 'all' || article.category.includes(category);
+            return districtMatch && categoryMatch;
+        });
+        
+        state.filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderPage();
+    }
     
-    section.innerHTML = `
-        <div class="district-header">
-            <h2 class="district-title font-serif">${districtTitle}</h2>
-            <p class="district-desc">${districtDesc}</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="articles-${district.district_id}">
-        </div>
-    `;
-    
-    container.appendChild(section);
-    
-    // Render articles
-    const articlesContainer = document.getElementById(`articles-${district.district_id}`);
-    articles.forEach(article => {
-        articlesContainer.appendChild(createArticleCard(article));
-    });
-}
-
-// Create Article Card
-function createArticleCard(article) {
-    const title = currentLang === 'en' ? article.title_en : article.title_kor;
-    const desc = currentLang === 'en' ? article.desc_en : article.desc_kor;
-    
-    const articleEl = document.createElement('article');
-    articleEl.className = 'fade-in';
-    articleEl.innerHTML = `
-        <a href="${buildArticleUrl(article.id)}" class="block group">
-            <div class="aspect-[3/2] overflow-hidden bg-gray-100 mb-4 relative">
-                <img src="../${article.image}" alt="${title}" 
-                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                     onerror="this.src='https://placehold.co/800x600/e5e5e5/666666?text=FBC'">
-                ${article.cultural_badge ? `<span class="cultural-badge absolute top-3 left-3">${article.cultural_badge}</span>` : ''}
-            </div>
-            <div>
-                <div class="flex items-center space-x-2 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wide">${article.category}</span>
+    // Render Functions
+    function renderHeroArticle() {
+        const heroContainer = document.getElementById('hero-article');
+        if (state.filteredData.length === 0) {
+            heroContainer.innerHTML = '';
+            return;
+        }
+        
+        const hero = state.filteredData[0];
+        const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
+        const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
+        
+        heroContainer.innerHTML = `
+            <a href="${buildArticleUrl(hero.id)}" class="block relative group">
+                <div class="aspect-video overflow-hidden bg-gray-100 relative">
+                    ${createImageWithSkeleton(hero.image_display_url, title, 'w-full h-full object-cover')}
                 </div>
-                <h3 class="text-base font-bold mb-2 group-hover:text-gray-600 transition line-clamp-2">${title}</h3>
-                <p class="text-sm text-gray-600 mb-2 line-clamp-2">${desc}</p>
-                <p class="text-xs text-gray-500">${article.date} · ${article.author}</p>
-            </div>
-        </a>
-    `;
-    
-    return articleEl;
-}
-
-// Newsletter Subscription
-document.getElementById('newsletter-submit').addEventListener('click', () => {
-    const email = document.getElementById('newsletter-email').value;
-    if (email && email.includes('@')) {
-        alert(currentLang === 'en' 
-            ? 'Thank you for subscribing!' 
-            : '구독해 주셔서 감사합니다!');
-        document.getElementById('newsletter-email').value = '';
-    } else {
-        alert(currentLang === 'en' 
-            ? 'Please enter a valid email address.' 
-            : '유효한 이메일 주소를 입력해주세요.');
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="inline-block px-3 py-1 text-[10px] md:text-[11px] font-semibold uppercase tracking-wide bg-black text-white">${hero.category}</span>
+                        ${hero.cultural_badge ? `<span class="inline-block px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${hero.cultural_badge}</span>` : ''}
+                    </div>
+                    <h2 class="text-xl md:text-3xl lg:text-4xl font-serif font-bold text-white mb-2 break-words">${title}</h2>
+                    <p class="text-sm md:text-lg text-white/90 mb-3 line-clamp-2">${desc}</p>
+                    <p class="text-xs md:text-sm text-white/70">${hero.date} · ${hero.author}</p>
+                </div>
+            </a>
+        `;
     }
-});
+    
+    function renderFeaturedGrid() {
+        const articles = state.filteredData.slice(1, 5);
+        document.getElementById('featured-grid').innerHTML = articles.map(article => createArticleCard(article)).join('');
+    }
+    
+    function renderLatestStories() {
+        const articles = state.filteredData.slice(5, state.displayedArticles);
+        const latestSection = document.getElementById('latest-section');
+        const loadMoreContainer = document.getElementById('load-more-container');
+        
+        if (articles.length === 0) {
+            latestSection.classList.add('hidden');
+            loadMoreContainer.classList.add('hidden');
+            return;
+        }
+        
+        latestSection.classList.remove('hidden');
+        document.getElementById('latest-articles').innerHTML = articles.map(article => createArticleCard(article)).join('');
+        
+        loadMoreContainer.classList.toggle('hidden', state.displayedArticles >= state.filteredData.length);
+    }
+    
+    function createArticleCard(article) {
+        const title = state.currentLang === 'en' ? article.title_en : article.title_kor;
+        const desc = state.currentLang === 'en' ? article.desc_en : article.desc_kor;
+        
+        return `
+            <article class="fade-in">
+                <a href="${buildArticleUrl(article.id)}" class="block group">
+                    <div class="aspect-[3/2] overflow-hidden bg-gray-100 mb-4 relative rounded-sm">
+                        ${createImageWithSkeleton(article.image_display_url, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        ${article.cultural_badge ? `<span class="absolute top-3 left-3 inline-block px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${article.cultural_badge}</span>` : ''}
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wide text-gray-700">${article.category}</span>
+                        <h3 class="text-base font-bold my-2 group-hover:text-gray-600 transition line-clamp-2">${title}</h3>
+                        <p class="text-sm text-gray-600 mb-2 line-clamp-2">${desc}</p>
+                        <p class="text-xs text-gray-500">${article.date} · ${article.author}</p>
+                    </div>
+                </a>
+            </article>
+        `;
+    }
+    
+    function renderPage() {
+        updateTexts();
+        renderHeroArticle();
+        renderFeaturedGrid();
+        renderLatestStories();
+    }
+    
+    function updateTexts() {
+        document.getElementById('load-more-text').textContent = state.currentLang === 'en' ? 'Load More' : '더 보기';
+    }
+    
+    // Load More
+    function setupLoadMore() {
+        document.getElementById('load-more').addEventListener('click', () => {
+            state.displayedArticles += state.articlesPerLoad;
+            renderLatestStories();
+        });
+    }
+    
+    // Newsletter
+    function setupNewsletter() {
+        document.getElementById('newsletter-submit').addEventListener('click', () => {
+            const email = document.getElementById('newsletter-email').value;
+            if (email && email.includes('@')) {
+                alert(state.currentLang === 'en' ? 'Thank you for subscribing!' : '구독해 주셔서 감사합니다!');
+                document.getElementById('newsletter-email').value = '';
+            } else {
+                alert(state.currentLang === 'en' ? 'Please enter a valid email address.' : '유효한 이메일 주소를 입력해주세요.');
+            }
+        });
+    }
+    
+    // Initialize
+    async function init() {
+        initializeLanguage();
+        await loadDistrictsData();
+        setupLanguageToggle();
+        setupFilterButtons();
+        setupLoadMore();
+        setupNewsletter();
+        applyFilter();
+    }
+    
+    document.addEventListener('DOMContentLoaded', init);
+})();
 </script>
 
 </body>
