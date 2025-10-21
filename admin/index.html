@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBC Admin - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
+        .font-serif {
+            font-family: 'Noto Serif KR', Georgia, serif !important;
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center px-4">
+    
+    <!-- Login Container -->
+    <div class="w-full max-w-md">
+        
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-serif font-bold tracking-wider mb-2">FBC</h1>
+            <p class="text-sm text-gray-600 tracking-widest uppercase">Admin Portal</p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-8">
+            
+            <!-- Alert Message -->
+            <div id="alert-message" class="hidden mb-6 p-4 rounded border">
+                <p id="alert-text" class="text-sm"></p>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email"
+                        required
+                        autocomplete="email"
+                        class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
+                        placeholder="admin@fbc-creators.com"
+                    >
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Password
+                    </label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password"
+                        required
+                        autocomplete="current-password"
+                        class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
+                        placeholder="••••••••"
+                    >
+                </div>
+                
+                <button 
+                    type="submit" 
+                    id="login-button"
+                    class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    로그인
+                </button>
+            </form>
+            
+            <!-- Divider -->
+            <div class="relative my-8">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-xs uppercase">
+                    <span class="px-2 bg-white text-gray-500 tracking-wider">or</span>
+                </div>
+            </div>
+            
+            <!-- Magic Link -->
+            <button 
+                type="button"
+                id="magic-link-button"
+                class="w-full border border-gray-300 py-3 rounded font-medium hover:bg-gray-50 transition text-sm"
+            >
+                Magic Link로 로그인
+            </button>
+            
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-8">
+            <a href="index.html" class="text-sm text-gray-600 hover:text-black transition">
+                ← 메인으로 돌아가기
+            </a>
+        </div>
+        
+    </div>
+
+    <script type="module">
+        /**
+         * @fileoverview FBC Admin Login Page
+         * @description Supabase Authentication for Admin Portal
+         */
+
+        // ============================================
+        // Supabase Configuration
+        // ============================================
+        const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwY2libmhoZWdraGR3eXhlcWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzMyNzYsImV4cCI6MjA3NjMwOTI3Nn0.LKjw1dqgjs39shvGpxcfFPutA7p1yR9eOb4zhomSBS8'; //
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============================================
+        // DOM Elements
+        // ============================================
+        /** @type {HTMLFormElement} */
+        const loginForm = document.getElementById('login-form');
+        
+        /** @type {HTMLInputElement} */
+        const emailInput = document.getElementById('email');
+        
+        /** @type {HTMLInputElement} */
+        const passwordInput = document.getElementById('password');
+        
+        /** @type {HTMLButtonElement} */
+        const loginButton = document.getElementById('login-button');
+        
+        /** @type {HTMLButtonElement} */
+        const magicLinkButton = document.getElementById('magic-link-button');
+        
+        /** @type {HTMLDivElement} */
+        const alertMessage = document.getElementById('alert-message');
+        
+        /** @type {HTMLParagraphElement} */
+        const alertText = document.getElementById('alert-text');
+
+        // ============================================
+        // Alert Functions
+        // ============================================
+        
+        /**
+         * Show alert message
+         * @param {string} message - Message to display
+         * @param {'success' | 'error' | 'info'} type - Alert type
+         */
+        function showAlert(message, type = 'info') {
+            alertText.textContent = message;
+            alertMessage.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'text-green-800', 
+                                         'bg-red-50', 'border-red-200', 'text-red-800',
+                                         'bg-blue-50', 'border-blue-200', 'text-blue-800');
+            
+            if (type === 'success') {
+                alertMessage.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+            } else if (type === 'error') {
+                alertMessage.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+            } else {
+                alertMessage.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-800');
+            }
+        }
+
+        /**
+         * Hide alert message
+         */
+        function hideAlert() {
+            alertMessage.classList.add('hidden');
+        }
+
+        /**
+         * Set loading state
+         * @param {boolean} loading - Loading state
+         */
+        function setLoading(loading) {
+            loginButton.disabled = loading;
+            magicLinkButton.disabled = loading;
+            
+            if (loading) {
+                loginButton.textContent = '로그인 중...';
+            } else {
+                loginButton.textContent = '로그인';
+            }
+        }
+
+        // ============================================
+        // Email Validation
+        // ============================================
+        
+        /**
+         * Validate email format
+         * @param {string} email - Email to validate
+         * @returns {boolean} - Valid or not
+         */
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // ============================================
+        // Authentication Functions
+        // ============================================
+        
+        /**
+         * Sign in with email and password
+         * @param {string} email - User email
+         * @param {string} password - User password
+         */
+        async function signInWithPassword(email, password) {
+            try {
+                setLoading(true);
+                hideAlert();
+
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (data?.user) {
+                    showAlert('로그인 성공! 리디렉션 중...', 'success');
+                    
+                    // Redirect to write page
+                    setTimeout(() => {
+                        window.location.href = '/write/index.html';
+                    }, 1000);
+                }
+
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                if (error.message.includes('Invalid login credentials')) {
+                    showAlert('이메일 또는 비밀번호가 올바르지 않습니다.', 'error');
+                } else {
+                    showAlert('로그인 중 오류가 발생했습니다: ' + error.message, 'error');
+                }
+                
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Sign in with magic link
+         * @param {string} email - User email
+         */
+        async function signInWithMagicLink(email) {
+            try {
+                setLoading(true);
+                hideAlert();
+
+                const { error } = await supabaseClient.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        emailRedirectTo: window.location.origin + '/write/index.html',
+                    },
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                showAlert('Magic Link가 이메일로 전송되었습니다. 확인해주세요.', 'success');
+                
+            } catch (error) {
+                console.error('Magic link error:', error);
+                showAlert('Magic Link 전송 중 오류가 발생했습니다: ' + error.message, 'error');
+                
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Check if user is already logged in
+         */
+        async function checkSession() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session?.user) {
+                    // Already logged in, redirect
+                    window.location.href = '/write/index.html';
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }
+
+        // ============================================
+        // Event Listeners
+        // ============================================
+        
+        /**
+         * Login form submit handler
+         */
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validation
+            if (!email || !password) {
+                showAlert('이메일과 비밀번호를 모두 입력해주세요.', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showAlert('올바른 이메일 형식이 아닙니다.', 'error');
+                return;
+            }
+
+            await signInWithPassword(email, password);
+        });
+
+        /**
+         * Magic link button handler
+         */
+        magicLinkButton.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showAlert('이메일을 입력해주세요.', 'error');
+                emailInput.focus();
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showAlert('올바른 이메일 형식이 아닙니다.', 'error');
+                return;
+            }
+
+            await signInWithMagicLink(email);
+        });
+
+        // ============================================
+        // Initialize
+        // ============================================
+        
+        // Check existing session on load
+        checkSession();
+        
+        // Auto-focus email input
+        emailInput.focus();
+
+    </script>
+
+</body>
+</html>
