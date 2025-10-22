@@ -250,6 +250,27 @@
         `;
     };
 
+    // Skeleton placeholder for articles
+    const createArticleSkeleton = () => `
+        <div class="animate-pulse">
+            <div class="aspect-square bg-gray-200 rounded mb-3"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        </div>
+    `;
+
+    const createSidebarSkeleton = () => `
+        <div class="flex gap-3 mb-5 animate-pulse">
+            <div class="w-20 h-20 bg-gray-200 rounded"></div>
+            <div class="flex-1">
+                <div class="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                <div class="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div class="h-2 bg-gray-200 rounded w-1/2"></div>
+            </div>
+        </div>
+    `;
+
     window.handleImageError = (img) => {
         img.src = 'https://placehold.co/800x600/e5e5e5/666666?text=FBC';
         img.classList.add('loaded');
@@ -341,10 +362,13 @@
     };
 
     // ============================================
-    // Data Loading from Supabase
+    // Data Loading from Supabase (Optimized)
     // ============================================
     async function loadData() {
         try {
+            // Show skeletons immediately
+            showSkeletons();
+
             // Load all content_items
             const { data: contentItems, error: contentError } = await supabaseClient
                 .from('content_items')
@@ -363,8 +387,22 @@
         }
     }
 
+    function showSkeletons() {
+        // Show skeletons for popular articles
+        $('popular-articles').innerHTML = Array(5).fill(createSidebarSkeleton()).join('');
+
+        // Show skeletons for related articles
+        $('related-articles').innerHTML = Array(3).fill(createArticleSkeleton()).join('');
+
+        // Show skeletons for latest articles
+        $('latest-articles').innerHTML = Array(3).fill(createArticleSkeleton()).join('');
+
+        // Show skeletons for must read
+        $('must-read-articles').innerHTML = Array(5).fill(createSidebarSkeleton()).join('');
+    }
+
     async function loadArticle(category, articleId) {
-        // Find article in content_items
+        // Step 1: Load text content immediately
         state.currentArticle = state.allArticles.find(a => a.id === articleId);
 
         if (!state.currentArticle) {
@@ -372,7 +410,22 @@
             return;
         }
 
-        // Load article HTML content
+        // Update title, category, author, date (text only)
+        $('article-category').textContent = state.currentArticle.category;
+        $('article-category').href = `../${category}/index.html`;
+        $('article-author').textContent = state.currentArticle.author;
+        $('article-date').textContent = state.currentArticle.date;
+        document.title = `${state.currentArticle.title_kor} - FBC`;
+        $('article-title').textContent = state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en;
+
+        // Tags (text only)
+        if (state.currentArticle.tags?.length) {
+            $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
+                `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
+            ).join('');
+        }
+
+        // Step 2: Load article HTML content
         try {
             const { data: articleData, error: articleError } = await supabaseClient
                 .from('articles')
@@ -382,48 +435,38 @@
 
             if (articleError) throw articleError;
 
-            // Update UI
-            $('article-category').textContent = state.currentArticle.category;
-            $('article-category').href = `../${category}/index.html`;
-            $('article-author').textContent = state.currentArticle.author;
-            $('article-date').textContent = state.currentArticle.date;
-            document.title = `${state.currentArticle.title_kor} - FBC`;
-
             updateArticleContent(articleData);
 
-            // Tags
-            if (state.currentArticle.tags?.length) {
-                $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
-                    `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
-                ).join('');
-            }
-
-            // Related articles (same category or tags)
+            // Step 3: Prepare article lists (text only first)
             const related = state.allArticles.filter(a =>
                 a.id !== articleId &&
                 (a.source_type === state.currentArticle.source_type ||
                     a.tags?.some(t => state.currentArticle.tags?.includes(t)))
             ).slice(0, 3);
 
-            // Latest articles
             const latest = state.allArticles.filter(a => a.id !== articleId).slice(0, 3);
 
-            // Popular articles (same category, sorted by views)
             const popular = state.allArticles
                 .filter(a => a.id !== articleId && a.source_type === state.currentArticle.source_type)
                 .sort((a, b) => (b.views || 0) - (a.views || 0))
                 .slice(0, 5);
 
-            renderArticleGrid('related-articles', related);
-            renderArticleGrid('latest-articles', latest);
-            renderSidebarItems('popular-articles', popular);
-
-            // Must Read - fetch from a separate pinned table or hardcode IDs
-            const mustReadIds = ['fs00001', 'by00001', 'lf00001']; // Example
+            const mustReadIds = ['fs00001', 'by00001', 'lf00001'];
             const mustRead = state.allArticles
                 .filter(a => mustReadIds.includes(a.id) && a.id !== articleId)
                 .slice(0, 5);
-            renderSidebarItems('must-read-articles', mustRead);
+
+            // Step 4: Render in priority order (images load sequentially)
+            await renderSidebarItems('popular-articles', popular);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await renderArticleGrid('related-articles', related);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await renderArticleGrid('latest-articles', latest);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await renderSidebarItems('must-read-articles', mustRead);
 
         } catch (error) {
             console.error('Error loading article content:', error);
@@ -433,7 +476,6 @@
 
     function updateArticleContent(articleData) {
         const { currentArticle, currentLang } = state;
-        $('article-title').textContent = currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
 
         if (articleData) {
             let html = currentLang === 'ko' ? articleData.article_html_ko : articleData.article_html_en;
@@ -455,7 +497,7 @@
         const container = $(containerId);
         if (!articles?.length) {
             container.innerHTML = `<p class="text-gray-500 text-sm">${state.currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No articles.'}</p>`;
-            return;
+            return Promise.resolve();
         }
 
         container.innerHTML = articles.map(article => {
@@ -471,13 +513,15 @@
                 </a>
             `;
         }).join('');
+
+        return Promise.resolve();
     }
 
     function renderSidebarItems(containerId, articles) {
         const container = $(containerId);
         if (!articles?.length) {
             container.innerHTML = `<p class="text-gray-500 text-xs md:text-sm">${state.currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.'}</p>`;
-            return;
+            return Promise.resolve();
         }
 
         container.innerHTML = articles.map(article => {
@@ -494,6 +538,8 @@
                 </a>
             `;
         }).join('');
+
+        return Promise.resolve();
     }
 
     // ============================================
@@ -553,6 +599,8 @@
     // ============================================
     initializeLanguage();
     loadData();
+</script>
+
 </script>
 </body>
 </html>
