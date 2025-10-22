@@ -206,6 +206,8 @@
     // ============================================
     // Utility Functions
     // ============================================
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const buildArticleUrl = (id, sourceType) => `../article/index.html?category=${sourceType}&id=${id}`;
 
     function createImageWithSkeleton(src, alt, imgClass = '') {
@@ -222,29 +224,43 @@
         `;
     }
 
+    const createSkeletonCard = () => `
+        <div class="animate-pulse">
+            <div class="aspect-[3/2] bg-gray-200 rounded-sm mb-4"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        </div>
+    `;
+
     // ============================================
     // Language Management
     // ============================================
     function initializeLanguage() {
         const savedLang = sessionStorage.getItem('fbc_language');
+
         if (savedLang) {
+            // 세션에 저장된 언어가 있으면 우선 사용
             state.currentLang = savedLang;
         } else {
+            // 없으면 시스템 언어 감지
             const browserLang = navigator.language || navigator.userLanguage;
             state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
             sessionStorage.setItem('fbc_language', state.currentLang);
         }
-        document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+
+        document.getElementById('lang-text').textContent = state.currentLang === 'ko' ? '한국어' : 'English';
     }
 
     function setupLanguageToggle() {
         const langToggle = document.getElementById('lang-toggle');
         langToggle.addEventListener('click', () => {
             state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
-            document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+            document.getElementById('lang-text').textContent = state.currentLang === 'ko' ? '한국어' : 'English';
             sessionStorage.setItem('fbc_language', state.currentLang);
             updateTexts();
-            renderPage();
+            renderAllSections();
         });
     }
 
@@ -268,6 +284,29 @@
             state.fashionData = [];
             state.filteredData = [];
         }
+    }
+
+    // ============================================
+    // Skeleton Display
+    // ============================================
+    function showSkeletons() {
+        // Hero skeleton
+        document.getElementById('hero-article').innerHTML = `
+            <div class="relative animate-pulse">
+                <div class="aspect-video bg-gray-200 rounded"></div>
+                <div class="absolute bottom-8 left-8 right-8">
+                    <div class="h-4 bg-gray-300 rounded w-1/4 mb-4"></div>
+                    <div class="h-8 bg-gray-300 rounded w-3/4 mb-3"></div>
+                    <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                </div>
+            </div>
+        `;
+
+        // Featured grid skeleton
+        document.getElementById('featured-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+
+        // Latest section skeleton
+        document.getElementById('latest-articles').innerHTML = Array(8).fill(createSkeletonCard()).join('');
     }
 
     // ============================================
@@ -295,7 +334,7 @@
         });
     }
 
-    function applyFilter() {
+    async function applyFilter() {
         const { type, value } = state.currentFilter;
 
         if (type === 'category') {
@@ -309,13 +348,15 @@
         }
 
         state.filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        renderPage();
+
+        // 순차 로딩
+        await renderSequentially();
     }
 
     // ============================================
     // Render Functions
     // ============================================
-    function renderHeroArticle() {
+    async function renderHeroArticle() {
         const heroContainer = document.getElementById('hero-article');
         if (state.filteredData.length === 0) {
             heroContainer.innerHTML = '';
@@ -323,8 +364,8 @@
         }
 
         const hero = state.filteredData[0];
-        const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
-        const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
+        const title = state.currentLang === 'ko' ? hero.title_kor : hero.title_en;
+        const desc = state.currentLang === 'ko' ? hero.desc_kor : hero.desc_en;
 
         // Hero에서는 image_origin_url 사용, 없으면 image로 폴백
         const heroImage = hero.image_origin_url || hero.image;
@@ -347,12 +388,12 @@
         `;
     }
 
-    function renderFeaturedGrid() {
+    async function renderFeaturedGrid() {
         const articles = state.filteredData.slice(1, 5);
         document.getElementById('featured-grid').innerHTML = articles.map(article => createArticleCard(article)).join('');
     }
 
-    function renderLatestStories() {
+    async function renderLatestStories() {
         const articles = state.filteredData.slice(5, state.displayedArticles);
         const latestSection = document.getElementById('latest-section');
         const loadMoreContainer = document.getElementById('load-more-container');
@@ -370,8 +411,8 @@
     }
 
     function createArticleCard(article) {
-        const title = state.currentLang === 'en' ? article.title_en : article.title_kor;
-        const desc = state.currentLang === 'en' ? article.desc_en : article.desc_kor;
+        const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+        const desc = state.currentLang === 'ko' ? article.desc_kor : article.desc_en;
 
         return `
             <article class="fade-in">
@@ -391,7 +432,29 @@
         `;
     }
 
-    function renderPage() {
+    // ============================================
+    // Sequential Loading
+    // ============================================
+    async function renderSequentially() {
+        updateTexts();
+
+        // 1. Show skeletons
+        showSkeletons();
+        await delay(50);
+
+        // 2. Load Hero
+        await renderHeroArticle();
+        await delay(100);
+
+        // 3. Load Featured Grid
+        await renderFeaturedGrid();
+        await delay(100);
+
+        // 4. Load Latest Stories
+        await renderLatestStories();
+    }
+
+    function renderAllSections() {
         updateTexts();
         renderHeroArticle();
         renderFeaturedGrid();
@@ -399,7 +462,7 @@
     }
 
     function updateTexts() {
-        document.getElementById('load-more-text').textContent = state.currentLang === 'en' ? 'Load More' : '더 보기';
+        document.getElementById('load-more-text').textContent = state.currentLang === 'ko' ? '더 보기' : 'Load More';
     }
 
     // ============================================
@@ -419,10 +482,10 @@
         document.getElementById('newsletter-submit').addEventListener('click', () => {
             const email = document.getElementById('newsletter-email').value;
             if (email && email.includes('@')) {
-                alert(state.currentLang === 'en' ? 'Thank you for subscribing!' : '구독해 주셔서 감사합니다!');
+                alert(state.currentLang === 'ko' ? '구독해 주셔서 감사합니다!' : 'Thank you for subscribing!');
                 document.getElementById('newsletter-email').value = '';
             } else {
-                alert(state.currentLang === 'en' ? 'Please enter a valid email address.' : '유효한 이메일 주소를 입력해주세요.');
+                alert(state.currentLang === 'ko' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email address.');
             }
         });
     }
@@ -431,16 +494,24 @@
     // Initialize
     // ============================================
     async function init() {
+        // 1. Initialize language (세션 또는 시스템 언어)
         initializeLanguage();
+
+        // 2. Load data
         await loadFashionData();
+
+        // 3. Setup listeners
         setupLanguageToggle();
         setupFilterButtons();
         setupLoadMore();
         setupNewsletter();
-        applyFilter();
+
+        // 4. Initial render with sequential loading
+        await applyFilter();
     }
 
     document.addEventListener('DOMContentLoaded', init);
 </script>
+
 </body>
 </html>

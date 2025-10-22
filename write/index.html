@@ -296,7 +296,7 @@
     ];
 
     // 기존 icons 객체 그대로 사용
-    const buttons = [
+    const icons = [
         { name: 'Bold', icon: icons.bold, command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
         { name: 'Italic', icon: icons.italic, command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
         { name: 'Underline', icon: icons.underline, command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
