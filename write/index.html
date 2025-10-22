@@ -6,7 +6,6 @@
     <title>FBC Content Editor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -19,6 +18,7 @@
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
 
+        /* Tiptap Editor Styles */
         .ProseMirror {
             padding: 20px;
             min-height: 400px;
@@ -32,12 +32,18 @@
         .ProseMirror h3 { font-size: 1.25em; font-weight: bold; margin: 0.6em 0 0.3em; line-height: 1.4; }
         .ProseMirror strong { font-weight: bold; }
         .ProseMirror em { font-style: italic; }
+        .ProseMirror u { text-decoration: underline; }
+        .ProseMirror s { text-decoration: line-through; }
         .ProseMirror code {
             background: #f3f4f6;
             padding: 2px 6px;
             border-radius: 3px;
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
+        }
+        .ProseMirror mark {
+            background: #fef08a;
+            padding: 2px 0;
         }
         .ProseMirror img {
             max-width: 500px;
@@ -50,6 +56,9 @@
             color: #3b82f6;
             text-decoration: underline;
         }
+        .ProseMirror .text-left { text-align: left; }
+        .ProseMirror .text-center { text-align: center; }
+        .ProseMirror .text-right { text-align: right; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -92,104 +101,55 @@
     <!-- Mode Selection - Admin Style -->
     <div id="mode-selection" class="min-h-[80vh] flex items-center justify-center px-4">
         <div class="w-full max-w-md">
-
-            <!-- Logo & Title -->
             <div class="text-center mb-8">
                 <h1 class="text-5xl font-serif font-bold tracking-wider mb-2">FBC</h1>
                 <p class="text-sm text-gray-600 tracking-widest uppercase">Content Editor</p>
             </div>
-
-            <!-- Selection Card -->
             <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-8">
-
-                <h2 class="text-xl font-semibold text-center mb-6">
-                    작업 선택
-                </h2>
-
-                <p class="text-sm text-gray-600 text-center mb-8">
-                    어떤 작업을 하시겠습니까?
-                </p>
-
-                <!-- Buttons -->
+                <h2 class="text-xl font-semibold text-center mb-6">작업 선택</h2>
+                <p class="text-sm text-gray-600 text-center mb-8">어떤 작업을 하시겠습니까?</p>
                 <div class="space-y-4">
-                    <button
-                            id="btn-edit-mode"
-                            class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
-                    >
+                    <button id="btn-edit-mode" class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition">
                         기존 게시글 수정
                     </button>
-
-                    <button
-                            id="btn-create-mode"
-                            class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
-                    >
+                    <button id="btn-create-mode" class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition">
                         새로운 글 발행
                     </button>
                 </div>
-
             </div>
-
-            <!-- Footer -->
             <div class="text-center mt-8">
                 <a href="../index.html" class="text-sm text-gray-600 hover:text-black transition">
                     ← 메인으로 돌아가기
                 </a>
             </div>
-
         </div>
     </div>
 
-    <!-- Edit Mode: URL Input - Admin Style -->
+    <!-- Edit Mode: URL Input -->
     <div id="edit-url-input" class="hidden min-h-[80vh] flex items-center justify-center px-4">
         <div class="w-full max-w-md">
-
-            <!-- Logo & Title -->
             <div class="text-center mb-8">
                 <h1 class="text-5xl font-serif font-bold tracking-wider mb-2">FBC</h1>
                 <p class="text-sm text-gray-600 tracking-widest uppercase">Edit Article</p>
             </div>
-
-            <!-- URL Input Card -->
             <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-8">
-
                 <h2 class="text-xl font-semibold mb-2">게시글 URL 입력</h2>
-                <p class="text-sm text-gray-600 mb-6">
-                    수정할 게시글의 URL을 입력해주세요.
-                </p>
-
+                <p class="text-sm text-gray-600 mb-6">수정할 게시글의 URL을 입력해주세요.</p>
                 <div class="space-y-6">
                     <div>
-                        <label for="article-url" class="block text-sm font-medium text-gray-700 mb-2">
-                            게시글 URL
-                        </label>
-                        <input
-                                type="text"
-                                id="article-url"
-                                class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition text-sm"
-                                placeholder="http://localhost:8000/article/index.html?category=fashion&id=fs00001"
-                        >
+                        <label for="article-url" class="block text-sm font-medium text-gray-700 mb-2">게시글 URL</label>
+                        <input type="text" id="article-url" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition text-sm" placeholder="http://localhost:8000/article/index.html?category=fashion&id=fs00001">
                     </div>
-
-                    <button
-                            id="load-article-btn"
-                            class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition"
-                    >
+                    <button id="load-article-btn" class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition">
                         불러오기
                     </button>
                 </div>
-
             </div>
-
-            <!-- Footer -->
             <div class="text-center mt-8">
-                <button
-                        id="back-to-mode-select"
-                        class="text-sm text-gray-600 hover:text-black transition"
-                >
+                <button id="back-to-mode-select" class="text-sm text-gray-600 hover:text-black transition">
                     ← 작업 선택으로 돌아가기
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -197,9 +157,7 @@
     <div id="editor-form" class="hidden">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold" id="form-title">새 콘텐츠 발행</h1>
-            <button id="cancel-edit-btn" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition">
-                취소
-            </button>
+            <button id="cancel-edit-btn" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition">취소</button>
         </div>
 
         <input type="hidden" id="edit-article-id" value="">
@@ -222,9 +180,9 @@
                 <label class="block font-semibold mb-2 text-sm">제목 (한국어) *</label>
                 <input type="text" id="title-kor" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="한국어 제목" required>
             </div>
-            <div>
-                <label class="block font-semibold mb-2 text-sm">제목 (English) *</label>
-                <input type="text" id="title-en" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English title" required>
+            <div class="flex gap-2">
+                <input type="text" id="title-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English title" required>
+                <button id="translate-title-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">번역</button>
             </div>
         </div>
 
@@ -234,9 +192,9 @@
                 <label class="block font-semibold mb-2 text-sm">설명 (한국어) *</label>
                 <input type="text" id="desc-kor" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="한국어 설명" required>
             </div>
-            <div>
-                <label class="block font-semibold mb-2 text-sm">설명 (English) *</label>
-                <input type="text" id="desc-en" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English description" required>
+            <div class="flex gap-2">
+                <input type="text" id="desc-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English description" required>
+                <button id="translate-desc-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">번역</button>
             </div>
         </div>
 
@@ -252,8 +210,12 @@
                     <input type="text" id="author" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="Author name" required>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block font-semibold mb-2 text-sm">썸네일 이미지 URL *</label>
-                    <input type="text" id="thumbnail-url" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="https://..." required>
+                    <label class="block font-semibold mb-2 text-sm">썸네일 이미지 *</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="thumbnail-file" accept="image/*" class="hidden">
+                        <button id="thumbnail-upload-btn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">이미지 업로드</button>
+                        <input type="text" id="thumbnail-url" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="또는 URL 입력" required>
+                    </div>
                 </div>
                 <div>
                     <label class="block font-semibold mb-2 text-sm">Cultural Badge (선택, 영어/숫자만)</label>
@@ -279,6 +241,7 @@
                 <div id="toolbar-kor" class="border-b border-gray-200 p-2 flex gap-1 flex-wrap bg-gray-50"></div>
                 <div id="editor-kor"></div>
             </div>
+            <button id="translate-content-btn" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">본문 영어로 번역</button>
         </div>
 
         <!-- Content Editor (English) -->
@@ -295,7 +258,7 @@
             <button id="publish-btn" class="px-8 py-3 bg-black text-white rounded hover:bg-gray-800 transition font-semibold">
                 <span id="publish-btn-text">발행하기</span>
             </button>
-            <p id="publish-info" class="text-sm text-gray-600 mt-4">
+            <p class="text-sm text-gray-600 mt-4">
                 <span id="publish-info-text">발행하면 Supabase에 데이터가 저장됩니다.</span>
             </p>
         </div>
@@ -306,21 +269,24 @@
 <script type="module">
     /**
      * @fileoverview FBC Content Editor with Supabase Integration
-     * @description Admin panel for creating and editing content
+     * @description Complete admin panel with all features
      */
 
     import { Editor } from 'https://esm.sh/@tiptap/core@2.10.3'
     import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.10.3'
     import TiptapImage from 'https://esm.sh/@tiptap/extension-image@2.10.3'
     import Link from 'https://esm.sh/@tiptap/extension-link@2.10.3'
+    import Underline from 'https://esm.sh/@tiptap/extension-underline@2.10.3'
     import Highlight from 'https://esm.sh/@tiptap/extension-highlight@2.10.3'
+    import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.10.3'
     import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder@2.10.3'
 
     // ============================================
-    // Supabase Configuration
+    // Configuration
     // ============================================
     const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your anon key
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const IMGBB_API_KEY = '4a0d69744fa47d8de59028ec369b7abc';
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -330,14 +296,11 @@
     // ============================================
     /** @type {Editor|null} */
     let editorKor = null;
-
     /** @type {Editor|null} */
     let editorEn = null;
-
     /** @type {boolean} */
     let isEditMode = false;
 
-    /** @type {Array<{district_id: string, name_kor: string, name_en: string}>} */
     const districtMeta = [
         { district_id: "dsm00001", name_kor: "성수동", name_en: "Seongsu-dong" },
         { district_id: "dsm00002", name_kor: "한남동", name_en: "Hannam-dong" },
@@ -349,40 +312,37 @@
     // Toolbar Icons
     // ============================================
     const icons = {
-        bold: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 2.5C5.17157 2.5 4.5 3.17157 4.5 4V20C4.5 20.8284 5.17157 21.5 6 21.5H15C16.4587 21.5 17.8576 20.9205 18.8891 19.8891C19.9205 18.8576 20.5 17.4587 20.5 16C20.5 14.5413 19.9205 13.1424 18.8891 12.1109C18.6781 11.9 18.4518 11.7079 18.2128 11.5359C19.041 10.5492 19.5 9.29829 19.5 8C19.5 6.54131 18.9205 5.14236 17.8891 4.11091C16.8576 3.07946 15.4587 2.5 14 2.5H6ZM14 10.5C14.663 10.5 15.2989 10.2366 15.7678 9.76777C16.2366 9.29893 16.5 8.66304 16.5 8C16.5 7.33696 16.2366 6.70107 15.7678 6.23223C15.2989 5.76339 14.663 5.5 14 5.5H7.5V10.5H14ZM7.5 18.5V13.5H15C15.663 13.5 16.2989 13.7634 16.7678 14.2322C17.2366 14.7011 17.5 15.337 17.5 16C17.5 16.663 17.2366 17.2989 16.7678 17.7678C16.2989 18.2366 15.663 18.5 15 18.5H7.5Z"/></svg>',
-        italic: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.0222 3H19C19.5523 3 20 3.44772 20 4C20 4.55228 19.5523 5 19 5H15.693L10.443 19H14C14.5523 19 15 19.4477 15 20C15 20.5523 14.5523 21 14 21H9.02418C9.00802 21.0004 8.99181 21.0004 8.97557 21H5C4.44772 21 4 20.5523 4 20C4 19.4477 4.44772 19 5 19H8.30704L13.557 5H10C9.44772 5 9 4.55228 9 4C9 3.44772 9.44772 3 10 3H14.9782C14.9928 2.99968 15.0075 2.99967 15.0222 3Z"/></svg>',
-        image: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 2C20 1.44772 19.5523 1 19 1C18.4477 1 18 1.44772 18 2V4H16C15.4477 4 15 4.44772 15 5C15 5.55228 15.4477 6 16 6H18V8C18 8.55228 18.4477 9 19 9C19.5523 9 20 8.55228 20 8V6H22C22.5523 6 23 5.55228 23 5C23 4.44772 22.5523 4 22 4H20V2Z"/></svg>'
+        bold: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>',
+        italic: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>',
+        strike: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.3 4.9c-2.3-.6-4.4-1-6.2-.9-2.7 0-5.3.7-5.3 3.6 0 1.5.9 2.6 2.4 3.3M3.5 12h17M13.4 19.1c2.4.7 4.6.9 6.2.8 2.7 0 5.3-.7 5.3-3.6 0-1.4-.8-2.4-2.1-3.1"></path></svg>',
+        underline: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>',
+        code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+        highlight: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l3 3L22 4l-9 9-3-3zM3 21h18v-2H3v2z"></path></svg>',
+        link: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>',
+        h1: '<svg width="20" height="20" viewBox="0 0 24 24"><text x="2" y="18" font-size="16" font-weight="bold">H1</text></svg>',
+        h2: '<svg width="20" height="20" viewBox="0 0 24 24"><text x="2" y="18" font-size="14" font-weight="bold">H2</text></svg>',
+        h3: '<svg width="20" height="20" viewBox="0 0 24 24"><text x="2" y="18" font-size="12" font-weight="bold">H3</text></svg>',
+        alignLeft: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>',
+        alignCenter: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>',
+        alignRight: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>',
+        image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>'
     };
 
     // ============================================
     // Utility Functions
     // ============================================
 
-    /**
-     * Show/hide progress modal
-     * @param {boolean} show - Show or hide
-     */
     function showProgress(show = true) {
         document.getElementById('upload-overlay').classList.toggle('hidden', !show);
         document.getElementById('upload-progress').classList.toggle('hidden', !show);
     }
 
-    /**
-     * Update progress
-     * @param {number} percent - Progress percentage
-     * @param {string} status - Status message
-     * @param {string} detail - Detail message
-     */
     function updateProgress(percent, status, detail = '') {
         document.getElementById('progress-fill').style.width = `${percent}%`;
         document.getElementById('upload-status').textContent = status;
         document.getElementById('upload-detail').textContent = detail;
     }
 
-    /**
-     * Show/hide elements
-     * @param {string} showId - Element ID to show
-     */
     function showSection(showId) {
         ['mode-selection', 'edit-url-input', 'editor-form'].forEach(id => {
             document.getElementById(id).classList.add('hidden');
@@ -390,11 +350,6 @@
         document.getElementById(showId).classList.remove('hidden');
     }
 
-    /**
-     * Extract URL parameters
-     * @param {string} url - URL string
-     * @returns {{category: string|null, id: string|null}}
-     */
     function extractUrlParams(url) {
         try {
             const urlObj = new URL(url);
@@ -409,11 +364,6 @@
         }
     }
 
-    /**
-     * Generate next article ID
-     * @param {string} category - Category name
-     * @returns {Promise<string>}
-     */
     async function generateNextId(category) {
         const prefix = { fashion: 'fs', beauty: 'by', life: 'lf', districts: 'ds' }[category];
 
@@ -442,6 +392,120 @@
     }
 
     // ============================================
+    // Image Upload (ImgBB)
+    // ============================================
+
+    /**
+     * Resize image to max 500px
+     * @param {File} file - Image file
+     * @returns {Promise<Blob>}
+     */
+    async function resizeImage(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > 500) {
+                        height = (height * 500) / width;
+                        width = 500;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(resolve, file.type, 0.9);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Upload image to ImgBB
+     * @param {File} file - Image file
+     * @returns {Promise<string>} - Image URL
+     */
+    async function uploadToImgBB(file) {
+        const resizedBlob = await resizeImage(file);
+        const formData = new FormData();
+        formData.append('image', resizedBlob);
+
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            return data.data.url;
+        } else {
+            throw new Error('ImgBB upload failed');
+        }
+    }
+
+    // ============================================
+    // Translation (MyMemory API)
+    // ============================================
+
+    /**
+     * Translate text using MyMemory API
+     * @param {string} text - Text to translate
+     * @param {string} from - Source language
+     * @param {string} to - Target language
+     * @returns {Promise<string>}
+     */
+    async function translateText(text, from = 'ko', to = 'en') {
+        if (!text.trim()) return '';
+
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.responseData.translatedText;
+        } catch (error) {
+            console.error('Translation error:', error);
+            return text;
+        }
+    }
+
+    /**
+     * Translate HTML content
+     * @param {string} html - HTML content
+     * @returns {Promise<string>}
+     */
+    async function translateHTML(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+
+        const textNodes = [];
+        const walker = document.createTreeWalker(div, NodeFilter.SHOW_TEXT, null, false);
+
+        let node;
+        while (node = walker.nextNode()) {
+            if (node.nodeValue.trim()) {
+                textNodes.push(node);
+            }
+        }
+
+        for (const node of textNodes) {
+            const translated = await translateText(node.nodeValue);
+            node.nodeValue = translated;
+        }
+
+        return div.innerHTML;
+    }
+
+    // ============================================
     // Editor Initialization
     // ============================================
 
@@ -456,18 +520,28 @@
         const buttons = [
             { name: 'Bold', icon: icons.bold, command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
             { name: 'Italic', icon: icons.italic, command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
+            { name: 'Strike', icon: icons.strike, command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
+            { name: 'Underline', icon: icons.underline, command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
+            { name: 'Code', icon: icons.code, command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
+            { name: 'Highlight', icon: icons.highlight, command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') },
+            { name: 'H1', icon: icons.h1, command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
+            { name: 'H2', icon: icons.h2, command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
+            { name: 'H3', icon: icons.h3, command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
+            { name: 'Align Left', icon: icons.alignLeft, command: () => editor.chain().focus().setTextAlign('left').run(), isActive: () => editor.isActive({ textAlign: 'left' }) },
+            { name: 'Align Center', icon: icons.alignCenter, command: () => editor.chain().focus().setTextAlign('center').run(), isActive: () => editor.isActive({ textAlign: 'center' }) },
+            { name: 'Align Right', icon: icons.alignRight, command: () => editor.chain().focus().setTextAlign('right').run(), isActive: () => editor.isActive({ textAlign: 'right' }) },
         ];
 
         buttons.forEach(btn => {
             const button = document.createElement('button');
-            button.className = 'p-1.5 rounded hover:bg-gray-200 transition flex items-center justify-center min-w-[36px] min-h-[36px]';
+            button.className = 'p-2 rounded hover:bg-gray-200 transition';
             button.innerHTML = btn.icon;
             button.title = btn.name;
             button.type = 'button';
             button.onclick = btn.command;
 
             if (btn.isActive) {
-                const updateState = () => button.classList.toggle('bg-gray-200', btn.isActive());
+                const updateState = () => button.classList.toggle('bg-gray-300', btn.isActive());
                 editor.on('selectionUpdate', updateState);
                 editor.on('update', updateState);
                 updateState();
@@ -475,17 +549,47 @@
             toolbar.appendChild(button);
         });
 
-        // Image button
-        const imageBtn = document.createElement('button');
-        imageBtn.className = 'p-1.5 rounded hover:bg-gray-200 transition flex items-center justify-center min-w-[36px] min-h-[36px]';
-        imageBtn.innerHTML = icons.image;
-        imageBtn.title = 'Add image URL';
-        imageBtn.type = 'button';
-        imageBtn.onclick = () => {
-            const url = window.prompt('이미지 URL을 입력하세요:');
+        // Link button
+        const linkBtn = document.createElement('button');
+        linkBtn.className = 'p-2 rounded hover:bg-gray-200 transition';
+        linkBtn.innerHTML = icons.link;
+        linkBtn.title = 'Add Link';
+        linkBtn.type = 'button';
+        linkBtn.onclick = () => {
+            const url = window.prompt('URL을 입력하세요:');
             if (url) {
-                editor.chain().focus().setImage({ src: url }).run();
+                editor.chain().focus().setLink({ href: url }).run();
             }
+        };
+        toolbar.appendChild(linkBtn);
+
+        // Image button with upload
+        const imageBtn = document.createElement('button');
+        imageBtn.className = 'p-2 rounded hover:bg-gray-200 transition';
+        imageBtn.innerHTML = icons.image;
+        imageBtn.title = 'Add Image';
+        imageBtn.type = 'button';
+        imageBtn.onclick = async () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    try {
+                        showProgress(true);
+                        updateProgress(50, '이미지 업로드 중...');
+                        const url = await uploadToImgBB(file);
+                        editor.chain().focus().setImage({ src: url }).run();
+                        updateProgress(100, '완료!');
+                        setTimeout(() => showProgress(false), 500);
+                    } catch (error) {
+                        showProgress(false);
+                        alert('이미지 업로드 실패: ' + error.message);
+                    }
+                }
+            };
+            input.click();
         };
         toolbar.appendChild(imageBtn);
     }
@@ -498,7 +602,9 @@
             StarterKit,
             TiptapImage.configure({ inline: false }),
             Link.configure({ openOnClick: false }),
-            Highlight.configure({ multicolor: false })
+            Underline,
+            Highlight.configure({ multicolor: false }),
+            TextAlign.configure({ types: ['heading', 'paragraph'] })
         ];
 
         editorKor = new Editor({
@@ -521,20 +627,17 @@
     // Auth Check
     // ============================================
 
-    /**
-     * Check if user is authenticated
-     */
     async function checkAuth() {
         try {
             const { data: { session } } = await supabaseClient.auth.getSession();
 
             if (!session?.user) {
                 alert('로그인이 필요합니다.');
-                window.location.href = '/admin/index.html';
+                window.location.href = '/admin.html';
             }
         } catch (error) {
             console.error('Auth check error:', error);
-            window.location.href = '/admin/index.html';
+            window.location.href = '/admin.html';
         }
     }
 
@@ -542,17 +645,11 @@
     // Load Article for Editing
     // ============================================
 
-    /**
-     * Load article data from Supabase
-     * @param {string} category - Category name
-     * @param {string} articleId - Article ID
-     */
     async function loadArticle(category, articleId) {
         try {
             showProgress(true);
             updateProgress(20, '게시글 정보 불러오는 중...');
 
-            // Load content_items
             const { data: contentData, error: contentError } = await supabaseClient
                 .from('content_items')
                 .select('*')
@@ -563,7 +660,6 @@
 
             updateProgress(50, 'HTML 콘텐츠 불러오는 중...');
 
-            // Load articles
             const { data: articleData, error: articleError } = await supabaseClient
                 .from('articles')
                 .select('*')
@@ -574,7 +670,6 @@
 
             updateProgress(80, '폼 데이터 채우는 중...');
 
-            // Fill form
             document.getElementById('edit-article-id').value = articleId;
             document.getElementById('category').value = contentData.source_type;
             document.getElementById('title-kor').value = contentData.title_kor;
@@ -588,11 +683,9 @@
             document.getElementById('tags').value = (contentData.tags || []).join(', ');
             document.getElementById('district-select').value = contentData.district_id || '';
 
-            // Set editor content
             editorKor.commands.setContent(articleData.article_html_ko);
             editorEn.commands.setContent(articleData.article_html_en);
 
-            // Update UI
             document.getElementById('form-title').textContent = '게시글 수정';
             document.getElementById('publish-btn-text').textContent = '수정 완료';
             document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
@@ -615,9 +708,6 @@
     // Publish/Update Article
     // ============================================
 
-    /**
-     * Publish or update article
-     */
     async function publishArticle() {
         const category = document.getElementById('category').value;
         const titleKor = document.getElementById('title-kor').value;
@@ -632,7 +722,6 @@
         const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(Boolean) : [];
         const districtId = document.getElementById('district-select').value || null;
 
-        // Validation
         if (!category) return alert('카테고리를 선택해주세요.');
         if (!titleKor || !titleEn) return alert('제목을 모두 입력해주세요.');
         if (!descKor || !descEn) return alert('설명을 모두 입력해주세요.');
@@ -654,7 +743,6 @@
             showProgress(true);
             updateProgress(20, isEditMode ? '게시글 업데이트 중...' : '게시글 생성 중...');
 
-            // Prepare content_items data
             const contentData = {
                 id: articleId,
                 source_type: category,
@@ -672,7 +760,6 @@
                 views: 0
             };
 
-            // Prepare articles data
             const articleData = {
                 id: articleId,
                 article_html_ko: contentKor,
@@ -681,7 +768,6 @@
 
             updateProgress(50, 'content_items 저장 중...');
 
-            // Upsert content_items
             const { error: contentError } = await supabaseClient
                 .from('content_items')
                 .upsert(contentData, { onConflict: 'id' });
@@ -690,7 +776,6 @@
 
             updateProgress(75, 'articles 저장 중...');
 
-            // Upsert articles
             const { error: articleError } = await supabaseClient
                 .from('articles')
                 .upsert(articleData, { onConflict: 'id' });
@@ -716,13 +801,11 @@
     // Event Listeners
     // ============================================
 
-    // Logout
     document.getElementById('logout-btn').addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
-        window.location.href = '/admin/index.html';
+        window.location.href = '/admin.html';
     });
 
-    // Mode selection buttons
     document.getElementById('btn-edit-mode').addEventListener('click', () => {
         showSection('edit-url-input');
     });
@@ -735,7 +818,6 @@
         showSection('editor-form');
     });
 
-    // Back to mode selection
     document.getElementById('back-to-mode-select').addEventListener('click', () => {
         showSection('mode-selection');
     });
@@ -746,7 +828,6 @@
         }
     });
 
-    // Load article
     document.getElementById('load-article-btn').addEventListener('click', () => {
         const url = document.getElementById('article-url').value.trim();
         if (!url) {
@@ -757,17 +838,75 @@
         const { category, id } = extractUrlParams(url);
 
         if (!category || !id) {
-            alert('올바른 게시글 URL이 아닙니다.\n예: http://localhost:8000/article/index.html?category=fashion&id=fs00001');
+            alert('올바른 게시글 URL이 아닙니다.');
             return;
         }
 
         loadArticle(category, id);
     });
 
-    // Publish button
+    // Thumbnail upload
+    document.getElementById('thumbnail-upload-btn').addEventListener('click', () => {
+        document.getElementById('thumbnail-file').click();
+    });
+
+    document.getElementById('thumbnail-file').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                showProgress(true);
+                updateProgress(50, '썸네일 업로드 중...');
+                const url = await uploadToImgBB(file);
+                document.getElementById('thumbnail-url').value = url;
+                updateProgress(100, '완료!');
+                setTimeout(() => showProgress(false), 500);
+            } catch (error) {
+                showProgress(false);
+                alert('업로드 실패: ' + error.message);
+            }
+        }
+    });
+
+    // Translation buttons
+    document.getElementById('translate-title-btn').addEventListener('click', async () => {
+        const korText = document.getElementById('title-kor').value;
+        if (!korText) return alert('한국어 제목을 먼저 입력하세요.');
+
+        showProgress(true);
+        updateProgress(50, '번역 중...');
+        const translated = await translateText(korText);
+        document.getElementById('title-en').value = translated;
+        updateProgress(100, '완료!');
+        setTimeout(() => showProgress(false), 500);
+    });
+
+    document.getElementById('translate-desc-btn').addEventListener('click', async () => {
+        const korText = document.getElementById('desc-kor').value;
+        if (!korText) return alert('한국어 설명을 먼저 입력하세요.');
+
+        showProgress(true);
+        updateProgress(50, '번역 중...');
+        const translated = await translateText(korText);
+        document.getElementById('desc-en').value = translated;
+        updateProgress(100, '완료!');
+        setTimeout(() => showProgress(false), 500);
+    });
+
+    document.getElementById('translate-content-btn').addEventListener('click', async () => {
+        const korHtml = editorKor.getHTML();
+        if (!korHtml || korHtml === '<p></p>') return alert('한국어 본문을 먼저 작성하세요.');
+
+        showProgress(true);
+        updateProgress(30, '본문 번역 중...');
+        const translated = await translateHTML(korHtml);
+        editorEn.commands.setContent(translated);
+        updateProgress(100, '완료!');
+        setTimeout(() => showProgress(false), 500);
+    });
+
     document.getElementById('publish-btn').addEventListener('click', publishArticle);
 
-    // Input validation (English/numbers only)
+    // Input validation
     ['subcategory', 'author', 'cultural-badge', 'tags'].forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
@@ -781,7 +920,6 @@
     // Initialize
     // ============================================
 
-    // Populate districts
     districtMeta.forEach(district => {
         const option = document.createElement('option');
         option.value = district.district_id;
@@ -789,10 +927,7 @@
         document.getElementById('district-select').appendChild(option);
     });
 
-    // Initialize editors
     initializeEditors();
-
-    // Check authentication
     checkAuth();
 
 </script>
