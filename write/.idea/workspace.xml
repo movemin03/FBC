@@ -5,147 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8e5fe6b-5870-4c94-96ad-20da08bc9ec2" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/../about/about_html.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../about/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../about/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../article/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../article/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../beauty/beauty_jhtml.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../beauty/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../beauty/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/about.json" beforeDir="false" afterPath="$PROJECT_DIR$/../data/about.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/beauty.json" beforeDir="false" afterPath="$PROJECT_DIR$/../data/beauty.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/districts.json" beforeDir="false" afterPath="$PROJECT_DIR$/../data/districts.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/fashion.json" beforeDir="false" afterPath="$PROJECT_DIR$/../data/fashion.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/life.json" beforeDir="false" afterPath="$PROJECT_DIR$/../data/life.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../districts/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../districts/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fashion/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../fashion/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/about/slide-01.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/about/slide-02.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/about/slide-03.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/about/slide-04.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/about/slide-05.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00001.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00002.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00003.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00004.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00005.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00006.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00007.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00008.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00009.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00010.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00011.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00012.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00013.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00014.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00015.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00016.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00017.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00018.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00019.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00020.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00021.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00022.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00023.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00024.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00025.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00026.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00027.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00028.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00029.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/beauty/by00030.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00001.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00002.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00003.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00004.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00005.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00006.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00007.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00008.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00009.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00010.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00011.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00012.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00013.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00014.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00015.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00016.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00017.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00018.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00019.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00020.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00021.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00022.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00023.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00024.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00025.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00026.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00027.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00028.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00029.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/districts/ds00030.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00001.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00002.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00003.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00004.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00005.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00006.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00007.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00008.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00009.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00010.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00011.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00012.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00013.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00014.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00015.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00016.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00017.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00018.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00019.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00020.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00021.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00022.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00023.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00024.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00025.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00026.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00027.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00028.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00029.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/fashion/fs00030.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00001.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00002.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00003.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00004.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00005.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00006.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00007.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00008.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00009.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00010.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00011.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00012.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00013.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00014.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00015.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00016.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00017.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00018.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00019.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00020.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00021.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00022.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00023.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00024.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00025.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00026.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00027.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00028.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00029.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../img/life/lf00030.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../life/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../life/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../main index html.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../main index html.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,21 +24,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -194,6 +58,7 @@
       <updated>1760976229731</updated>
       <workItem from="1760976231647" duration="859000" />
       <workItem from="1760977338202" duration="7481000" />
+      <workItem from="1761134438257" duration="971000" />
     </task>
     <servers />
   </component>
