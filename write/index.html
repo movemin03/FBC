@@ -18,7 +18,6 @@
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
 
-        /* Tiptap Editor Styles */
         .ProseMirror {
             padding: 20px;
             min-height: 400px;
@@ -98,7 +97,7 @@
 <!-- Main Container -->
 <div class="max-w-[1200px] mx-auto px-5 py-10">
 
-    <!-- Mode Selection - Admin Style -->
+    <!-- Mode Selection -->
     <div id="mode-selection" class="min-h-[80vh] flex items-center justify-center px-4">
         <div class="w-full max-w-md">
             <div class="text-center mb-8">
@@ -161,6 +160,7 @@
         </div>
 
         <input type="hidden" id="edit-article-id" value="">
+        <input type="hidden" id="current-thumbnail-delete-url" value="">
 
         <!-- Category Selection -->
         <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
@@ -182,7 +182,7 @@
             </div>
             <div class="flex gap-2">
                 <input type="text" id="title-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English title" required>
-                <button id="translate-title-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">번역</button>
+                <button id="translate-title-btn" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm whitespace-nowrap">영어 자동채우기</button>
             </div>
         </div>
 
@@ -194,7 +194,7 @@
             </div>
             <div class="flex gap-2">
                 <input type="text" id="desc-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English description" required>
-                <button id="translate-desc-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">번역</button>
+                <button id="translate-desc-btn" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm whitespace-nowrap">영어 자동채우기</button>
             </div>
         </div>
 
@@ -213,7 +213,7 @@
                     <label class="block font-semibold mb-2 text-sm">썸네일 이미지 *</label>
                     <div class="flex gap-2">
                         <input type="file" id="thumbnail-file" accept="image/*" class="hidden">
-                        <button id="thumbnail-upload-btn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">이미지 업로드</button>
+                        <button id="thumbnail-upload-btn" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm">이미지 업로드</button>
                         <input type="text" id="thumbnail-url" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="또는 URL 입력" required>
                     </div>
                 </div>
@@ -241,7 +241,6 @@
                 <div id="toolbar-kor" class="border-b border-gray-200 p-2 flex gap-1 flex-wrap bg-gray-50"></div>
                 <div id="editor-kor"></div>
             </div>
-            <button id="translate-content-btn" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">본문 영어로 번역</button>
         </div>
 
         <!-- Content Editor (English) -->
@@ -267,11 +266,6 @@
 </div>
 
 <script type="module">
-    /**
-     * @fileoverview FBC Content Editor with Supabase Integration
-     * @description Complete admin panel with all features
-     */
-
     import { Editor } from 'https://esm.sh/@tiptap/core@2.10.3'
     import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.10.3'
     import TiptapImage from 'https://esm.sh/@tiptap/extension-image@2.10.3'
@@ -281,9 +275,7 @@
     import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.10.3'
     import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder@2.10.3'
 
-    // ============================================
     // Configuration
-    // ============================================
     const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
     const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
     const IMGBB_API_KEY = '4a0d69744fa47d8de59028ec369b7abc';
@@ -291,15 +283,11 @@
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ============================================
     // Global State
-    // ============================================
-    /** @type {Editor|null} */
     let editorKor = null;
-    /** @type {Editor|null} */
     let editorEn = null;
-    /** @type {boolean} */
     let isEditMode = false;
+    const uploadedImages = new Set(); // Track uploaded image URLs
 
     const districtMeta = [
         { district_id: "dsm00001", name_kor: "성수동", name_en: "Seongsu-dong" },
@@ -308,30 +296,21 @@
         { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong" }
     ];
 
-    // ============================================
     // Toolbar Icons
-    // ============================================
     const icons = {
-        bold: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>',
-        italic: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>',
-        strike: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.3 4.9c-2.3-.6-4.4-1-6.2-.9-2.7 0-5.3.7-5.3 3.6 0 1.5.9 2.6 2.4 3.3M3.5 12h17M13.4 19.1c2.4.7 4.6.9 6.2.8 2.7 0 5.3-.7 5.3-3.6 0-1.4-.8-2.4-2.1-3.1"></path></svg>',
-        underline: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>',
-        code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
-        highlight: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l3 3L22 4l-9 9-3-3zM3 21h18v-2H3v2z"></path></svg>',
-        link: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>',
-        h1: '<svg width="20" height="20" viewBox="0 0 24 24"><text x="2" y="18" font-size="16" font-weight="bold">H1</text></svg>',
-        h2: '<svg width="20" height="20" viewBox="0 0 24 24"><text x="2" y="18" font-size="14" font-weight="bold">H2</text></svg>',
-        h3: '<svg width="20" height="20" viewBox="0 0 24 24"><text x="2" y="18" font-size="12" font-weight="bold">H3</text></svg>',
-        alignLeft: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>',
-        alignCenter: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>',
-        alignRight: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>',
-        image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>'
+        bold: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 2.5C5.17157 2.5 4.5 3.17157 4.5 4V20C4.5 20.8284 5.17157 21.5 6 21.5H15C16.4587 21.5 17.8576 20.9205 18.8891 19.8891C19.9205 18.8576 20.5 17.4587 20.5 16C20.5 14.5413 19.9205 13.1424 18.8891 12.1109C18.6781 11.9 18.4518 11.7079 18.2128 11.5359C19.041 10.5492 19.5 9.29829 19.5 8C19.5 6.54131 18.9205 5.14236 17.8891 4.11091C16.8576 3.07946 15.4587 2.5 14 2.5H6ZM14 10.5C14.663 10.5 15.2989 10.2366 15.7678 9.76777C16.2366 9.29893 16.5 8.66304 16.5 8C16.5 7.33696 16.2366 6.70107 15.7678 6.23223C15.2989 5.76339 14.663 5.5 14 5.5H7.5V10.5H14ZM7.5 18.5V13.5H15C15.663 13.5 16.2989 13.7634 16.7678 14.2322C17.2366 14.7011 17.5 15.337 17.5 16C17.5 16.663 17.2366 17.2989 16.7678 17.7678C16.2989 18.2366 15.663 18.5 15 18.5H7.5Z"/></svg>',
+        italic: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.0222 3H19C19.5523 3 20 3.44772 20 4C20 4.55228 19.5523 5 19 5H15.693L10.443 19H14C14.5523 19 15 19.4477 15 20C15 20.5523 14.5523 21 14 21H9.02418C9.00802 21.0004 8.99181 21.0004 8.97557 21H5C4.44772 21 4 20.5523 4 20C4 19.4477 4.44772 19 5 19H8.30704L13.557 5H10C9.44772 5 9 4.55228 9 4C9 3.44772 9.44772 3 10 3H14.9782C14.9928 2.99968 15.0075 2.99967 15.0222 3Z"/></svg>',
+        strike: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9.00039 3H16.0001C16.5524 3 17.0001 3.44772 17.0001 4C17.0001 4.55229 16.5524 5 16.0001 5H9.00011C8.68006 4.99983 8.36412 5.07648 8.07983 5.22349C7.79555 5.37051 7.55069 5.5836 7.36585 5.84487C7.181 6.10614 7.06155 6.40796 7.01754 6.72497C6.97352 7.04198 7.00623 7.36492 7.11292 7.66667C7.29701 8.18737 7.02414 8.75872 6.50344 8.94281C5.98274 9.1269 5.4114 8.85403 5.2273 8.33333C5.01393 7.72984 4.94851 7.08396 5.03654 6.44994C5.12456 5.81592 5.36346 5.21229 5.73316 4.68974C6.10285 4.1672 6.59256 3.74101 7.16113 3.44698C7.72955 3.15303 8.36047 2.99975 9.00039 3Z"/><path d="M18 13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11H4C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H14C14.7956 13 15.5587 13.3161 16.1213 13.8787C16.6839 14.4413 17 15.2044 17 16C17 16.7956 16.6839 17.5587 16.1213 18.1213C15.5587 18.6839 14.7956 19 14 19H6C5.44772 19 5 19.4477 5 20C5 20.5523 5.44772 21 6 21H14C15.3261 21 16.5979 20.4732 17.5355 19.5355C18.4732 18.5979 19 17.3261 19 16C19 14.9119 18.6453 13.8604 18 13Z"/></svg>',
+        code: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.4545 4.2983C15.6192 3.77115 15.3254 3.21028 14.7983 3.04554C14.2712 2.88081 13.7103 3.1746 13.5455 3.70175L8.54554 19.7017C8.38081 20.2289 8.6746 20.7898 9.20175 20.9545C9.72889 21.1192 10.2898 20.8254 10.4545 20.2983L15.4545 4.2983Z"/><path d="M6.70711 7.29289C7.09763 7.68342 7.09763 8.31658 6.70711 8.70711L3.41421 12L6.70711 15.2929C7.09763 15.6834 7.09763 16.3166 6.70711 16.7071C6.31658 17.0976 5.68342 17.0976 5.29289 16.7071L1.29289 12.7071C0.902369 12.3166 0.902369 11.6834 1.29289 11.2929L5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289Z"/><path d="M17.2929 7.29289C17.6834 6.90237 18.3166 6.90237 18.7071 7.29289L22.7071 11.2929C23.0976 11.6834 23.0976 12.3166 22.7071 12.7071L18.7071 16.7071C18.3166 17.0976 17.6834 17.0976 17.2929 16.7071C16.9024 16.3166 16.9024 15.6834 17.2929 15.2929L20.5858 12L17.2929 8.70711C16.9024 8.31658 16.9024 7.68342 17.2929 7.29289Z"/></svg>',
+        highlight: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M14.7072 4.70711C15.0977 4.31658 15.0977 3.68342 14.7072 3.29289C14.3167 2.90237 13.6835 2.90237 13.293 3.29289L8.69294 7.89286L8.68594 7.9C8.13626 8.46079 7.82837 9.21474 7.82837 10C7.82837 10.2306 7.85491 10.4584 7.90631 10.6795L2.29289 16.2929C2.10536 16.4804 2 16.7348 2 17V20C2 20.5523 2.44772 21 3 21H12C12.2652 21 12.5196 20.8946 12.7071 20.7071L15.3205 18.0937C15.5416 18.1452 15.7695 18.1717 16.0001 18.1717C16.7853 18.1717 17.5393 17.8639 18.1001 17.3142L22.7072 12.7071C23.0977 12.3166 23.0977 11.6834 22.7072 11.2929C22.3167 10.9024 21.6835 10.9024 21.293 11.2929L16.6971 15.8887C16.5105 16.0702 16.2605 16.1717 16.0001 16.1717C15.7397 16.1717 15.4897 16.0702 15.303 15.8887L10.1113 10.697C9.92992 10.5104 9.82837 10.2604 9.82837 10C9.82837 9.73963 9.92992 9.48958 10.1113 9.30297L14.7072 4.70711ZM13.5858 17L9.00004 12.4142L4 17.4142V19H11.5858L13.5858 17Z"/></svg>',
+        link: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16.9958 1.06669C15.4226 1.05302 13.907 1.65779 12.7753 2.75074L12.765 2.76086L11.045 4.47086C10.6534 4.86024 10.6515 5.49341 11.0409 5.88507C11.4303 6.27673 12.0634 6.27858 12.4551 5.88919L14.1697 4.18456C14.9236 3.45893 15.9319 3.05752 16.9784 3.06662C18.0272 3.07573 19.0304 3.49641 19.772 4.23804C20.5137 4.97967 20.9344 5.98292 20.9435 7.03171C20.9526 8.07776 20.5515 9.08563 19.8265 9.83941L16.833 12.8329C16.4274 13.2386 15.9393 13.5524 15.4019 13.7529C14.8645 13.9533 14.2903 14.0359 13.7181 13.9949C13.146 13.9539 12.5894 13.7904 12.0861 13.5154C11.5827 13.2404 11.1444 12.8604 10.8008 12.401C10.47 11.9588 9.84333 11.8685 9.40108 12.1993C8.95883 12.5301 8.86849 13.1568 9.1993 13.599C9.71464 14.288 10.3721 14.858 11.1272 15.2705C11.8822 15.683 12.7171 15.9283 13.5753 15.9898C14.4334 16.0513 15.2948 15.9274 16.1009 15.6267C16.907 15.326 17.639 14.8555 18.2473 14.247L21.2472 11.2471L21.2593 11.2347C22.3523 10.1031 22.9571 8.58751 22.9434 7.01433C22.9297 5.44115 22.2987 3.93628 21.1863 2.82383C20.0738 1.71138 18.5689 1.08036 16.9958 1.06669Z"/><path d="M10.4247 8.0102C9.56657 7.94874 8.70522 8.07256 7.89911 8.37326C7.09305 8.67395 6.36096 9.14458 5.75272 9.753L2.75285 12.7529L2.74067 12.7653C1.64772 13.8969 1.04295 15.4125 1.05662 16.9857C1.07029 18.5589 1.70131 20.0637 2.81376 21.1762C3.9262 22.2886 5.43108 22.9196 7.00426 22.9333C8.57744 22.947 10.0931 22.3422 11.2247 21.2493L11.2371 21.2371L12.9471 19.5271C13.3376 19.1366 13.3376 18.5034 12.9471 18.1129C12.5565 17.7223 11.9234 17.7223 11.5328 18.1129L9.82932 19.8164C9.07555 20.5414 8.06768 20.9425 7.02164 20.9334C5.97285 20.9243 4.9696 20.5036 4.22797 19.762C3.48634 19.0203 3.06566 18.0171 3.05655 16.9683C3.04746 15.9222 3.44851 14.9144 4.17355 14.1606L7.16719 11.167C7.5727 10.7613 8.06071 10.4476 8.59811 10.2471C9.13552 10.0467 9.70976 9.96412 10.2819 10.0051C10.854 10.0461 11.4106 10.2096 11.9139 10.4846C12.4173 10.7596 12.8556 11.1397 13.1992 11.599C13.53 12.0412 14.1567 12.1316 14.5989 11.8007C15.0412 11.4699 15.1315 10.8433 14.8007 10.401C14.2854 9.71205 13.6279 9.14198 12.8729 8.72948C12.1178 8.31697 11.2829 8.07166 10.4247 8.0102Z"/></svg>',
+        alignLeft: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44772 22 6C22 6.55228 21.5523 7 21 7H3C2.44772 7 2 6.55228 2 6Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M2 12C2 11.4477 2.44772 11 3 11H15C15.5523 11 16 11.4477 16 12C16 12.5523 15.5523 13 15 13H3C2.44772 13 2 12.5523 2 12Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M2 18C2 17.4477 2.44772 17 3 17H17C17.5523 17 18 17.4477 18 18C18 18.5523 17.5523 19 17 19H3C2.44772 19 2 18.5523 2 18Z"/></svg>',
+        alignCenter: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44772 22 6C22 6.55228 21.5523 7 21 7H3C2.44772 7 2 6.55228 2 6Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6 12C6 11.4477 6.44772 11 7 11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H7C6.44772 13 6 12.5523 6 12Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4 18C4 17.4477 4.44772 17 5 17H19C19.5523 17 20 17.4477 20 18C20 18.5523 19.5523 19 19 19H5C4.44772 19 4 18.5523 4 18Z"/></svg>',
+        alignRight: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44772 22 6C22 6.55228 21.5523 7 21 7H3C2.44772 7 2 6.55228 2 6Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12C8 11.4477 8.44772 11 9 11H21C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13H9C8.44772 13 8 12.5523 8 12Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6 18C6 17.4477 6.44772 17 7 17H21C21.5523 17 22 17.4477 22 18C22 18.5523 21.5523 19 21 19H7C6.44772 19 6 18.5523 6 18Z"/></svg>',
+        image: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 2C20 1.44772 19.5523 1 19 1C18.4477 1 18 1.44772 18 2V4H16C15.4477 4 15 4.44772 15 5C15 5.55228 15.4477 6 16 6H18V8C18 8.55228 18.4477 9 19 9C19.5523 9 20 8.55228 20 8V6H22C22.5523 6 23 5.55228 23 5C23 4.44772 22.5523 4 22 4H20V2ZM5 4C4.73478 4 4.48043 4.10536 4.29289 4.29289C4.10536 4.48043 4 4.73478 4 5V19C4 19.2652 4.10536 19.5196 4.29289 19.7071C4.48043 19.8946 4.73478 20 5 20H5.58579L14.379 11.2068C14.9416 10.6444 15.7045 10.3284 16.5 10.3284C17.2955 10.3284 18.0584 10.6444 18.621 11.2068L20 12.5858V12C20 11.4477 20.4477 11 21 11C21.5523 11 22 11.4477 22 12V14.998C22 14.9994 22 15.0007 22 15.002V19C22 19.7957 21.6839 20.5587 21.1213 21.1213C20.5587 21.6839 19.7957 22 19 22H6.00219C6.00073 22 5.99927 22 5.99781 22H5C4.20435 22 3.44129 21.6839 2.87868 21.1213C2.31607 20.5587 2 19.7957 2 19V5C2 4.20435 2.31607 3.44129 2.87868 2.87868C3.44129 2.31607 4.20435 2 5 2H12C12.5523 2 13 2.44772 13 3C13 3.55228 12.5523 4 12 4H5ZM8.41422 20H19C19.2652 20 19.5196 19.8946 19.7071 19.7071C19.8946 19.5196 20 19.2652 20 19V15.4142L17.207 12.6212C17.0195 12.4338 16.7651 12.3284 16.5 12.3284C16.2349 12.3284 15.9806 12.4337 15.7931 12.6211L8.41422 20ZM6.87868 6.87868C7.44129 6.31607 8.20435 6 9 6C9.79565 6 10.5587 6.31607 11.1213 6.87868C11.6839 7.44129 12 8.20435 12 9C12 9.79565 11.6839 10.5587 11.1213 11.1213C10.5587 11.6839 9.79565 12 9 12C8.20435 12 7.44129 11.6839 6.87868 11.1213C6.31607 10.5587 6 9.79565 6 9C6 8.20435 6.31607 7.44129 6.87868 6.87868ZM9 8C8.73478 8 8.48043 8.10536 8.29289 8.29289C8.10536 8.48043 8 8.73478 8 9C8 9.26522 8.10536 9.51957 8.29289 9.70711C8.48043 9.89464 8.73478 10 9 10C9.26522 10 9.51957 9.89464 9.70711 9.70711C9.89464 9.51957 10 9.26522 10 9C10 8.73478 9.89464 8.48043 9.70711 8.29289C9.51957 8.10536 9.26522 8 9 8Z"/></svg>',
     };
 
-    // ============================================
     // Utility Functions
-    // ============================================
-
     function showProgress(show = true) {
         document.getElementById('upload-overlay').classList.toggle('hidden', !show);
         document.getElementById('upload-progress').classList.toggle('hidden', !show);
@@ -359,7 +338,6 @@
                 id: params.get('id')
             };
         } catch (error) {
-            console.error('URL parsing error:', error);
             return { category: null, id: null };
         }
     }
@@ -391,15 +369,7 @@
         }
     }
 
-    // ============================================
-    // Image Upload (ImgBB)
-    // ============================================
-
-    /**
-     * Resize image to max 500px
-     * @param {File} file - Image file
-     * @returns {Promise<Blob>}
-     */
+    // Image Upload Functions
     async function resizeImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -429,11 +399,6 @@
         });
     }
 
-    /**
-     * Upload image to ImgBB
-     * @param {File} file - Image file
-     * @returns {Promise<string>} - Image URL
-     */
     async function uploadToImgBB(file) {
         const resizedBlob = await resizeImage(file);
         const formData = new FormData();
@@ -446,23 +411,25 @@
 
         const data = await response.json();
         if (data.success) {
-            return data.data.url;
+            return {
+                url: data.data.url,
+                deleteUrl: data.data.delete_url
+            };
         } else {
             throw new Error('ImgBB upload failed');
         }
     }
 
-    // ============================================
-    // Translation (MyMemory API)
-    // ============================================
+    async function deleteFromImgBB(deleteUrl) {
+        if (!deleteUrl) return;
+        try {
+            await fetch(deleteUrl, { method: 'GET' });
+        } catch (error) {
+            console.error('ImgBB delete error:', error);
+        }
+    }
 
-    /**
-     * Translate text using MyMemory API
-     * @param {string} text - Text to translate
-     * @param {string} from - Source language
-     * @param {string} to - Target language
-     * @returns {Promise<string>}
-     */
+    // Translation
     async function translateText(text, from = 'ko', to = 'en') {
         if (!text.trim()) return '';
 
@@ -478,42 +445,7 @@
         }
     }
 
-    /**
-     * Translate HTML content
-     * @param {string} html - HTML content
-     * @returns {Promise<string>}
-     */
-    async function translateHTML(html) {
-        const div = document.createElement('div');
-        div.innerHTML = html;
-
-        const textNodes = [];
-        const walker = document.createTreeWalker(div, NodeFilter.SHOW_TEXT, null, false);
-
-        let node;
-        while (node = walker.nextNode()) {
-            if (node.nodeValue.trim()) {
-                textNodes.push(node);
-            }
-        }
-
-        for (const node of textNodes) {
-            const translated = await translateText(node.nodeValue);
-            node.nodeValue = translated;
-        }
-
-        return div.innerHTML;
-    }
-
-    // ============================================
     // Editor Initialization
-    // ============================================
-
-    /**
-     * Create toolbar for editor
-     * @param {Editor} editor - Tiptap editor instance
-     * @param {string} toolbarId - Toolbar element ID
-     */
     function createToolbar(editor, toolbarId) {
         const toolbar = document.getElementById(toolbarId);
 
@@ -521,12 +453,8 @@
             { name: 'Bold', icon: icons.bold, command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
             { name: 'Italic', icon: icons.italic, command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
             { name: 'Strike', icon: icons.strike, command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
-            { name: 'Underline', icon: icons.underline, command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
             { name: 'Code', icon: icons.code, command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
             { name: 'Highlight', icon: icons.highlight, command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') },
-            { name: 'H1', icon: icons.h1, command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
-            { name: 'H2', icon: icons.h2, command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
-            { name: 'H3', icon: icons.h3, command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
             { name: 'Align Left', icon: icons.alignLeft, command: () => editor.chain().focus().setTextAlign('left').run(), isActive: () => editor.isActive({ textAlign: 'left' }) },
             { name: 'Align Center', icon: icons.alignCenter, command: () => editor.chain().focus().setTextAlign('center').run(), isActive: () => editor.isActive({ textAlign: 'center' }) },
             { name: 'Align Right', icon: icons.alignRight, command: () => editor.chain().focus().setTextAlign('right').run(), isActive: () => editor.isActive({ textAlign: 'right' }) },
@@ -563,7 +491,7 @@
         };
         toolbar.appendChild(linkBtn);
 
-        // Image button with upload
+        // Image button
         const imageBtn = document.createElement('button');
         imageBtn.className = 'p-2 rounded hover:bg-gray-200 transition';
         imageBtn.innerHTML = icons.image;
@@ -579,8 +507,9 @@
                     try {
                         showProgress(true);
                         updateProgress(50, '이미지 업로드 중...');
-                        const url = await uploadToImgBB(file);
+                        const { url, deleteUrl } = await uploadToImgBB(file);
                         editor.chain().focus().setImage({ src: url }).run();
+                        uploadedImages.add(url);
                         updateProgress(100, '완료!');
                         setTimeout(() => showProgress(false), 500);
                     } catch (error) {
@@ -594,9 +523,6 @@
         toolbar.appendChild(imageBtn);
     }
 
-    /**
-     * Initialize Tiptap editors
-     */
     function initializeEditors() {
         const extensions = [
             StarterKit,
@@ -611,6 +537,25 @@
             element: document.querySelector('#editor-kor'),
             extensions: [...extensions, Placeholder.configure({ placeholder: '한국어 본문을 입력하세요...' })],
             content: '',
+            onUpdate: ({ editor }) => {
+                // Track deleted images
+                const currentHtml = editor.getHTML();
+                const currentImages = new Set();
+                const imgRegex = /<img[^>]+src="([^">]+)"/g;
+                let match;
+                while ((match = imgRegex.exec(currentHtml)) !== null) {
+                    currentImages.add(match[1]);
+                }
+
+                // Find deleted images
+                uploadedImages.forEach(imgUrl => {
+                    if (!currentImages.has(imgUrl)) {
+                        // Image was deleted, but we can't easily get delete URL
+                        // Track for potential cleanup
+                        uploadedImages.delete(imgUrl);
+                    }
+                });
+            }
         });
 
         editorEn = new Editor({
@@ -623,10 +568,7 @@
         createToolbar(editorEn, 'toolbar-en');
     }
 
-    // ============================================
     // Auth Check
-    // ============================================
-
     async function checkAuth() {
         try {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -641,10 +583,7 @@
         }
     }
 
-    // ============================================
-    // Load Article for Editing
-    // ============================================
-
+    // Load Article
     async function loadArticle(category, articleId) {
         try {
             showProgress(true);
@@ -704,10 +643,7 @@
         }
     }
 
-    // ============================================
-    // Publish/Update Article
-    // ============================================
-
+    // Publish Article
     async function publishArticle() {
         const category = document.getElementById('category').value;
         const titleKor = document.getElementById('title-kor').value;
@@ -797,10 +733,7 @@
         }
     }
 
-    // ============================================
     // Event Listeners
-    // ============================================
-
     document.getElementById('logout-btn').addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
         window.location.href = '/admin.html';
@@ -845,7 +778,7 @@
         loadArticle(category, id);
     });
 
-    // Thumbnail upload
+    // Thumbnail upload with delete old image
     document.getElementById('thumbnail-upload-btn').addEventListener('click', () => {
         document.getElementById('thumbnail-file').click();
     });
@@ -855,9 +788,18 @@
         if (file) {
             try {
                 showProgress(true);
-                updateProgress(50, '썸네일 업로드 중...');
-                const url = await uploadToImgBB(file);
+
+                // Delete old thumbnail if exists
+                const oldDeleteUrl = document.getElementById('current-thumbnail-delete-url').value;
+                if (oldDeleteUrl) {
+                    updateProgress(30, '기존 이미지 삭제 중...');
+                    await deleteFromImgBB(oldDeleteUrl);
+                }
+
+                updateProgress(60, '새 썸네일 업로드 중...');
+                const { url, deleteUrl } = await uploadToImgBB(file);
                 document.getElementById('thumbnail-url').value = url;
+                document.getElementById('current-thumbnail-delete-url').value = deleteUrl;
                 updateProgress(100, '완료!');
                 setTimeout(() => showProgress(false), 500);
             } catch (error) {
@@ -892,18 +834,6 @@
         setTimeout(() => showProgress(false), 500);
     });
 
-    document.getElementById('translate-content-btn').addEventListener('click', async () => {
-        const korHtml = editorKor.getHTML();
-        if (!korHtml || korHtml === '<p></p>') return alert('한국어 본문을 먼저 작성하세요.');
-
-        showProgress(true);
-        updateProgress(30, '본문 번역 중...');
-        const translated = await translateHTML(korHtml);
-        editorEn.commands.setContent(translated);
-        updateProgress(100, '완료!');
-        setTimeout(() => showProgress(false), 500);
-    });
-
     document.getElementById('publish-btn').addEventListener('click', publishArticle);
 
     // Input validation
@@ -916,10 +846,7 @@
         }
     });
 
-    // ============================================
     // Initialize
-    // ============================================
-
     districtMeta.forEach(district => {
         const option = document.createElement('option');
         option.value = district.district_id;
