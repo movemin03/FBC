@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life & Culture - FBC Creators</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -15,37 +16,37 @@
         .font-serif, .font-serif * {
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
-        
+
         /* Skeleton Loading Animation */
         @keyframes shimmer {
             0% { background-position: -468px 0; }
             100% { background-position: 468px 0; }
         }
-        
+
         .skeleton {
             animation: shimmer 1.2s ease-in-out infinite;
             background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
             background-size: 800px 104px;
         }
-        
+
         .image-container {
             position: relative;
             overflow: hidden;
         }
-        
+
         .image-container img {
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
         }
-        
+
         .image-container img.loaded {
             opacity: 1;
         }
-        
+
         .fade-in {
             animation: fadeIn 0.6s ease-in;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -89,7 +90,7 @@
 
 <!-- Main Content -->
 <main class="max-w-7xl mx-auto px-4 py-12">
-    
+
     <!-- Page Title -->
     <div class="mb-8">
         <h2 class="text-4xl font-serif font-bold mb-2">Life & Culture</h2>
@@ -178,11 +179,19 @@
     </div>
 </footer>
 
-<script>
-(function() {
-    'use strict';
-    
+<script type="module">
+    // ============================================
+    // Supabase Configuration
+    // ============================================
+    const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ============================================
     // State Management
+    // ============================================
     const state = {
         currentLang: 'en',
         lifeData: [],
@@ -191,21 +200,19 @@
         displayedArticles: 13,
         articlesPerLoad: 12
     };
-    
-    const prefixMap = { 'fs': 'fashion', 'by': 'beauty', 'lf': 'life', 'ds': 'districts' };
-    
+
+    // ============================================
     // Utility Functions
-    const getCategoryFromId = (id) => prefixMap[id.substring(0, 2)] || 'life';
-    const buildArticleUrl = (id) => `../article/index.html?category=${getCategoryFromId(id)}&id=${id}`;
-    
-    // Image Loading with Skeleton
+    // ============================================
+    const buildArticleUrl = (id, sourceType) => `../article/index.html?category=${sourceType}&id=${id}`;
+
     function createImageWithSkeleton(src, alt, imgClass = '') {
         return `
             <div class="image-container w-full h-full">
                 <div class="skeleton w-full h-full absolute inset-0"></div>
-                <img src="${src}" 
-                     alt="${alt}" 
-                     class="${imgClass}" 
+                <img src="${src}"
+                     alt="${alt}"
+                     class="${imgClass}"
                      loading="lazy"
                      onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
                      onerror="this.src='https://placehold.co/1200x675/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
@@ -213,7 +220,9 @@
         `;
     }
 
+    // ============================================
     // Language Management
+    // ============================================
     function initializeLanguage() {
         const savedLang = sessionStorage.getItem('fbc_language');
         if (savedLang) {
@@ -237,12 +246,20 @@
         });
     }
 
-
-    // Data Loading
+    // ============================================
+    // Data Loading from Supabase
+    // ============================================
     async function loadLifeData() {
         try {
-            const response = await fetch('../data/life.json');
-            state.lifeData = await response.json();
+            const { data, error } = await supabaseClient
+                .from('content_items')
+                .select('*')
+                .eq('source_type', 'life')
+                .order('date', { ascending: false });
+
+            if (error) throw error;
+
+            state.lifeData = data || [];
             state.filteredData = [...state.lifeData];
         } catch (error) {
             console.error('Error loading life data:', error);
@@ -250,15 +267,17 @@
             state.filteredData = [];
         }
     }
-    
+
+    // ============================================
     // Filter Management
+    // ============================================
     function setupFilterButtons() {
         const filterButtons = document.querySelectorAll('[data-filter]');
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const filterType = button.dataset.type;
                 const filterValue = button.dataset.filter;
-                
+
                 // Update active state
                 document.querySelectorAll(`[data-type="${filterType}"]`).forEach(btn => {
                     btn.classList.remove('bg-black', 'text-white', 'border-black');
@@ -266,19 +285,19 @@
                 });
                 button.classList.add('bg-black', 'text-white', 'border-black');
                 button.classList.remove('bg-white', 'border-gray-300');
-                
+
                 state.currentFilter = { type: filterType, value: filterValue };
                 state.displayedArticles = 13;
                 applyFilter();
             });
         });
     }
-    
+
     function applyFilter() {
         const { type, value } = state.currentFilter;
-        
+
         if (type === 'category') {
-            state.filteredData = value === 'all' 
+            state.filteredData = value === 'all'
                 ? [...state.lifeData]
                 : state.lifeData.filter(article => article.category === value);
         } else if (type === 'cultural') {
@@ -286,27 +305,29 @@
                 ? [...state.lifeData]
                 : state.lifeData.filter(article => article.cultural_badge === value);
         }
-        
+
         state.filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
         renderPage();
     }
-    
+
+    // ============================================
     // Render Functions
+    // ============================================
     function renderHeroArticle() {
         const heroContainer = document.getElementById('hero-article');
         if (state.filteredData.length === 0) {
             heroContainer.innerHTML = '';
             return;
         }
-        
+
         const hero = state.filteredData[0];
         const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
         const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
-        
+
         heroContainer.innerHTML = `
-            <a href="${buildArticleUrl(hero.id)}" class="block relative group">
+            <a href="${buildArticleUrl(hero.id, hero.source_type)}" class="block relative group">
                 <div class="aspect-video overflow-hidden bg-gray-100 relative">
-                    ${createImageWithSkeleton(hero.image_display_url, title, 'w-full h-full object-cover')}
+                    ${createImageWithSkeleton(hero.image, title, 'w-full h-full object-cover')}
                 </div>
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-8">
                     <div class="flex items-center gap-2 mb-3">
@@ -320,38 +341,38 @@
             </a>
         `;
     }
-    
+
     function renderFeaturedGrid() {
         const articles = state.filteredData.slice(1, 5);
         document.getElementById('featured-grid').innerHTML = articles.map(article => createArticleCard(article)).join('');
     }
-    
+
     function renderLatestStories() {
         const articles = state.filteredData.slice(5, state.displayedArticles);
         const latestSection = document.getElementById('latest-section');
         const loadMoreContainer = document.getElementById('load-more-container');
-        
+
         if (articles.length === 0) {
             latestSection.classList.add('hidden');
             loadMoreContainer.classList.add('hidden');
             return;
         }
-        
+
         latestSection.classList.remove('hidden');
         document.getElementById('latest-articles').innerHTML = articles.map(article => createArticleCard(article)).join('');
-        
+
         loadMoreContainer.classList.toggle('hidden', state.displayedArticles >= state.filteredData.length);
     }
-    
+
     function createArticleCard(article) {
         const title = state.currentLang === 'en' ? article.title_en : article.title_kor;
         const desc = state.currentLang === 'en' ? article.desc_en : article.desc_kor;
-        
+
         return `
             <article class="fade-in">
-                <a href="${buildArticleUrl(article.id)}" class="block group">
+                <a href="${buildArticleUrl(article.id, article.source_type)}" class="block group">
                     <div class="aspect-[3/2] overflow-hidden bg-gray-100 mb-4 relative rounded-sm">
-                        ${createImageWithSkeleton(article.image_display_url, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        ${createImageWithSkeleton(article.image, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                         ${article.cultural_badge ? `<span class="absolute top-3 left-3 inline-block px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${article.cultural_badge}</span>` : ''}
                     </div>
                     <div>
@@ -364,27 +385,31 @@
             </article>
         `;
     }
-    
+
     function renderPage() {
         updateTexts();
         renderHeroArticle();
         renderFeaturedGrid();
         renderLatestStories();
     }
-    
+
     function updateTexts() {
         document.getElementById('load-more-text').textContent = state.currentLang === 'en' ? 'Load More' : '더 보기';
     }
-    
+
+    // ============================================
     // Load More
+    // ============================================
     function setupLoadMore() {
         document.getElementById('load-more').addEventListener('click', () => {
             state.displayedArticles += state.articlesPerLoad;
             renderLatestStories();
         });
     }
-    
+
+    // ============================================
     // Newsletter
+    // ============================================
     function setupNewsletter() {
         document.getElementById('newsletter-submit').addEventListener('click', () => {
             const email = document.getElementById('newsletter-email').value;
@@ -396,8 +421,10 @@
             }
         });
     }
-    
+
+    // ============================================
     // Initialize
+    // ============================================
     async function init() {
         initializeLanguage();
         await loadLifeData();
@@ -407,9 +434,8 @@
         setupNewsletter();
         applyFilter();
     }
-    
+
     document.addEventListener('DOMContentLoaded', init);
-})();
 </script>
 
 </body>
