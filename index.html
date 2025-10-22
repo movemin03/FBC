@@ -263,6 +263,8 @@
     // ============================================
     // Utility Functions
     // ============================================
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const formatDate = (dateStr) => {
         const date = new Date(dateStr);
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -299,6 +301,14 @@
         `;
     }
 
+    const createSkeletonCard = () => `
+        <div class="animate-pulse">
+            <div class="h-64 bg-gray-200 rounded-sm mb-3"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded w-full"></div>
+        </div>
+    `;
+
     // ============================================
     // Session Management
     // ============================================
@@ -329,11 +339,22 @@
     }
 
     // ============================================
+    // Show Skeletons
+    // ============================================
+    function showSkeletons() {
+        document.getElementById('fashion-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+        document.getElementById('beauty-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+        document.getElementById('today-stories').innerHTML = '<div class="md:col-span-12 h-96 bg-gray-200 rounded-sm animate-pulse"></div>';
+        document.getElementById('best-stories').innerHTML = Array(15).fill('<div class="swiper-slide" style="width: 256px;"><div class="h-48 bg-gray-200 rounded-sm animate-pulse mb-3"></div><div class="h-3 bg-gray-200 rounded w-full animate-pulse"></div></div>').join('');
+        document.getElementById('must-read').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+        document.getElementById('latest-stories').innerHTML = Array(3).fill('<div class="flex gap-4 animate-pulse"><div class="w-32 h-32 bg-gray-200 rounded-sm"></div><div class="flex-1"><div class="h-3 bg-gray-200 rounded mb-2"></div><div class="h-4 bg-gray-200 rounded mb-2"></div><div class="h-2 bg-gray-200 rounded w-1/2"></div></div></div>').join('');
+    }
+
+    // ============================================
     // Load Data from Supabase
     // ============================================
     async function loadData() {
         try {
-            // Load all content items
             const { data: contentItems, error: contentError } = await supabaseClient
                 .from('content_items')
                 .select('*')
@@ -342,14 +363,11 @@
             if (contentError) throw contentError;
 
             state.data.allContent = contentItems || [];
-
-            // Load pinned IDs (hardcoded or from separate table)
-            // For now, using first 5 articles for hero, etc.
             state.data.heroIds = state.data.allContent.slice(0, 5).map(a => a.id);
             state.data.todayStoriesIds = state.data.allContent.slice(5, 10).map(a => a.id);
             state.data.mustReadIds = state.data.allContent.slice(10, 14).map(a => a.id);
 
-            initializePage();
+            await initializePage();
         } catch (error) {
             console.error('Error loading data:', error);
             alert('Failed to load data. Please refresh the page.');
@@ -368,22 +386,20 @@
 
         const container = document.getElementById('hero-slides-container');
         container.innerHTML = state.heroSlides.map((hero, index) => {
-            // Hero에서는 image_origin_url 사용, 없으면 image로 폴백
             const heroImage = hero.image_origin_url || hero.image;
-
             return `
-            <div class="hero-slide ${index === 0 ? 'active' : ''}"
-                 style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${heroImage}')` : 'none'}"
-                 data-index="${index}"
-                 data-image="${heroImage}"
-                 data-id="${hero.id}"></div>
-        `;
+                <div class="hero-slide ${index === 0 ? 'active' : ''}"
+                     style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${heroImage}')` : 'none'}"
+                     data-index="${index}"
+                     data-image="${heroImage}"
+                     data-id="${hero.id}"></div>
+            `;
         }).join('');
 
         const indicators = document.getElementById('hero-indicators');
         indicators.innerHTML = state.heroSlides.map((_, index) => `
-        <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
-    `).join('');
+            <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
+        `).join('');
 
         document.querySelectorAll('[data-index]').forEach(el => {
             el.addEventListener('click', (e) => {
@@ -402,7 +418,6 @@
             window.location.href = `article/index.html?category=${hero.source_type}&id=${hero.id}`;
         });
 
-        // 나머지 슬라이드 이미지 프리로드
         setTimeout(() => {
             document.querySelectorAll('.hero-slide').forEach((slide, index) => {
                 if (index === 0) return;
@@ -457,7 +472,7 @@
         document.getElementById('location-desc').textContent = state.currentLang === 'kor' ? district.desc_kor : district.desc_en;
     }
 
-    function renderFashionSection() {
+    async function renderFashionSection() {
         const district = getDistrictMeta(state.currentDistrict);
         const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
         document.getElementById('fashion-location-title').textContent = `Fashion for ${districtName}`;
@@ -486,7 +501,7 @@
         }).join('');
     }
 
-    function renderBeautySection() {
+    async function renderBeautySection() {
         const district = getDistrictMeta(state.currentDistrict);
         const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
         document.getElementById('beauty-location-title').textContent = `Beauty for ${districtName}`;
@@ -515,7 +530,7 @@
         }).join('');
     }
 
-    function renderTodayStories() {
+    async function renderTodayStories() {
         const stories = state.data.todayStoriesIds.map(id => getContentById(id)).filter(Boolean);
         if (stories.length === 0) return;
 
@@ -560,7 +575,7 @@
         `;
     }
 
-    function renderBestStories() {
+    async function renderBestStories() {
         const stories = [...state.data.allContent].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 15);
 
         const getDistrictName = (districtId) => {
@@ -593,7 +608,7 @@
         });
     }
 
-    function renderMustRead() {
+    async function renderMustRead() {
         const stories = state.data.mustReadIds.map(id => getContentById(id)).filter(Boolean);
 
         const getDistrictName = (districtId) => {
@@ -618,7 +633,7 @@
         `).join('');
     }
 
-    function renderLatestStories() {
+    async function renderLatestStories() {
         const latest = state.data.allContent.slice(0, 3);
 
         document.getElementById('latest-stories').innerHTML = latest.map(item => `
@@ -750,20 +765,46 @@
     }
 
     // ============================================
-    // Initialize Page
+    // Initialize Page (Sequential Loading)
     // ============================================
-    function initializePage() {
+    async function initializePage() {
+        // 1. Load session & text content
         loadSession();
+        renderLocationSection();
+
+        // 2. Show skeletons
+        showSkeletons();
+
+        // 3. Load Hero
         initializeHeroSlides();
         startHeroRotation();
         renderHero();
-        renderLocationSection();
-        renderFashionSection();
-        renderBeautySection();
-        renderTodayStories();
-        renderBestStories();
-        renderMustRead();
-        renderLatestStories();
+        await delay(150);
+
+        // 4. Load Fashion images
+        await renderFashionSection();
+        await delay(150);
+
+        // 5. Load Beauty images
+        await renderBeautySection();
+        await delay(150);
+
+        // 6. Load Today's Stories images
+        await renderTodayStories();
+        await delay(150);
+
+        // 7. Load Best Stories images
+        await renderBestStories();
+        await delay(150);
+
+        // 8. Load Must Read images
+        await renderMustRead();
+        await delay(150);
+
+        // 9. Load Latest Stories images
+        await renderLatestStories();
+
+        // 10. Setup rest
         renderLocationModal();
         setupEventListeners();
 
@@ -775,6 +816,7 @@
     // Start
     loadData();
 </script>
+
 
 </body>
 </html>
