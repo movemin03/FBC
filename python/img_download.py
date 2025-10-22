@@ -13,7 +13,7 @@ PEXELS_API_KEY = "QbZ7FqndljpYDP3H993N5DTooL3RLDCmqdodjTT35JjmrybXF8XJV6DW"
 UNSPLASH_ACCESS_KEY = "cFhxdsT6vbgINEatl0RAQCdaq_4puV6db3YTvlFRYw8"
 
 # Base directory
-BASE_DIR = r"C:\Users\movemin\Desktop\FBC"
+BASE_DIR = r"C:\Users\kwony\Desktop\FBC"
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 # JSON files to process
@@ -112,12 +112,12 @@ def create_folders():
 
 
 def try_download_from_unsplash(keyword, save_path, page=1):
-    """Try to download from Unsplash API"""
+    """Try to download from Unsplash API - randomly select from results"""
     url = "https://api.unsplash.com/search/photos"
     headers = {"Authorization": f"Client-ID {UNSPLASH_ACCESS_KEY}"}
     params = {
         "query": keyword,
-        "per_page": 10,
+        "per_page": 30,
         "page": page,
         "orientation": "landscape"
     }
@@ -133,29 +133,29 @@ def try_download_from_unsplash(keyword, save_path, page=1):
             data = response.json()
             if data.get('results'):
                 photos = data['results']
-                random.shuffle(photos)
+                
+                # Randomly select one photo from results
+                selected_photo = random.choice(photos)
+                image_url = selected_photo['urls']['regular']
 
-                for photo in photos:
-                    image_url = photo['urls']['regular']
+                temp_path = save_path + ".tmp"
+                img_response = requests.get(image_url, timeout=15)
 
-                    temp_path = save_path + ".tmp"
-                    img_response = requests.get(image_url, timeout=15)
+                if img_response.status_code == 200:
+                    with open(temp_path, 'wb') as f:
+                        f.write(img_response.content)
 
-                    if img_response.status_code == 200:
-                        with open(temp_path, 'wb') as f:
-                            f.write(img_response.content)
+                    img_hash = get_file_hash(temp_path)
 
-                        img_hash = get_file_hash(temp_path)
+                    with hash_lock:
+                        if img_hash in downloaded_hashes:
+                            os.remove(temp_path)
+                            return False
 
-                        with hash_lock:
-                            if img_hash in downloaded_hashes:
-                                os.remove(temp_path)
-                                continue
+                        os.rename(temp_path, save_path)
+                        downloaded_hashes[img_hash] = save_path
 
-                            os.rename(temp_path, save_path)
-                            downloaded_hashes[img_hash] = save_path
-
-                        return True
+                    return True
 
         time.sleep(0.3)
 
@@ -166,12 +166,12 @@ def try_download_from_unsplash(keyword, save_path, page=1):
 
 
 def try_download_from_pexels(keyword, save_path, page=1):
-    """Try to download from Pexels API"""
+    """Try to download from Pexels API - randomly select from results"""
     url = "https://api.pexels.com/v1/search"
     headers = {"Authorization": PEXELS_API_KEY}
     params = {
         "query": keyword,
-        "per_page": 10,
+        "per_page": 30,
         "page": page,
         "orientation": "landscape",
         "size": "large"
@@ -188,29 +188,29 @@ def try_download_from_pexels(keyword, save_path, page=1):
             data = response.json()
             if data.get('photos'):
                 photos = data['photos']
-                random.shuffle(photos)
+                
+                # Randomly select one photo from results
+                selected_photo = random.choice(photos)
+                image_url = selected_photo['src']['large']
 
-                for photo in photos:
-                    image_url = photo['src']['large']
+                temp_path = save_path + ".tmp"
+                img_response = requests.get(image_url, timeout=15)
 
-                    temp_path = save_path + ".tmp"
-                    img_response = requests.get(image_url, timeout=15)
+                if img_response.status_code == 200:
+                    with open(temp_path, 'wb') as f:
+                        f.write(img_response.content)
 
-                    if img_response.status_code == 200:
-                        with open(temp_path, 'wb') as f:
-                            f.write(img_response.content)
+                    img_hash = get_file_hash(temp_path)
 
-                        img_hash = get_file_hash(temp_path)
+                    with hash_lock:
+                        if img_hash in downloaded_hashes:
+                            os.remove(temp_path)
+                            return False
 
-                        with hash_lock:
-                            if img_hash in downloaded_hashes:
-                                os.remove(temp_path)
-                                continue
+                        os.rename(temp_path, save_path)
+                        downloaded_hashes[img_hash] = save_path
 
-                            os.rename(temp_path, save_path)
-                            downloaded_hashes[img_hash] = save_path
-
-                        return True
+                    return True
 
         time.sleep(0.3)
 
@@ -220,99 +220,44 @@ def try_download_from_pexels(keyword, save_path, page=1):
     return False
 
 
-def download_from_dual_sources(keyword, save_path, fallback_keywords, attempt=1):
+def download_from_dual_sources(keyword, save_path, fallback_keywords):
     """
-    Try to download from both Pexels and Unsplash with multiple fallback strategies
+    Try to download from both Pexels and Unsplash with fallback keywords
     """
-    max_pages = 3
-
     # Randomly choose which API to try first
     apis = ['pexels', 'unsplash']
     random.shuffle(apis)
 
     # Strategy 1: Try both APIs with original keyword
     for api in apis:
-        for page in range(1, max_pages + 1):
-            if api == 'pexels':
-                if try_download_from_pexels(keyword, save_path, page):
-                    with stats_lock:
-                        stats['pexels_count'] += 1
-                    return True, f"{api}-original"
-            else:
-                if try_download_from_unsplash(keyword, save_path, page):
-                    with stats_lock:
-                        stats['unsplash_count'] += 1
-                    return True, f"{api}-original"
+        if api == 'pexels':
+            if try_download_from_pexels(keyword, save_path):
+                with stats_lock:
+                    stats['pexels_count'] += 1
+                return True, f"{api}-original"
+        else:
+            if try_download_from_unsplash(keyword, save_path):
+                with stats_lock:
+                    stats['unsplash_count'] += 1
+                return True, f"{api}-original"
 
-    # Strategy 2: Keyword variations with both APIs
-    if attempt == 1:
-        variations = generate_keyword_variations(keyword)
-        for var_keyword in variations:
-            for api in apis:
-                for page in range(1, 2):
-                    if api == 'pexels':
-                        if try_download_from_pexels(var_keyword, save_path, page):
-                            with stats_lock:
-                                stats['pexels_count'] += 1
-                            return True, f"{api}-variation"
-                    else:
-                        if try_download_from_unsplash(var_keyword, save_path, page):
-                            with stats_lock:
-                                stats['unsplash_count'] += 1
-                            return True, f"{api}-variation"
-
-    # Strategy 3: Fallback keywords with both APIs
+    # Strategy 2: Try fallback keywords with both APIs
     for fallback_keyword in fallback_keywords:
         for api in apis:
-            for page in range(1, 2):
-                if api == 'pexels':
-                    if try_download_from_pexels(fallback_keyword, save_path, page):
-                        with stats_lock:
-                            stats['pexels_count'] += 1
-                        return True, f"{api}-fallback"
-                else:
-                    if try_download_from_unsplash(fallback_keyword, save_path, page):
-                        with stats_lock:
-                            stats['unsplash_count'] += 1
-                        return True, f"{api}-fallback"
-
-    # Strategy 4: Generic keywords with both APIs
-    generic_keywords = ["korea", "korean culture", "asian style", "modern design"]
-    for generic in generic_keywords:
-        for api in apis:
             if api == 'pexels':
-                if try_download_from_pexels(generic, save_path, 1):
+                if try_download_from_pexels(fallback_keyword, save_path):
                     with stats_lock:
                         stats['pexels_count'] += 1
-                    return True, f"{api}-generic"
+                        stats['fallback_used'] += 1
+                    return True, f"{api}-fallback"
             else:
-                if try_download_from_unsplash(generic, save_path, 1):
+                if try_download_from_unsplash(fallback_keyword, save_path):
                     with stats_lock:
                         stats['unsplash_count'] += 1
-                    return True, f"{api}-generic"
+                        stats['fallback_used'] += 1
+                    return True, f"{api}-fallback"
 
     return False, "failed"
-
-
-def generate_keyword_variations(keyword):
-    """Generate variations of the keyword"""
-    variations = []
-    words = keyword.split()
-
-    if len(words) > 2:
-        for i in range(len(words)):
-            variation = " ".join(words[:i] + words[i + 1:])
-            variations.append(variation)
-
-    if len(words) >= 2:
-        shuffled = words.copy()
-        random.shuffle(shuffled)
-        variations.append(" ".join(shuffled))
-
-    if len(words) > 3:
-        variations.append(" ".join(words[:len(words) // 2]))
-
-    return variations[:3]
 
 
 def load_district_meta():
@@ -350,20 +295,28 @@ def extract_images_from_json(json_file, district_map):
             data = json.load(f)
 
         images = []
+        file_type = json_file.replace('.json', '')
 
         if isinstance(data, list):
             for item in data:
-                if 'image' in item:
+                if 'image' in item and 'id' in item:
+                    # Use id as filename
+                    item_id = item['id']
+                    filename = f"{item_id}.jpg"
+                    
+                    # Construct local path: img/{category}/{id}.jpg
+                    local_path = f"img/{file_type}/{filename}"
+                    
                     # Extract district_id if exists
                     district_id = item.get('district_id')
                     district_name = district_map.get(district_id, None) if district_id else None
 
                     images.append({
-                        'path': item['image'],
+                        'path': local_path,
                         'district_name': district_name,
                         'title_en': item.get('title_en', ''),
-                        'desc_en': item.get('desc_en', ''),
-                        'category': item.get('category', '')
+                        'category': item.get('category', ''),
+                        'id': item_id
                     })
 
         return images
@@ -372,55 +325,22 @@ def extract_images_from_json(json_file, district_map):
         return []
 
 
-def extract_keywords_from_text(text):
-    """Extract meaningful keywords from text"""
-    # Remove common words
-    stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-                  'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'been', 'be',
-                  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should',
-                  'can', 'could', 'may', 'might', 'must', 'that', 'this', 'these', 'those'}
-
-    # Split and filter
-    words = text.lower().split()
-    keywords = [w.strip('.,!?;:') for w in words if w.lower() not in stop_words and len(w) > 2]
-
-    return ' '.join(keywords[:5])  # Take first 5 meaningful words
-
-
 def get_keyword_for_image(image_info, json_file):
-    """Generate keyword based on image info using title_en and desc_en"""
+    """Generate keyword from title_en only"""
+    title_en = image_info.get('title_en', '').strip()
+    
+    # If title_en exists, use it
+    if title_en:
+        return title_en
+    
+    # Fallback to category or file type
     file_type = json_file.replace('.json', '')
-
-    # Primary keywords from title_en and desc_en
-    title_keywords = extract_keywords_from_text(image_info.get('title_en', ''))
-    desc_keywords = extract_keywords_from_text(image_info.get('desc_en', ''))
-
-    # Combine keywords
-    primary_keyword = f"{title_keywords} {desc_keywords}".strip()
-
-    # If no keywords extracted, use category-based fallback
-    if not primary_keyword:
-        category = image_info.get('category', '').lower()
-        if category:
-            primary_keyword = category
-        else:
-            primary_keyword = file_type
-
-    # Add district-specific context
-    district_name = image_info.get('district_name')
-    if district_name:
-        if 'seongsu' in district_name:
-            primary_keyword += " industrial urban seoul"
-        elif 'hannam' in district_name:
-            primary_keyword += " luxury sophisticated seoul"
-        elif 'hongdae' in district_name:
-            primary_keyword += " street youth seoul"
-        elif 'myeongdong' in district_name:
-            primary_keyword += " shopping seoul"
-    else:
-        primary_keyword += " korea korean"
-
-    return primary_keyword
+    category = image_info.get('category', '').lower()
+    
+    if category:
+        return category
+    
+    return file_type
 
 
 def generate_fallback_keywords(image_info, json_file):
@@ -432,16 +352,16 @@ def generate_fallback_keywords(image_info, json_file):
 
     # Category-based fallbacks
     if 'fashion' in file_type or 'fashion' in category:
-        fallbacks.extend(["fashion style", "trendy clothing", "korean fashion", "stylish outfit"])
+        fallbacks.extend(["fashion", "style", "clothing", "korean fashion"])
     elif 'beauty' in file_type or 'beauty' in category:
-        fallbacks.extend(["beauty makeup", "skincare", "cosmetics", "korean beauty"])
+        fallbacks.extend(["beauty", "makeup", "skincare", "korean beauty"])
     elif 'life' in file_type or 'cafe' in category:
-        fallbacks.extend(["lifestyle cafe", "modern living", "urban culture", "seoul cafe"])
+        fallbacks.extend(["lifestyle", "cafe", "urban", "seoul"])
     elif 'district' in file_type:
-        fallbacks.extend(["seoul street", "urban neighborhood", "city culture", "korean district"])
+        fallbacks.extend(["seoul", "korea", "urban", "city"])
 
     # Generic fallbacks
-    fallbacks.extend(["korea", "korean style", "asian culture", "modern seoul"])
+    fallbacks.extend(["korea", "korean", "modern", "aesthetic"])
 
     return fallbacks[:5]
 
@@ -475,7 +395,7 @@ def download_single_image(task):
     json_file, image_info, index, total = task
     image_path = image_info['path']
     full_path = os.path.join(BASE_DIR, image_path)
-    file_type = json_file.replace('.json', '')
+    item_id = image_info['id']
 
     # Skip if exists
     if os.path.exists(full_path):
@@ -485,6 +405,7 @@ def download_single_image(task):
         return {
             'status': 'skip',
             'path': image_path,
+            'id': item_id,
             'index': index,
             'total': total
         }
@@ -492,7 +413,7 @@ def download_single_image(task):
     # Create directory
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
-    # Generate keyword from title_en and desc_en
+    # Generate keyword from title_en only
     keyword = get_keyword_for_image(image_info, json_file)
     fallback_keywords = generate_fallback_keywords(image_info, json_file)
 
@@ -503,12 +424,11 @@ def download_single_image(task):
         with stats_lock:
             stats['success'] += 1
             stats['download'] += 1
-            if 'fallback' in strategy or 'variation' in strategy or 'generic' in strategy:
-                stats['fallback_used'] += 1
 
         return {
             'status': 'success',
             'path': image_path,
+            'id': item_id,
             'keyword': keyword,
             'strategy': strategy,
             'index': index,
@@ -520,6 +440,7 @@ def download_single_image(task):
         return {
             'status': 'fail',
             'path': image_path,
+            'id': item_id,
             'keyword': keyword,
             'index': index,
             'total': total
@@ -591,11 +512,11 @@ def main():
         return
 
     # Download with ThreadPoolExecutor
-    print(f"Step {5 if not cleared else 4}: Downloading images (using {min(6, total)} parallel threads)...")
-    print("Note: Using title_en & desc_en for intelligent keyword generation")
+    print(f"Step {5 if not cleared else 4}: Downloading images (using parallel threads)...")
+    print("Note: Using title_en for keyword search, filename based on id")
     print()
 
-    max_workers = min(2, total)
+    max_workers = min(3, total)
     start_time = time.time()
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -605,7 +526,7 @@ def main():
             result = future.result()
 
             if result['status'] == 'skip':
-                print(f"[{result['index']}/{result['total']}] ⊙ Skip: {result['path']}")
+                print(f"[{result['index']}/{result['total']}] ⊙ Skip: {result['id']}.jpg")
             elif result['status'] == 'success':
                 strategy = result.get('strategy', '')
                 source = "Pexels" if 'pexels' in strategy else "Unsplash"
@@ -613,16 +534,12 @@ def main():
                 strategy_info = ""
                 if 'fallback' in strategy:
                     strategy_info = f" [{source} - fallback]"
-                elif 'variation' in strategy:
-                    strategy_info = f" [{source} - variation]"
-                elif 'generic' in strategy:
-                    strategy_info = f" [{source} - generic]"
                 else:
                     strategy_info = f" [{source}]"
 
-                print(f"[{result['index']}/{result['total']}] ✓ Success: {result['path']}{strategy_info}")
+                print(f"[{result['index']}/{result['total']}] ✓ Success: {result['id']}.jpg (keyword: {result['keyword']}){strategy_info}")
             else:
-                print(f"[{result['index']}/{result['total']}] ✗ Failed: {result['path']}")
+                print(f"[{result['index']}/{result['total']}] ✗ Failed: {result['id']}.jpg (keyword: {result['keyword']})")
 
     elapsed_time = time.time() - start_time
 
@@ -642,7 +559,8 @@ def main():
     print(f"")
     print(f"Unique images: {len(downloaded_hashes)}")
     print(f"Time elapsed: {elapsed_time:.2f} seconds")
-    print(f"Average speed: {total / elapsed_time:.2f} images/sec")
+    if elapsed_time > 0:
+        print(f"Average speed: {total / elapsed_time:.2f} images/sec")
     print()
 
     if stats['fail'] > 0:
