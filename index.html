@@ -224,7 +224,6 @@
         <button id="close-location-modal" class="mt-4 w-full py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Cancel</button>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script type="module">
     // ============================================
@@ -310,17 +309,19 @@
     `;
 
     // ============================================
-    // Session Management
+    // Session Management (✅ fbc_language로 통일)
     // ============================================
     function loadSession() {
         const stored = sessionStorage;
+
+        // ✅ fbc_language 키 사용
         if (stored.getItem('fbc_language')) {
-            state.fbc_language = stored.getItem('fbc_language');
-            document.getElementById('lang-text').textContent = state.fbc_language === 'kor' ? '한국어' : 'English';
+            state.currentLang = stored.getItem('fbc_language');
+            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
         } else {
             const browserLang = navigator.language || navigator.userLanguage;
-            state.fbc_language = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
-            document.getElementById('lang-text').textContent = state.fbc_language === 'kor' ? '한국어' : 'English';
+            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
+            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
         }
 
         if (stored.getItem('autoSelectEnabled')) {
@@ -333,7 +334,8 @@
     }
 
     function saveSession() {
-        sessionStorage.setItem('currentLang', state.currentLang);
+        // ✅ fbc_language 키 사용
+        sessionStorage.setItem('fbc_language', state.currentLang);
         sessionStorage.setItem('autoSelectEnabled', state.autoSelectEnabled);
         sessionStorage.setItem('currentDistrict', state.currentDistrict);
     }
@@ -816,7 +818,5 @@
     // Start
     loadData();
 </script>
-
-
 </body>
 </html>
