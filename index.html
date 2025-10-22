@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FBC Creators Magazine</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,33 +17,32 @@
         .font-serif, .font-serif * {
             font-family: 'Noto Serif KR', Georgia, serif !important;
         }
-        
-        /* Skeleton Loading Animation */
+
         @keyframes shimmer {
             0% { background-position: -468px 0; }
             100% { background-position: 468px 0; }
         }
-        
+
         .skeleton {
             animation: shimmer 1.2s ease-in-out infinite;
             background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
             background-size: 800px 104px;
         }
-        
+
         .image-container {
             position: relative;
             overflow: hidden;
         }
-        
+
         .image-container img {
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
         }
-        
+
         .image-container img.loaded {
             opacity: 1;
         }
-        
+
         .hero-image {
             background-size: cover;
             background-position: center;
@@ -51,7 +51,7 @@
             overflow: hidden;
             cursor: pointer;
         }
-        
+
         .hero-slide {
             position: absolute;
             inset: 0;
@@ -61,11 +61,11 @@
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
         }
-        
+
         .hero-slide.active {
             opacity: 1;
         }
-        
+
         .hero-content {
             word-break: keep-all;
             text-wrap: balance;
@@ -94,6 +94,7 @@
             </div>
             <div class="justify-self-end flex items-center space-x-4 text-xs">
                 <a href="#newsletter-section" class="hover:text-gray-600">SUBSCRIBE</a>
+                <a href="admin/index.html" class="text-gray-400 hover:text-gray-600 opacity-30 hover:opacity-100 transition text-[10px]">•</a>
             </div>
         </div>
         <nav class="py-4">
@@ -220,11 +221,19 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-(function() {
-    'use strict';
-    
+<script type="module">
+    // ============================================
+    // Supabase Configuration
+    // ============================================
+    const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwY2libmhoZWdraGR3eXhlcWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzMyNzYsImV4cCI6MjA3NjMwOTI3Nn0.LKjw1dqgjs39shvGpxcfFPutA7p1yR9eOb4zhomSBS8';
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ============================================
     // State Management
+    // ============================================
     const state = {
         currentLang: 'en',
         currentDistrict: 'dsm00001',
@@ -232,63 +241,62 @@
         heroInterval: null,
         heroSlides: [],
         autoSelectEnabled: true,
-        touchStartX: 0,
-        touchEndX: 0,
         data: {
-            pinned: null,
-            fashion: [],
-            beauty: [],
-            life: [],
-            districts: [],
-            districtMeta: []
+            allContent: [],
+            districtMeta: [
+                { district_id: "dsm00001", name_kor: "성수동", name_en: "Seongsu-dong", title_kor: "성수동", title_en: "Seongsu-dong", desc_kor: "트렌디한 카페와 힙한 패션", desc_en: "Trendy cafes and hip fashion", latitude: 37.5447, longitude: 127.0557 },
+                { district_id: "dsm00002", name_kor: "한남동", name_en: "Hannam-dong", title_kor: "한남동", title_en: "Hannam-dong", desc_kor: "럭셔리 브랜드와 고급 문화", desc_en: "Luxury brands and upscale culture", latitude: 37.5347, longitude: 127.0024 },
+                { district_id: "dsm00003", name_kor: "홍대", name_en: "Hongdae", title_kor: "홍대", title_en: "Hongdae", desc_kor: "예술과 젊음의 거리", desc_en: "Street of art and youth", latitude: 37.5563, longitude: 126.9236 },
+                { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong", title_kor: "명동", title_en: "Myeongdong", desc_kor: "K-뷰티와 쇼핑의 중심", desc_en: "K-beauty and shopping hub", latitude: 37.5636, longitude: 126.9826 }
+            ],
+            heroIds: [],
+            todayStoriesIds: [],
+            mustReadIds: []
         }
     };
-    
+
+    // ============================================
     // Utility Functions
-    const getCategoryFromId = (id) => {
-        const prefix = id.substring(0, 2).toLowerCase();
-        const map = { 'fs': 'fashion', 'by': 'beauty', 'lf': 'life', 'ds': 'districts' };
-        return map[prefix] || 'fashion';
-    };
-    
+    // ============================================
     const formatDate = (dateStr) => {
         const date = new Date(dateStr);
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return state.currentLang === 'kor' 
+        return state.currentLang === 'kor'
             ? date.toLocaleDateString('ko-KR', options)
             : date.toLocaleDateString('en-US', options);
     };
-    
+
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         return R * c;
     };
-    
-    const getContentById = (source, id) => state.data[source].find(item => item.id === id);
+
+    const getContentById = (id) => state.data.allContent.find(item => item.id === id);
     const getDistrictMeta = (districtId) => state.data.districtMeta.find(d => d.district_id === districtId);
-    
-    // Image Loading with Skeleton
+
     function createImageWithSkeleton(src, alt, classes = '') {
         return `
             <div class="image-container w-full h-full">
                 <div class="skeleton w-full h-full absolute inset-0"></div>
-                <img src="${src}" 
-                     alt="${alt}" 
-                     class="${classes}" 
+                <img src="${src}"
+                     alt="${alt}"
+                     class="${classes}"
                      loading="lazy"
                      onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
                      onerror="this.src='https://placehold.co/800x600/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
             </div>
         `;
     }
-    
+
+    // ============================================
     // Session Management
+    // ============================================
     function loadSession() {
         const stored = sessionStorage;
         if (stored.getItem('currentLang')) {
@@ -299,64 +307,74 @@
             state.currentLang = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
             document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
         }
-        
+
         if (stored.getItem('autoSelectEnabled')) {
             state.autoSelectEnabled = stored.getItem('autoSelectEnabled') === 'true';
         }
-        
+
         if (stored.getItem('currentDistrict')) {
             state.currentDistrict = stored.getItem('currentDistrict');
         }
     }
-    
+
     function saveSession() {
         sessionStorage.setItem('currentLang', state.currentLang);
         sessionStorage.setItem('autoSelectEnabled', state.autoSelectEnabled);
         sessionStorage.setItem('currentDistrict', state.currentDistrict);
     }
-    
-    // Load Data
+
+    // ============================================
+    // Load Data from Supabase
+    // ============================================
     async function loadData() {
         try {
-            const [pinned, fashion, beauty, life, districts, districtMeta] = await Promise.all([
-                fetch('data/pinned.json').then(r => r.json()),
-                fetch('data/fashion.json').then(r => r.json()),
-                fetch('data/beauty.json').then(r => r.json()),
-                fetch('data/life.json').then(r => r.json()),
-                fetch('data/districts.json').then(r => r.json()),
-                fetch('data/district_meta.json').then(r => r.json())
-            ]);
-            
-            state.data = { pinned, fashion, beauty, life, districts, districtMeta };
+            // Load all content items
+            const { data: contentItems, error: contentError } = await supabaseClient
+                .from('content_items')
+                .select('*')
+                .order('date', { ascending: false });
+
+            if (contentError) throw contentError;
+
+            state.data.allContent = contentItems || [];
+
+            // Load pinned IDs (hardcoded or from separate table)
+            // For now, using first 5 articles for hero, etc.
+            state.data.heroIds = state.data.allContent.slice(0, 5).map(a => a.id);
+            state.data.todayStoriesIds = state.data.allContent.slice(5, 10).map(a => a.id);
+            state.data.mustReadIds = state.data.allContent.slice(10, 14).map(a => a.id);
+
             initializePage();
         } catch (error) {
             console.error('Error loading data:', error);
             alert('Failed to load data. Please refresh the page.');
         }
     }
-    
+
+    // ============================================
     // Hero Functions
+    // ============================================
     function initializeHeroSlides() {
-        state.heroSlides = state.data.pinned.hero.slice(0, 5)
-            .map(item => getContentById(item.source, item.id))
+        state.heroSlides = state.data.heroIds
+            .map(id => getContentById(id))
             .filter(Boolean);
-        
+
         if (state.heroSlides.length === 0) return;
-        
+
         const container = document.getElementById('hero-slides-container');
         container.innerHTML = state.heroSlides.map((hero, index) => `
             <div class="hero-slide ${index === 0 ? 'active' : ''}"
-                 style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image_display_url}')` : 'none'}"
+                 style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')` : 'none'}"
                  data-index="${index}"
-                 data-image="${hero.image_display_url}"
+                 data-image="${hero.image}"
                  data-id="${hero.id}"></div>
         `).join('');
-        
+
         const indicators = document.getElementById('hero-indicators');
         indicators.innerHTML = state.heroSlides.map((_, index) => `
             <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
         `).join('');
-        
+
         document.querySelectorAll('[data-index]').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -368,13 +386,12 @@
                 }
             });
         });
-        
+
         document.getElementById('hero-section').addEventListener('click', () => {
             const hero = state.heroSlides[state.currentHeroIndex];
-            window.location.href = `article/index.html?category=${getCategoryFromId(hero.id)}&id=${hero.id}`;
+            window.location.href = `article/index.html?category=${hero.source_type}&id=${hero.id}`;
         });
-        
-        // Lazy load images
+
         setTimeout(() => {
             document.querySelectorAll('.hero-slide').forEach((slide, index) => {
                 if (index === 0) return;
@@ -386,64 +403,69 @@
             });
         }, 500);
     }
-    
+
     function goToSlide(index) {
         const slides = document.querySelectorAll('.hero-slide');
         const indicators = document.querySelectorAll('#hero-indicators > div');
-        
+
         slides[state.currentHeroIndex].classList.remove('active');
         indicators[state.currentHeroIndex].classList.remove('bg-white');
         indicators[state.currentHeroIndex].classList.add('bg-white/50');
-        
+
         state.currentHeroIndex = index;
-        
+
         slides[state.currentHeroIndex].classList.add('active');
         indicators[state.currentHeroIndex].classList.add('bg-white');
         indicators[state.currentHeroIndex].classList.remove('bg-white/50');
-        
+
         renderHero();
     }
-    
+
     function nextSlide() {
         goToSlide((state.currentHeroIndex + 1) % state.heroSlides.length);
     }
-    
+
     function startHeroRotation() {
         state.heroInterval = setInterval(nextSlide, 5000);
     }
-    
+
     function renderHero() {
         const hero = state.heroSlides[state.currentHeroIndex];
         document.getElementById('hero-title').textContent = state.currentLang === 'kor' ? hero.title_kor : hero.title_en;
         document.getElementById('hero-subtitle').textContent = formatDate(hero.date);
     }
-    
+
+    // ============================================
     // Render Functions
+    // ============================================
     function renderLocationSection() {
         const district = getDistrictMeta(state.currentDistrict);
         if (!district) return;
-        
+
         document.getElementById('location-title').textContent = state.currentLang === 'kor' ? district.title_kor : district.title_en;
         document.getElementById('location-desc').textContent = state.currentLang === 'kor' ? district.desc_kor : district.desc_en;
     }
-    
+
     function renderFashionSection() {
         const district = getDistrictMeta(state.currentDistrict);
         const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
         document.getElementById('fashion-location-title').textContent = `Fashion for ${districtName}`;
-        
-        const districtItems = state.data.fashion.filter(item => item.district_id === state.currentDistrict);
-        const generalItems = state.data.fashion.filter(item => !item.district_id);
+
+        const districtItems = state.data.allContent.filter(item =>
+            item.source_type === 'fashion' && item.district_id === state.currentDistrict
+        );
+        const generalItems = state.data.allContent.filter(item =>
+            item.source_type === 'fashion' && !item.district_id
+        );
         const items = [...districtItems, ...generalItems].slice(0, 4);
-        
+
         document.getElementById('fashion-grid').innerHTML = items.map(item => {
-            const category = getCategoryFromId(item.id);
             return `
-                <a href="article/index.html?category=${category}&id=${item.id}" class="block group">
+                <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
                     <article class="transition-transform hover:-translate-y-1">
                         <div class="relative overflow-hidden mb-3 h-64 bg-gray-100 rounded-sm">
                             ${item.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(item.image_display_url, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                            ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                         </div>
                         <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
                         <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
@@ -452,24 +474,27 @@
             `;
         }).join('');
     }
-    
+
     function renderBeautySection() {
         const district = getDistrictMeta(state.currentDistrict);
         const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
         document.getElementById('beauty-location-title').textContent = `Beauty for ${districtName}`;
-        
-        const districtItems = state.data.beauty.filter(item => item.district_id === state.currentDistrict);
-        const generalItems = state.data.beauty.filter(item => !item.district_id);
+
+        const districtItems = state.data.allContent.filter(item =>
+            item.source_type === 'beauty' && item.district_id === state.currentDistrict
+        );
+        const generalItems = state.data.allContent.filter(item =>
+            item.source_type === 'beauty' && !item.district_id
+        );
         const items = [...districtItems, ...generalItems].slice(0, 4);
-        
+
         document.getElementById('beauty-grid').innerHTML = items.map(item => {
-            const category = getCategoryFromId(item.id);
             return `
-                <a href="article/index.html?category=${category}&id=${item.id}" class="block group">
+                <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
                     <article class="transition-transform hover:-translate-y-1">
                         <div class="relative overflow-hidden mb-3 h-64 bg-gray-100 rounded-sm">
                             ${item.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(item.image_display_url, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                            ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                         </div>
                         <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
                         <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
@@ -478,28 +503,28 @@
             `;
         }).join('');
     }
-    
+
     function renderTodayStories() {
-        const stories = state.data.pinned.todayStories.map(item => getContentById(item.source, item.id)).filter(Boolean);
+        const stories = state.data.todayStoriesIds.map(id => getContentById(id)).filter(Boolean);
         if (stories.length === 0) return;
-        
+
         const featured = stories[0];
         const small = stories.slice(1);
-        
+
         const getDistrictName = (districtId) => {
             if (!districtId) return null;
             const district = getDistrictMeta(districtId);
             return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
         };
-        
+
         document.getElementById('today-stories').innerHTML = `
             <div class="md:col-span-5">
-                <a href="article/index.html?category=${getCategoryFromId(featured.id)}&id=${featured.id}" class="block group">
+                <a href="article/index.html?category=${featured.source_type}&id=${featured.id}" class="block group">
                     <article class="h-full">
                         <div class="relative overflow-hidden mb-4 h-96 bg-gray-100 rounded-sm">
                             ${featured.district_id ? `<span class="absolute bottom-3 left-3 bg-white/95 px-3 py-1 text-xs font-semibold rounded">${getDistrictName(featured.district_id)}</span>` : ''}
                             ${featured.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${featured.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(featured.image_display_url, featured.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                            ${createImageWithSkeleton(featured.image, featured.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                         </div>
                         <div class="text-xs text-gray-500 mb-2 uppercase tracking-wide">${featured.category}</div>
                         <h3 class="text-2xl font-bold leading-tight">${state.currentLang === 'kor' ? featured.title_kor : featured.title_en}</h3>
@@ -508,12 +533,12 @@
             </div>
             <div class="md:col-span-7 grid grid-cols-2 gap-4">
                 ${small.map(story => `
-                    <a href="article/index.html?category=${getCategoryFromId(story.id)}&id=${story.id}" class="block group">
+                    <a href="article/index.html?category=${story.source_type}&id=${story.id}" class="block group">
                         <article>
                             <div class="relative overflow-hidden mb-3 h-48 bg-gray-100 rounded-sm">
                                 ${story.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(story.district_id)}</span>` : ''}
                                 ${story.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${story.cultural_badge}</span>` : ''}
-                                ${createImageWithSkeleton(story.image_display_url, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                                ${createImageWithSkeleton(story.image, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                             </div>
                             <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
                             <h4 class="text-sm font-bold leading-tight">${state.currentLang === 'kor' ? story.title_kor : story.title_en}</h4>
@@ -523,25 +548,24 @@
             </div>
         `;
     }
-    
+
     function renderBestStories() {
-        const allContent = [...state.data.fashion, ...state.data.beauty, ...state.data.life, ...state.data.districts];
-        const stories = allContent.sort((a, b) => b.views - a.views).slice(0, 15);
-        
+        const stories = [...state.data.allContent].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 15);
+
         const getDistrictName = (districtId) => {
             if (!districtId) return null;
             const district = getDistrictMeta(districtId);
             return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
         };
-        
+
         document.getElementById('best-stories').innerHTML = stories.map(story => `
             <div class="swiper-slide" style="width: 256px;">
-                <a href="article/index.html?category=${getCategoryFromId(story.id)}&id=${story.id}" class="block group">
+                <a href="article/index.html?category=${story.source_type}&id=${story.id}" class="block group">
                     <article>
                         <div class="relative overflow-hidden mb-3 h-48 bg-gray-100 rounded-sm">
                             ${story.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(story.district_id)}</span>` : ''}
                             ${story.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${story.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(story.image_display_url, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                            ${createImageWithSkeleton(story.image, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                         </div>
                         <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
                         <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? story.title_kor : story.title_en}</h4>
@@ -549,7 +573,7 @@
                 </a>
             </div>
         `).join('');
-        
+
         new Swiper('.best-stories-swiper', {
             slidesPerView: 'auto',
             spaceBetween: 24,
@@ -557,23 +581,23 @@
             grabCursor: true
         });
     }
-    
+
     function renderMustRead() {
-        const stories = state.data.pinned.mustRead.map(item => getContentById(item.source, item.id)).filter(Boolean);
-        
+        const stories = state.data.mustReadIds.map(id => getContentById(id)).filter(Boolean);
+
         const getDistrictName = (districtId) => {
             if (!districtId) return null;
             const district = getDistrictMeta(districtId);
             return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
         };
-        
+
         document.getElementById('must-read').innerHTML = stories.map(item => `
-            <a href="article/index.html?category=${getCategoryFromId(item.id)}&id=${item.id}" class="block group">
+            <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
                 <article>
                     <div class="relative overflow-hidden mb-3 h-56 bg-gray-100 rounded-sm">
                         ${item.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(item.district_id)}</span>` : ''}
                         ${item.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
-                        ${createImageWithSkeleton(item.image_display_url, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                     </div>
                     <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
                     <h4 class="text-base font-bold leading-tight mb-2">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
@@ -582,15 +606,14 @@
             </a>
         `).join('');
     }
-    
+
     function renderLatestStories() {
-        const allContent = [...state.data.fashion, ...state.data.beauty, ...state.data.life, ...state.data.districts];
-        const latest = allContent.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
-        
+        const latest = state.data.allContent.slice(0, 3);
+
         document.getElementById('latest-stories').innerHTML = latest.map(item => `
-            <a href="article/index.html?category=${getCategoryFromId(item.id)}&id=${item.id}" class="flex gap-4 group">
+            <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="flex gap-4 group">
                 <div class="w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-100 rounded-sm">
-                    ${createImageWithSkeleton(item.image_display_url, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                    ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                 </div>
                 <div class="flex-1">
                     <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
@@ -600,10 +623,10 @@
             </a>
         `).join('');
     }
-    
+
     function renderLocationModal() {
         const currentSelection = state.autoSelectEnabled ? 'auto' : state.currentDistrict;
-        
+
         document.getElementById('location-options').innerHTML = `
             <button class="w-full text-left p-4 border-2 rounded transition ${currentSelection === 'auto' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}" data-location="auto">
                 <div class="font-bold ${currentSelection === 'auto' ? 'text-blue-700' : ''}">🎯 Auto Detect</div>
@@ -616,7 +639,7 @@
                 </button>
             `).join('')}
         `;
-        
+
         document.querySelectorAll('[data-location]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const location = btn.dataset.location;
@@ -636,16 +659,16 @@
             });
         });
     }
-    
+
     function autoDetectLocation() {
         if (!navigator.geolocation) return;
-        
+
         navigator.geolocation.getCurrentPosition((position) => {
             const { latitude, longitude } = position.coords;
-            
+
             let closestDistrict = state.data.districtMeta[0];
             let minDistance = Infinity;
-            
+
             state.data.districtMeta.forEach(district => {
                 const distance = calculateDistance(latitude, longitude, district.latitude, district.longitude);
                 if (distance < minDistance) {
@@ -653,7 +676,7 @@
                     closestDistrict = district;
                 }
             });
-            
+
             if (state.currentDistrict !== closestDistrict.district_id) {
                 state.currentDistrict = closestDistrict.district_id;
                 saveSession();
@@ -663,14 +686,16 @@
             }
         });
     }
-    
+
+    // ============================================
     // Event Handlers
+    // ============================================
     function setupEventListeners() {
         document.getElementById('lang-toggle').addEventListener('click', () => {
             state.currentLang = state.currentLang === 'kor' ? 'en' : 'kor';
             document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
             saveSession();
-            
+
             renderHero();
             renderLocationSection();
             renderFashionSection();
@@ -681,22 +706,22 @@
             renderLatestStories();
             renderLocationModal();
         });
-        
+
         document.getElementById('change-location').addEventListener('click', () => {
             renderLocationModal();
             document.getElementById('location-modal').classList.remove('hidden');
         });
-        
+
         document.getElementById('close-location-modal').addEventListener('click', () => {
             document.getElementById('location-modal').classList.add('hidden');
         });
-        
+
         document.getElementById('location-modal').addEventListener('click', (e) => {
             if (e.target.id === 'location-modal') {
                 document.getElementById('location-modal').classList.add('hidden');
             }
         });
-        
+
         document.getElementById('newsletter-submit').addEventListener('click', () => {
             const email = document.getElementById('newsletter-email').value;
             if (email && email.includes('@')) {
@@ -706,14 +731,16 @@
                 alert(state.currentLang === 'kor' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email address.');
             }
         });
-        
+
         document.querySelector('a[href="#newsletter-section"]').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('newsletter-section').scrollIntoView({ behavior: 'smooth' });
         });
     }
-    
+
+    // ============================================
     // Initialize Page
+    // ============================================
     function initializePage() {
         loadSession();
         initializeHeroSlides();
@@ -728,15 +755,14 @@
         renderLatestStories();
         renderLocationModal();
         setupEventListeners();
-        
+
         if (state.autoSelectEnabled) {
             setTimeout(autoDetectLocation, 100);
         }
     }
-    
+
     // Start
     loadData();
-})();
 </script>
 
 </body>

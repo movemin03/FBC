@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beauty - FBC Creators</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -178,29 +179,35 @@
     </div>
 </footer>
 
-<script>
-    (function() {
-        'use strict';
+<script type="module">
+    // ============================================
+    // Supabase Configuration
+    // ============================================
+    const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwY2libmhoZWdraGR3eXhlcWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzMyNzYsImV4cCI6MjA3NjMwOTI3Nn0.LKjw1dqgjs39shvGpxcfFPutA7p1yR9eOb4zhomSBS8';
 
-        // State Management
-        const state = {
-            currentLang: 'en',
-            beautyData: [],
-            filteredData: [],
-            currentFilter: { type: 'category', value: 'all' },
-            displayedArticles: 13,
-            articlesPerLoad: 12
-        };
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const prefixMap = { 'fs': 'fashion', 'by': 'beauty', 'lf': 'life', 'ds': 'districts' };
+    // ============================================
+    // State Management
+    // ============================================
+    const state = {
+        currentLang: 'en',
+        beautyData: [],
+        filteredData: [],
+        currentFilter: { type: 'category', value: 'all' },
+        displayedArticles: 13,
+        articlesPerLoad: 12
+    };
 
-        // Utility Functions
-        const getCategoryFromId = (id) => prefixMap[id.substring(0, 2)] || 'beauty';
-        const buildArticleUrl = (id) => `../article/index.html?category=${getCategoryFromId(id)}&id=${id}`;
+    // ============================================
+    // Utility Functions
+    // ============================================
+    const buildArticleUrl = (id, sourceType) => `../article/index.html?category=${sourceType}&id=${id}`;
 
-        // Image Loading with Skeleton
-        function createImageWithSkeleton(src, alt, imgClass = '') {
-            return `
+    function createImageWithSkeleton(src, alt, imgClass = '') {
+        return `
             <div class="image-container w-full h-full">
                 <div class="skeleton w-full h-full absolute inset-0"></div>
                 <img src="${src}"
@@ -211,101 +218,116 @@
                      onerror="this.src='https://placehold.co/1200x675/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
             </div>
         `;
-        }
+    }
 
-        // Language Management
-        function initializeLanguage() {
-            const savedLang = sessionStorage.getItem('fbc_language');
-            if (savedLang) {
-                state.currentLang = savedLang;
-            } else {
-                const browserLang = navigator.language || navigator.userLanguage;
-                state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
-                sessionStorage.setItem('fbc_language', state.currentLang);
-            }
+    // ============================================
+    // Language Management
+    // ============================================
+    function initializeLanguage() {
+        const savedLang = sessionStorage.getItem('fbc_language');
+        if (savedLang) {
+            state.currentLang = savedLang;
+        } else {
+            const browserLang = navigator.language || navigator.userLanguage;
+            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+            sessionStorage.setItem('fbc_language', state.currentLang);
+        }
+        document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+    }
+
+    function setupLanguageToggle() {
+        const langToggle = document.getElementById('lang-toggle');
+        langToggle.addEventListener('click', () => {
+            state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
             document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
-        }
-
-        function setupLanguageToggle() {
-            const langToggle = document.getElementById('lang-toggle');
-            langToggle.addEventListener('click', () => {
-                state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
-                document.getElementById('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
-                sessionStorage.setItem('fbc_language', state.currentLang);
-                updateTexts();
-                renderPage();
-            });
-        }
-
-        // Data Loading
-        async function loadBeautyData() {
-            try {
-                const response = await fetch('../data/beauty.json');
-                state.beautyData = await response.json();
-                state.filteredData = [...state.beautyData];
-            } catch (error) {
-                console.error('Error loading beauty data:', error);
-                state.beautyData = [];
-                state.filteredData = [];
-            }
-        }
-
-        // Filter Management
-        function setupFilterButtons() {
-            const filterButtons = document.querySelectorAll('[data-filter]');
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const filterType = button.dataset.type;
-                    const filterValue = button.dataset.filter;
-
-                    // Update active state
-                    document.querySelectorAll(`[data-type="${filterType}"]`).forEach(btn => {
-                        btn.classList.remove('bg-black', 'text-white', 'border-black');
-                        btn.classList.add('bg-white', 'border-gray-300');
-                    });
-                    button.classList.add('bg-black', 'text-white', 'border-black');
-                    button.classList.remove('bg-white', 'border-gray-300');
-
-                    state.currentFilter = { type: filterType, value: filterValue };
-                    state.displayedArticles = 13;
-                    applyFilter();
-                });
-            });
-        }
-
-        function applyFilter() {
-            const { type, value } = state.currentFilter;
-
-            if (type === 'category') {
-                state.filteredData = value === 'all'
-                    ? [...state.beautyData]
-                    : state.beautyData.filter(article => article.category === value);
-            } else if (type === 'cultural') {
-                state.filteredData = value === 'all'
-                    ? [...state.beautyData]
-                    : state.beautyData.filter(article => article.cultural_badge === value);
-            }
-
-            state.filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            sessionStorage.setItem('fbc_language', state.currentLang);
+            updateTexts();
             renderPage();
+        });
+    }
+
+    // ============================================
+    // Data Loading from Supabase
+    // ============================================
+    async function loadBeautyData() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('content_items')
+                .select('*')
+                .eq('source_type', 'beauty')
+                .order('date', { ascending: false });
+
+            if (error) throw error;
+
+            state.beautyData = data || [];
+            state.filteredData = [...state.beautyData];
+        } catch (error) {
+            console.error('Error loading beauty data:', error);
+            state.beautyData = [];
+            state.filteredData = [];
+        }
+    }
+
+    // ============================================
+    // Filter Management
+    // ============================================
+    function setupFilterButtons() {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filterType = button.dataset.type;
+                const filterValue = button.dataset.filter;
+
+                // Update active state
+                document.querySelectorAll(`[data-type="${filterType}"]`).forEach(btn => {
+                    btn.classList.remove('bg-black', 'text-white', 'border-black');
+                    btn.classList.add('bg-white', 'border-gray-300');
+                });
+                button.classList.add('bg-black', 'text-white', 'border-black');
+                button.classList.remove('bg-white', 'border-gray-300');
+
+                state.currentFilter = { type: filterType, value: filterValue };
+                state.displayedArticles = 13;
+                applyFilter();
+            });
+        });
+    }
+
+    function applyFilter() {
+        const { type, value } = state.currentFilter;
+
+        if (type === 'category') {
+            state.filteredData = value === 'all'
+                ? [...state.beautyData]
+                : state.beautyData.filter(article => article.category === value);
+        } else if (type === 'cultural') {
+            state.filteredData = value === 'all'
+                ? [...state.beautyData]
+                : state.beautyData.filter(article => article.cultural_badge === value);
         }
 
-        // Render Functions
-        function renderHeroArticle() {
-            const heroContainer = document.getElementById('hero-article');
-            if (state.filteredData.length === 0) {
-                heroContainer.innerHTML = '';
-                return;
-            }
+        state.filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderPage();
+    }
 
-            const hero = state.filteredData[0];
-            const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
-            const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
+    // ============================================
+    // Render Functions
+    // ============================================
+    function renderHeroArticle() {
+        const heroContainer = document.getElementById('hero-article');
+        if (state.filteredData.length === 0) {
+            heroContainer.innerHTML = '';
+            return;
+        }
 
-            heroContainer.innerHTML = `
-            <a href="${buildArticleUrl(hero.id)}" class="block relative group">
+        const hero = state.filteredData[0];
+        const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
+        const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
+
+        heroContainer.innerHTML = `
+            <a href="${buildArticleUrl(hero.id, hero.source_type)}" class="block relative group">
                 <div class="aspect-video overflow-hidden bg-gray-100 relative">
-                    ${createImageWithSkeleton(hero.image_display_url, title, 'w-full h-full object-cover')}
+                    ${createImageWithSkeleton(hero.image, title, 'w-full h-full object-cover')}
                 </div>
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-8">
                     <div class="flex items-center gap-2 mb-3">
@@ -318,39 +340,39 @@
                 </div>
             </a>
         `;
+    }
+
+    function renderFeaturedGrid() {
+        const articles = state.filteredData.slice(1, 5);
+        document.getElementById('featured-grid').innerHTML = articles.map(article => createArticleCard(article)).join('');
+    }
+
+    function renderLatestStories() {
+        const articles = state.filteredData.slice(5, state.displayedArticles);
+        const latestSection = document.getElementById('latest-section');
+        const loadMoreContainer = document.getElementById('load-more-container');
+
+        if (articles.length === 0) {
+            latestSection.classList.add('hidden');
+            loadMoreContainer.classList.add('hidden');
+            return;
         }
 
-        function renderFeaturedGrid() {
-            const articles = state.filteredData.slice(1, 5);
-            document.getElementById('featured-grid').innerHTML = articles.map(article => createArticleCard(article)).join('');
-        }
+        latestSection.classList.remove('hidden');
+        document.getElementById('latest-articles').innerHTML = articles.map(article => createArticleCard(article)).join('');
 
-        function renderLatestStories() {
-            const articles = state.filteredData.slice(5, state.displayedArticles);
-            const latestSection = document.getElementById('latest-section');
-            const loadMoreContainer = document.getElementById('load-more-container');
+        loadMoreContainer.classList.toggle('hidden', state.displayedArticles >= state.filteredData.length);
+    }
 
-            if (articles.length === 0) {
-                latestSection.classList.add('hidden');
-                loadMoreContainer.classList.add('hidden');
-                return;
-            }
+    function createArticleCard(article) {
+        const title = state.currentLang === 'en' ? article.title_en : article.title_kor;
+        const desc = state.currentLang === 'en' ? article.desc_en : article.desc_kor;
 
-            latestSection.classList.remove('hidden');
-            document.getElementById('latest-articles').innerHTML = articles.map(article => createArticleCard(article)).join('');
-
-            loadMoreContainer.classList.toggle('hidden', state.displayedArticles >= state.filteredData.length);
-        }
-
-        function createArticleCard(article) {
-            const title = state.currentLang === 'en' ? article.title_en : article.title_kor;
-            const desc = state.currentLang === 'en' ? article.desc_en : article.desc_kor;
-
-            return `
+        return `
             <article class="fade-in">
-                <a href="${buildArticleUrl(article.id)}" class="block group">
+                <a href="${buildArticleUrl(article.id, article.source_type)}" class="block group">
                     <div class="aspect-[3/2] overflow-hidden bg-gray-100 mb-4 relative rounded-sm">
-                        ${createImageWithSkeleton(article.image_display_url, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        ${createImageWithSkeleton(article.image, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
                         ${article.cultural_badge ? `<span class="absolute top-3 left-3 inline-block px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${article.cultural_badge}</span>` : ''}
                     </div>
                     <div>
@@ -362,53 +384,58 @@
                 </a>
             </article>
         `;
-        }
+    }
 
-        function renderPage() {
-            updateTexts();
-            renderHeroArticle();
-            renderFeaturedGrid();
+    function renderPage() {
+        updateTexts();
+        renderHeroArticle();
+        renderFeaturedGrid();
+        renderLatestStories();
+    }
+
+    function updateTexts() {
+        document.getElementById('load-more-text').textContent = state.currentLang === 'en' ? 'Load More' : '더 보기';
+    }
+
+    // ============================================
+    // Load More
+    // ============================================
+    function setupLoadMore() {
+        document.getElementById('load-more').addEventListener('click', () => {
+            state.displayedArticles += state.articlesPerLoad;
             renderLatestStories();
-        }
+        });
+    }
 
-        function updateTexts() {
-            document.getElementById('load-more-text').textContent = state.currentLang === 'en' ? 'Load More' : '더 보기';
-        }
+    // ============================================
+    // Newsletter
+    // ============================================
+    function setupNewsletter() {
+        document.getElementById('newsletter-submit').addEventListener('click', () => {
+            const email = document.getElementById('newsletter-email').value;
+            if (email && email.includes('@')) {
+                alert(state.currentLang === 'en' ? 'Thank you for subscribing!' : '구독해 주셔서 감사합니다!');
+                document.getElementById('newsletter-email').value = '';
+            } else {
+                alert(state.currentLang === 'en' ? 'Please enter a valid email address.' : '유효한 이메일 주소를 입력해주세요.');
+            }
+        });
+    }
 
-        // Load More
-        function setupLoadMore() {
-            document.getElementById('load-more').addEventListener('click', () => {
-                state.displayedArticles += state.articlesPerLoad;
-                renderLatestStories();
-            });
-        }
+    // ============================================
+    // Initialize
+    // ============================================
+    async function init() {
+        initializeLanguage();
+        await loadBeautyData();
+        setupLanguageToggle();
+        setupFilterButtons();
+        setupLoadMore();
+        setupNewsletter();
+        applyFilter();
+    }
 
-        // Newsletter
-        function setupNewsletter() {
-            document.getElementById('newsletter-submit').addEventListener('click', () => {
-                const email = document.getElementById('newsletter-email').value;
-                if (email && email.includes('@')) {
-                    alert(state.currentLang === 'en' ? 'Thank you for subscribing!' : '구독해 주셔서 감사합니다!');
-                    document.getElementById('newsletter-email').value = '';
-                } else {
-                    alert(state.currentLang === 'en' ? 'Please enter a valid email address.' : '유효한 이메일 주소를 입력해주세요.');
-                }
-            });
-        }
-
-        // Initialize
-        async function init() {
-            initializeLanguage();
-            await loadBeautyData();
-            setupLanguageToggle();
-            setupFilterButtons();
-            setupLoadMore();
-            setupNewsletter();
-            applyFilter();
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
-    })();
+    document.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>

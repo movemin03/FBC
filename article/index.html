@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FBC Creators Magazine - Article</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +14,6 @@
         * { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
         .font-serif, .font-serif * { font-family: 'Noto Serif KR', Georgia, serif !important; }
 
-        /* Skeleton Loading */
         @keyframes shimmer {
             0% { background-position: -468px 0; }
             100% { background-position: 468px 0; }
@@ -39,7 +39,6 @@
             opacity: 1;
         }
 
-        /* Article Content Styles */
         .article-content p { @apply mb-6 leading-relaxed; }
         .article-content h2 { @apply text-2xl md:text-3xl font-bold mt-10 md:mt-12 mb-4 md:mb-6; }
         .article-content h3 { @apply text-xl md:text-2xl font-bold mt-8 md:mt-10 mb-3 md:mb-5; }
@@ -53,7 +52,6 @@
         .article-content li { @apply mb-2; }
         .article-content blockquote { @apply border-l-4 border-gray-300 pl-4 my-6 italic text-gray-700; }
 
-        /* Image Carousel (3+ images) */
         .image-carousel-container { @apply max-w-full my-8 md:my-12 overflow-hidden; }
         .image-carousel { @apply relative; }
         .image-carousel .swiper-slide {
@@ -71,7 +69,6 @@
         .image-carousel .swiper-button-prev,
         .image-carousel .swiper-pagination { display: none !important; }
 
-        /* Stacked Images (2 or less) */
         .image-stack { @apply max-w-3xl mx-auto my-8 md:my-12 space-y-4 md:space-y-6; }
         .image-stack img { @apply w-full h-auto rounded-xl shadow-lg m-0; }
 
@@ -139,20 +136,17 @@
             <div id="article-content" class="article-content max-w-3xl mx-auto text-base md:text-lg leading-relaxed text-gray-800"></div>
             <div id="article-tags" class="flex flex-wrap gap-2 mt-8 md:mt-10 max-w-3xl mx-auto"></div>
 
-            <!-- Related Articles -->
             <section class="mt-12 md:mt-16 max-w-3xl mx-auto">
                 <h2 class="text-xs md:text-sm font-bold tracking-widest uppercase border-b-2 border-black inline-block pb-2 mb-4 md:mb-6">Related Articles</h2>
                 <div id="related-articles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
             </section>
 
-            <!-- Latest Articles -->
             <section class="mt-12 md:mt-16 max-w-3xl mx-auto">
                 <h2 class="text-xs md:text-sm font-bold tracking-widest uppercase border-b-2 border-black inline-block pb-2 mb-4 md:mb-6">Latest Articles</h2>
                 <div id="latest-articles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
             </section>
         </article>
 
-        <!-- Sidebar -->
         <aside class="md:col-span-4">
             <div class="sticky top-24 space-y-8 md:space-y-10">
                 <div>
@@ -205,39 +199,45 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-    (function() {
-        'use strict';
+<script type="module">
+    // ============================================
+    // Supabase Configuration
+    // ============================================
+    const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwY2libmhoZWdraGR3eXhlcWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzMyNzYsImV4cCI6MjA3NjMwOTI3Nn0.LKjw1dqgjs39shvGpxcfFPutA7p1yR9eOb4zhomSBS8';
 
-        // State Management
-        const state = {
-            currentArticle: null,
-            allArticles: {},
-            articleData: [],
-            currentLang: 'en',
-            swiperInstances: []
-        };
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const CATEGORY_MAP = { fs: 'fashion', by: 'beauty', lf: 'life', ds: 'districts' };
-        const $ = (id) => document.getElementById(id);
-        const getCategoryFromId = (id) => CATEGORY_MAP[id.substring(0, 2).toLowerCase()] || 'fashion';
+    // ============================================
+    // State Management
+    // ============================================
+    const state = {
+        currentArticle: null,
+        allArticles: [],
+        currentLang: 'en',
+        swiperInstances: []
+    };
 
-        // Initialize Language (Session → System)
-        function initializeLanguage() {
-            const savedLang = sessionStorage.getItem('fbc_language');
-            if (savedLang) {
-                state.currentLang = savedLang;
-            } else {
-                const browserLang = navigator.language || navigator.userLanguage;
-                state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
-                sessionStorage.setItem('fbc_language', state.currentLang);
-            }
-            $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+    const $ = (id) => document.getElementById(id);
+
+    // ============================================
+    // Utility Functions
+    // ============================================
+    function initializeLanguage() {
+        const savedLang = sessionStorage.getItem('fbc_language');
+        if (savedLang) {
+            state.currentLang = savedLang;
+        } else {
+            const browserLang = navigator.language || navigator.userLanguage;
+            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'ko' : 'en';
+            sessionStorage.setItem('fbc_language', state.currentLang);
         }
+        $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+    }
 
-        // Image Loading with Skeleton
-        const createImageWithSkeleton = (src, alt, classes = '') => {
-            return `
+    const createImageWithSkeleton = (src, alt, classes = '') => {
+        return `
             <div class="image-container w-full h-full">
                 <div class="skeleton w-full h-full absolute inset-0"></div>
                 <img src="${src}"
@@ -248,64 +248,45 @@
                      onerror="handleImageError(this)">
             </div>
         `;
-        };
+    };
 
-        // Handle Image Error
-        window.handleImageError = (img) => {
-            const src = img.src;
-            if (src.endsWith('.webp')) {
-                img.onerror = () => {
-                    img.onerror = () => img.style.display = 'none';
-                    img.src = src.replace('.webp', '.png');
-                };
-                img.src = src.replace('.webp', '.jpg');
+    window.handleImageError = (img) => {
+        img.src = 'https://placehold.co/800x600/e5e5e5/666666?text=FBC';
+        img.classList.add('loaded');
+        img.previousElementSibling?.remove();
+    };
+
+    const getArticleInfo = () => {
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('category');
+        const articleId = params.get('id');
+        return category && articleId ? { category, articleId } : null;
+    };
+
+    const convertConsecutiveImages = (html) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const body = doc.body;
+        const allNodes = Array.from(body.childNodes);
+        const groups = [];
+        let currentGroup = [];
+
+        allNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'IMG') {
+                currentGroup.push(node);
+            } else if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+                // Skip
             } else {
-                img.style.display = 'none';
+                if (currentGroup.length >= 2) groups.push([...currentGroup]);
+                currentGroup = [];
             }
-            img.classList.add('loaded');
-            img.previousElementSibling?.remove();
-        };
+        });
+        if (currentGroup.length >= 2) groups.push(currentGroup);
 
-        // Get Article Info
-        const getArticleInfo = () => {
-            const params = new URLSearchParams(window.location.search);
-            const category = params.get('category');
-            const articleId = params.get('id');
-            return category && articleId ? { category, articleId } : null;
-        };
-
-        // Get Image URL (handle ImgBB URLs)
-        const getImageUrl = (imagePath) => {
-            if (!imagePath) return 'https://placehold.co/800x600/e5e5e5/666666?text=FBC';
-            if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
-            return imagePath.startsWith('img/') ? '../' + imagePath : imagePath;
-        };
-
-        // Convert Consecutive Images
-        const convertConsecutiveImages = (html) => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const body = doc.body;
-            const allNodes = Array.from(body.childNodes);
-            const groups = [];
-            let currentGroup = [];
-
-            allNodes.forEach(node => {
-                if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'IMG') {
-                    currentGroup.push(node);
-                } else if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
-                    // Skip
-                } else {
-                    if (currentGroup.length >= 2) groups.push([...currentGroup]);
-                    currentGroup = [];
-                }
-            });
-            if (currentGroup.length >= 2) groups.push(currentGroup);
-
-            groups.forEach((group, idx) => {
-                if (group.length >= 3) {
-                    const carouselId = `carousel-${Date.now()}-${idx}`;
-                    const carouselHTML = `
+        groups.forEach((group, idx) => {
+            if (group.length >= 3) {
+                const carouselId = `carousel-${Date.now()}-${idx}`;
+                const carouselHTML = `
                     <div class="image-carousel-container">
                         <div class="swiper image-carousel" id="${carouselId}" data-count="${group.length}">
                             <div class="swiper-wrapper">
@@ -318,106 +299,193 @@
                         </div>
                     </div>
                 `;
-                    const temp = document.createElement('div');
-                    temp.innerHTML = carouselHTML;
-                    group[0].replaceWith(temp.firstElementChild);
-                    group.slice(1).forEach(img => img.remove());
-                } else {
-                    const stackHTML = `
+                const temp = document.createElement('div');
+                temp.innerHTML = carouselHTML;
+                group[0].replaceWith(temp.firstElementChild);
+                group.slice(1).forEach(img => img.remove());
+            } else {
+                const stackHTML = `
                     <div class="image-stack">
                         ${group.map(img => createImageWithSkeleton(img.src, img.alt || '', 'w-full h-auto')).join('')}
                     </div>
                 `;
-                    const temp = document.createElement('div');
-                    temp.innerHTML = stackHTML;
-                    group[0].replaceWith(temp.firstElementChild);
-                    group.slice(1).forEach(img => img.remove());
+                const temp = document.createElement('div');
+                temp.innerHTML = stackHTML;
+                group[0].replaceWith(temp.firstElementChild);
+                group.slice(1).forEach(img => img.remove());
+            }
+        });
+
+        return body.innerHTML;
+    };
+
+    const initializeCarousels = () => {
+        state.swiperInstances.forEach(swiper => swiper.destroy());
+        state.swiperInstances = [];
+
+        document.querySelectorAll('.image-carousel').forEach(carousel => {
+            const swiper = new Swiper('#' + carousel.id, {
+                slidesPerView: 'auto',
+                spaceBetween: 16,
+                loop: true,
+                grabCursor: true,
+                navigation: false,
+                pagination: false,
+                breakpoints: {
+                    640: { spaceBetween: 20 },
+                    1024: { spaceBetween: 24 }
                 }
             });
+            state.swiperInstances.push(swiper);
+        });
+    };
 
-            return body.innerHTML;
-        };
+    // ============================================
+    // Data Loading from Supabase
+    // ============================================
+    async function loadData() {
+        try {
+            // Load all content_items
+            const { data: contentItems, error: contentError } = await supabaseClient
+                .from('content_items')
+                .select('*')
+                .order('date', { ascending: false });
 
-        // Initialize Swiper Carousels
-        const initializeCarousels = () => {
-            state.swiperInstances.forEach(swiper => swiper.destroy());
-            state.swiperInstances = [];
+            if (contentError) throw contentError;
 
-            document.querySelectorAll('.image-carousel').forEach(carousel => {
-                const swiper = new Swiper('#' + carousel.id, {
-                    slidesPerView: 'auto',
-                    spaceBetween: 16,
-                    loop: true,
-                    grabCursor: true,
-                    navigation: false,
-                    pagination: false,
-                    breakpoints: {
-                        640: { spaceBetween: 20 },
-                        1024: { spaceBetween: 24 }
-                    }
-                });
-                state.swiperInstances.push(swiper);
-            });
-        };
+            state.allArticles = contentItems || [];
 
-        // Update Article Content
-        const updateArticleContent = () => {
-            const { currentArticle, articleData, currentLang } = state;
-            $('article-title').textContent = currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
+            const info = getArticleInfo();
+            info ? await loadArticle(info.category, info.articleId) : window.location.href = '../index.html';
+        } catch (error) {
+            console.error('Error loading data:', error);
+            alert('데이터를 불러올 수 없습니다.');
+        }
+    }
 
-            const article = articleData.find(a => a.id === currentArticle.id);
-            if (article) {
-                let html = currentLang === 'ko' ? article.article_html_ko : article.article_html_en;
-                if (html) {
-                    html = html.replace(/src="img\//g, 'src="../img/');
-                    html = convertConsecutiveImages(html);
-                    html = html.replace(/<img/g, '<img onerror="handleImageError(this)"');
-                    $('article-content').innerHTML = html;
-                    setTimeout(initializeCarousels, 100);
-                } else {
-                    $('article-content').innerHTML = '<p>콘텐츠를 불러올 수 없습니다.</p>';
-                }
+    async function loadArticle(category, articleId) {
+        // Find article in content_items
+        state.currentArticle = state.allArticles.find(a => a.id === articleId);
+
+        if (!state.currentArticle) {
+            window.location.href = '../index.html';
+            return;
+        }
+
+        // Load article HTML content
+        try {
+            const { data: articleData, error: articleError } = await supabaseClient
+                .from('articles')
+                .select('*')
+                .eq('id', articleId)
+                .single();
+
+            if (articleError) throw articleError;
+
+            // Update UI
+            $('article-category').textContent = state.currentArticle.category;
+            $('article-category').href = `../${category}/index.html`;
+            $('article-author').textContent = state.currentArticle.author;
+            $('article-date').textContent = state.currentArticle.date;
+            document.title = `${state.currentArticle.title_kor} - FBC`;
+
+            updateArticleContent(articleData);
+
+            // Tags
+            if (state.currentArticle.tags?.length) {
+                $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
+                    `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
+                ).join('');
             }
-        };
 
-        // Render Functions
-        const renderArticleGrid = (containerId, articles) => {
-            const container = $(containerId);
-            if (!articles?.length) {
-                container.innerHTML = `<p class="text-gray-500 text-sm">${state.currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No articles.'}</p>`;
-                return;
+            // Related articles (same category or tags)
+            const related = state.allArticles.filter(a =>
+                a.id !== articleId &&
+                (a.source_type === state.currentArticle.source_type ||
+                    a.tags?.some(t => state.currentArticle.tags?.includes(t)))
+            ).slice(0, 3);
+
+            // Latest articles
+            const latest = state.allArticles.filter(a => a.id !== articleId).slice(0, 3);
+
+            // Popular articles (same category, sorted by views)
+            const popular = state.allArticles
+                .filter(a => a.id !== articleId && a.source_type === state.currentArticle.source_type)
+                .sort((a, b) => (b.views || 0) - (a.views || 0))
+                .slice(0, 5);
+
+            renderArticleGrid('related-articles', related);
+            renderArticleGrid('latest-articles', latest);
+            renderSidebarItems('popular-articles', popular);
+
+            // Must Read - fetch from a separate pinned table or hardcode IDs
+            const mustReadIds = ['fs00001', 'by00001', 'lf00001']; // Example
+            const mustRead = state.allArticles
+                .filter(a => mustReadIds.includes(a.id) && a.id !== articleId)
+                .slice(0, 5);
+            renderSidebarItems('must-read-articles', mustRead);
+
+        } catch (error) {
+            console.error('Error loading article content:', error);
+            $('article-content').innerHTML = '<p>콘텐츠를 불러올 수 없습니다.</p>';
+        }
+    }
+
+    function updateArticleContent(articleData) {
+        const { currentArticle, currentLang } = state;
+        $('article-title').textContent = currentLang === 'ko' ? currentArticle.title_kor : currentArticle.title_en;
+
+        if (articleData) {
+            let html = currentLang === 'ko' ? articleData.article_html_ko : articleData.article_html_en;
+            if (html) {
+                html = convertConsecutiveImages(html);
+                html = html.replace(/<img/g, '<img onerror="handleImageError(this)"');
+                $('article-content').innerHTML = html;
+                setTimeout(initializeCarousels, 100);
+            } else {
+                $('article-content').innerHTML = '<p>콘텐츠를 불러올 수 없습니다.</p>';
             }
+        }
+    }
 
-            container.innerHTML = articles.map(article => {
-                const category = getCategoryFromId(article.id);
-                const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
-                return `
-                <a href="index.html?category=${category}&id=${article.id}" class="group block">
+    // ============================================
+    // Render Functions
+    // ============================================
+    function renderArticleGrid(containerId, articles) {
+        const container = $(containerId);
+        if (!articles?.length) {
+            container.innerHTML = `<p class="text-gray-500 text-sm">${state.currentLang === 'ko' ? '관련 기사가 없습니다.' : 'No articles.'}</p>`;
+            return;
+        }
+
+        container.innerHTML = articles.map(article => {
+            const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+            return `
+                <a href="index.html?category=${article.source_type}&id=${article.id}" class="group block">
                     <div class="aspect-square overflow-hidden mb-2 md:mb-3 rounded bg-gray-100">
-                        ${createImageWithSkeleton(getImageUrl(article.image_display_url || article.image), title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300')}
+                        ${createImageWithSkeleton(article.image, title, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300')}
                     </div>
                     <div class="text-xs text-gray-500 uppercase mb-1 md:mb-2">${article.category || ''}</div>
                     <h3 class="font-semibold text-sm md:text-base leading-snug mb-1 md:mb-2 group-hover:underline line-clamp-2">${title}</h3>
                     <div class="text-xs text-gray-400">${article.date || ''}</div>
                 </a>
             `;
-            }).join('');
-        };
+        }).join('');
+    }
 
-        const renderSidebarItems = (containerId, articles) => {
-            const container = $(containerId);
-            if (!articles?.length) {
-                container.innerHTML = `<p class="text-gray-500 text-xs md:text-sm">${state.currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.'}</p>`;
-                return;
-            }
+    function renderSidebarItems(containerId, articles) {
+        const container = $(containerId);
+        if (!articles?.length) {
+            container.innerHTML = `<p class="text-gray-500 text-xs md:text-sm">${state.currentLang === 'ko' ? '기사가 없습니다.' : 'No articles.'}</p>`;
+            return;
+        }
 
-            container.innerHTML = articles.map(article => {
-                const category = getCategoryFromId(article.id);
-                const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
-                return `
-                <a href="index.html?category=${category}&id=${article.id}" class="flex gap-2 md:gap-3 mb-4 md:mb-5 group">
+        container.innerHTML = articles.map(article => {
+            const title = state.currentLang === 'ko' ? article.title_kor : article.title_en;
+            return `
+                <a href="index.html?category=${article.source_type}&id=${article.id}" class="flex gap-2 md:gap-3 mb-4 md:mb-5 group">
                     <div class="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded overflow-hidden bg-gray-100">
-                        ${createImageWithSkeleton(getImageUrl(article.image_display_url || article.image), title, 'w-full h-full object-cover')}
+                        ${createImageWithSkeleton(article.image, title, 'w-full h-full object-cover')}
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="text-xs md:text-sm font-semibold leading-snug mb-1 group-hover:underline line-clamp-2">${title}</div>
@@ -425,117 +493,66 @@
                     </div>
                 </a>
             `;
-            }).join('');
-        };
+        }).join('');
+    }
 
-        // Load Data
-        const loadData = async () => {
+    // ============================================
+    // Event Handlers
+    // ============================================
+    $('lang-toggle').onclick = async () => {
+        state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
+        $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
+        sessionStorage.setItem('fbc_language', state.currentLang);
+
+        const info = getArticleInfo();
+        if (info && state.currentArticle) {
             try {
-                const [fashion, beauty, life, districts, article] = await Promise.all([
-                    fetch('../data/fashion.json').then(r => r.json()),
-                    fetch('../data/beauty.json').then(r => r.json()),
-                    fetch('../data/life.json').then(r => r.json()),
-                    fetch('../data/districts.json').then(r => r.json()),
-                    fetch('../data/article.json').then(r => r.json())
-                ]);
+                const { data: articleData, error } = await supabaseClient
+                    .from('articles')
+                    .select('*')
+                    .eq('id', info.articleId)
+                    .single();
 
-                state.allArticles = { fashion, beauty, life, districts };
-                state.articleData = article;
-
-                const info = getArticleInfo();
-                info ? loadArticle(info.category, info.articleId) : window.location.href = '../index.html';
+                if (!error) {
+                    updateArticleContent(articleData);
+                }
             } catch (error) {
-                console.error('Error:', error);
-                alert('데이터를 불러올 수 없습니다.');
+                console.error('Error reloading article:', error);
             }
-        };
+        }
+    };
 
-        const loadArticle = async (category, articleId) => {
-            const categoryData = state.allArticles[category];
-            if (!categoryData) return window.location.href = '../index.html';
+    $('copy-link').onclick = async () => {
+        await navigator.clipboard.writeText(location.href);
+        alert(state.currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
+    };
 
-            state.currentArticle = categoryData.find(a => a.id === articleId);
-            if (!state.currentArticle) return window.location.href = '../index.html';
+    $('share-btn').onclick = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en,
+                url: location.href
+            });
+        } else {
+            alert(state.currentLang === 'ko' ? '공유 기능을 지원하지 않습니다.' : 'Share not supported.');
+        }
+    };
 
-            $('article-category').textContent = state.currentArticle.category;
-            $('article-category').href = `../${category}/index.html`;
-            $('article-author').textContent = state.currentArticle.author;
-            $('article-date').textContent = state.currentArticle.date;
-            document.title = `${state.currentArticle.title_kor} - FBC`;
+    $('newsletter-submit').onclick = () => {
+        const email = $('newsletter-email').value;
+        if (email && email.includes('@')) {
+            alert(state.currentLang === 'ko' ? '뉴스레터 신청 완료!' : 'Thank you!');
+            $('newsletter-email').value = '';
+        } else {
+            alert(state.currentLang === 'ko' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email.');
+        }
+    };
 
-            updateArticleContent();
-
-            if (state.currentArticle.tags?.length) {
-                $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
-                    `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
-                ).join('');
-            }
-
-            const allArticles = Object.values(state.allArticles).flat();
-
-            const related = allArticles.filter(a =>
-                a.id !== articleId && a.tags?.some(t => state.currentArticle.tags?.includes(t))
-            ).slice(0, 3);
-
-            const latest = allArticles.filter(a => a.id !== articleId)
-                .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
-
-            const popular = categoryData.filter(a => a.id !== articleId)
-                .sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
-
-            try {
-                const pinned = await fetch('../data/pinned.json').then(r => r.json());
-                const mustRead = pinned.mustRead?.map(item => allArticles.find(a => a.id === item.id))
-                    .filter(Boolean).filter(a => a.id !== articleId).slice(0, 5) || [];
-                renderSidebarItems('must-read-articles', mustRead);
-            } catch (e) {
-                console.error('Must read error:', e);
-            }
-
-            renderArticleGrid('related-articles', related);
-            renderArticleGrid('latest-articles', latest);
-            renderSidebarItems('popular-articles', popular);
-        };
-
-        // Event Handlers
-        $('lang-toggle').onclick = () => {
-            state.currentLang = state.currentLang === 'en' ? 'ko' : 'en';
-            $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
-            sessionStorage.setItem('fbc_language', state.currentLang);
-            updateArticleContent();
-            loadArticle(getCategoryFromId(state.currentArticle.id), state.currentArticle.id);
-        };
-
-        $('copy-link').onclick = async () => {
-            await navigator.clipboard.writeText(location.href);
-            alert(state.currentLang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
-        };
-
-        $('share-btn').onclick = () => {
-            if (navigator.share) {
-                navigator.share({
-                    title: state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en,
-                    url: location.href
-                });
-            } else {
-                alert(state.currentLang === 'ko' ? '공유 기능을 지원하지 않습니다.' : 'Share not supported.');
-            }
-        };
-
-        $('newsletter-submit').onclick = () => {
-            const email = $('newsletter-email').value;
-            if (email && email.includes('@')) {
-                alert(state.currentLang === 'ko' ? '뉴스레터 신청 완료!' : 'Thank you!');
-                $('newsletter-email').value = '';
-            } else {
-                alert(state.currentLang === 'ko' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email.');
-            }
-        };
-
-        // Initialize
-        initializeLanguage();
-        loadData();
-    })();
+    // ============================================
+    // Initialize
+    // ============================================
+    initializeLanguage();
+    loadData();
 </script>
 </body>
 </html>

@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8e5fe6b-5870-4c94-96ad-20da08bc9ec2" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/index - 복사본.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/write_index.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../article/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../article/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../beauty/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../beauty/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../districts/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../districts/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fashion/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../fashion/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +63,7 @@
       <updated>1760976229731</updated>
       <workItem from="1760976231647" duration="859000" />
       <workItem from="1760977338202" duration="7481000" />
-      <workItem from="1761134438257" duration="3077000" />
+      <workItem from="1761134438257" duration="4611000" />
     </task>
     <servers />
   </component>
