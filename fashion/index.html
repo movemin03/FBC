@@ -181,7 +181,6 @@
         </div>
     </div>
 </footer>
-
 <script type="module">
     // ============================================
     // Supabase Configuration
@@ -327,10 +326,13 @@
         const title = state.currentLang === 'en' ? hero.title_en : hero.title_kor;
         const desc = state.currentLang === 'en' ? hero.desc_en : hero.desc_kor;
 
+        // Hero에서는 image_origin_url 사용, 없으면 image로 폴백
+        const heroImage = hero.image_origin_url || hero.image;
+
         heroContainer.innerHTML = `
             <a href="${buildArticleUrl(hero.id, hero.source_type)}" class="block relative group">
                 <div class="aspect-video overflow-hidden bg-gray-100 relative">
-                    ${createImageWithSkeleton(hero.image, title, 'w-full h-full object-cover')}
+                    ${createImageWithSkeleton(heroImage, title, 'w-full h-full object-cover')}
                 </div>
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-8">
                     <div class="flex items-center gap-2 mb-3">
@@ -440,6 +442,5 @@
 
     document.addEventListener('DOMContentLoaded', init);
 </script>
-
 </body>
 </html>

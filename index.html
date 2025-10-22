@@ -367,18 +367,23 @@
         if (state.heroSlides.length === 0) return;
 
         const container = document.getElementById('hero-slides-container');
-        container.innerHTML = state.heroSlides.map((hero, index) => `
+        container.innerHTML = state.heroSlides.map((hero, index) => {
+            // Hero에서는 image_origin_url 사용, 없으면 image로 폴백
+            const heroImage = hero.image_origin_url || hero.image;
+
+            return `
             <div class="hero-slide ${index === 0 ? 'active' : ''}"
-                 style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${hero.image}')` : 'none'}"
+                 style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${heroImage}')` : 'none'}"
                  data-index="${index}"
-                 data-image="${hero.image}"
+                 data-image="${heroImage}"
                  data-id="${hero.id}"></div>
-        `).join('');
+        `;
+        }).join('');
 
         const indicators = document.getElementById('hero-indicators');
         indicators.innerHTML = state.heroSlides.map((_, index) => `
-            <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
-        `).join('');
+        <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
+    `).join('');
 
         document.querySelectorAll('[data-index]').forEach(el => {
             el.addEventListener('click', (e) => {
@@ -397,6 +402,7 @@
             window.location.href = `article/index.html?category=${hero.source_type}&id=${hero.id}`;
         });
 
+        // 나머지 슬라이드 이미지 프리로드
         setTimeout(() => {
             document.querySelectorAll('.hero-slide').forEach((slide, index) => {
                 if (index === 0) return;
