@@ -314,13 +314,13 @@
     // ============================================
     function loadSession() {
         const stored = sessionStorage;
-        if (stored.getItem('currentLang')) {
-            state.currentLang = stored.getItem('currentLang');
-            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
+        if (stored.getItem('fbc_language')) {
+            state.fbc_language = stored.getItem('fbc_language');
+            document.getElementById('lang-text').textContent = state.fbc_language === 'kor' ? '한국어' : 'English';
         } else {
             const browserLang = navigator.language || navigator.userLanguage;
-            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
-            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
+            state.fbc_language = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
+            document.getElementById('lang-text').textContent = state.fbc_language === 'kor' ? '한국어' : 'English';
         }
 
         if (stored.getItem('autoSelectEnabled')) {
