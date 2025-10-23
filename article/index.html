@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -203,8 +203,8 @@
     // ============================================
     // Supabase Configuration
     // ============================================
-    const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
-    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+    const SUPABASE_URL = window.ENV.SUPABASE_URL;
+    const SUPABASE_ANON_KEY = window.ENV.SUPABASE_ANON_KEY;
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -250,7 +250,6 @@
         `;
     };
 
-    // Skeleton placeholder for articles
     const createArticleSkeleton = () => `
         <div class="animate-pulse">
             <div class="aspect-square bg-gray-200 rounded mb-3"></div>
@@ -366,10 +365,13 @@
     // ============================================
     async function loadData() {
         try {
-            // Show skeletons immediately
+            // Step 1: 언어 설정 먼저 초기화
+            initializeLanguage();
+
+            // Step 2: 스켈레톤 UI 표시
             showSkeletons();
 
-            // Load all content_items
+            // Step 3: 데이터 로드
             const { data: contentItems, error: contentError } = await supabaseClient
                 .from('content_items')
                 .select('*')
@@ -388,21 +390,13 @@
     }
 
     function showSkeletons() {
-        // Show skeletons for popular articles
         $('popular-articles').innerHTML = Array(5).fill(createSidebarSkeleton()).join('');
-
-        // Show skeletons for related articles
         $('related-articles').innerHTML = Array(3).fill(createArticleSkeleton()).join('');
-
-        // Show skeletons for latest articles
         $('latest-articles').innerHTML = Array(3).fill(createArticleSkeleton()).join('');
-
-        // Show skeletons for must read
         $('must-read-articles').innerHTML = Array(5).fill(createSidebarSkeleton()).join('');
     }
 
     async function loadArticle(category, articleId) {
-        // Step 1: Load text content immediately
         state.currentArticle = state.allArticles.find(a => a.id === articleId);
 
         if (!state.currentArticle) {
@@ -410,22 +404,22 @@
             return;
         }
 
-        // Update title, category, author, date (text only)
+        // 텍스트 콘텐츠 먼저 표시 (언어에 맞게)
         $('article-category').textContent = state.currentArticle.category;
         $('article-category').href = `../${category}/index.html`;
         $('article-author').textContent = state.currentArticle.author;
         $('article-date').textContent = state.currentArticle.date;
-        document.title = `${state.currentArticle.title_kor} - FBC`;
-        $('article-title').textContent = state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en;
+        
+        const title = state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en;
+        document.title = `${title} - FBC`;
+        $('article-title').textContent = title;
 
-        // Tags (text only)
         if (state.currentArticle.tags?.length) {
             $('article-tags').innerHTML = state.currentArticle.tags.map(tag =>
                 `<a href="#tag-${tag}" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full text-xs md:text-sm text-gray-600 hover:bg-black hover:text-white transition">#${tag}</a>`
             ).join('');
         }
 
-        // Step 2: Load article HTML content
         try {
             const { data: articleData, error: articleError } = await supabaseClient
                 .from('articles')
@@ -437,7 +431,6 @@
 
             updateArticleContent(articleData);
 
-            // Step 3: Prepare article lists (text only first)
             const related = state.allArticles.filter(a =>
                 a.id !== articleId &&
                 (a.source_type === state.currentArticle.source_type ||
@@ -456,7 +449,6 @@
                 .filter(a => mustReadIds.includes(a.id) && a.id !== articleId)
                 .slice(0, 5);
 
-            // Step 4: Render in priority order (images load sequentially)
             await renderSidebarItems('popular-articles', popular);
             await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -490,9 +482,6 @@
         }
     }
 
-    // ============================================
-    // Render Functions
-    // ============================================
     function renderArticleGrid(containerId, articles) {
         const container = $(containerId);
         if (!articles?.length) {
@@ -550,6 +539,12 @@
         $('lang-text').textContent = state.currentLang === 'en' ? 'English' : '한국어';
         sessionStorage.setItem('fbc_language', state.currentLang);
 
+        if (state.currentArticle) {
+            const title = state.currentLang === 'ko' ? state.currentArticle.title_kor : state.currentArticle.title_en;
+            $('article-title').textContent = title;
+            document.title = `${title} - FBC`;
+        }
+
         const info = getArticleInfo();
         if (info && state.currentArticle) {
             try {
@@ -597,10 +592,7 @@
     // ============================================
     // Initialize
     // ============================================
-    initializeLanguage();
     loadData();
-</script>
-
 </script>
 </body>
 </html>
