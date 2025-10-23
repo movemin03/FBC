@@ -789,7 +789,7 @@
     });
 
     // ============================================
-    // Load Article from URL (수정)
+    // Load Article from URL (필드명 수정)
     // ============================================
     document.getElementById('load-article-btn').addEventListener('click', async () => {
         const url = document.getElementById('article-url').value.trim();
@@ -818,10 +818,7 @@
                 .single();
 
             if (error) throw error;
-
-            if (!data) {
-                throw new Error('게시글을 찾을 수 없습니다.');
-            }
+            if (!data) throw new Error('게시글을 찾을 수 없습니다.');
 
             // 2. articles에서 본문 내용 조회
             updateProgress('본문 조회 중...', 60);
@@ -837,20 +834,7 @@
 
             updateProgress('데이터 로딩 중...', 80);
 
-            // 3. 먼저 화면 전환 (에디터가 보여야 함)
-            document.getElementById('edit-url-input').classList.add('hidden');
-            document.getElementById('editor-form').classList.remove('hidden');
-
-            // 4. 에디터 초기화 확인 (없으면 생성)
-            if (!editorKor || !editorEn) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                if (!editorKor || !editorEn) {
-                    initializeEditors();
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                }
-            }
-
-            // 5. 폼에 데이터 채우기
+            // 3. 폼에 메타데이터 채우기
             document.getElementById('edit-article-id').value = data.id;
             document.getElementById('category').value = data.source_type;
             document.getElementById('title-kor').value = data.title_kor || '';
@@ -867,29 +851,33 @@
             uploadedThumbnailUrl = data.image;
             currentThumbnailFileName = `${articleId}.webp`;
 
-            // 6. 에디터에 본문 로드 (약간의 딜레이)
-            await new Promise(resolve => setTimeout(resolve, 100));
-
+            // 4. 에디터에 본문 로드 (✅ 필드명 수정)
             if (articleData) {
-                console.log('본문 데이터:', articleData);
-
-                if (editorKor && articleData.article_kor) {
-                    editorKor.commands.setContent(articleData.article_kor);
-                    console.log('한국어 본문 로드 완료');
+                // article_html_ko 필드 사용
+                if (articleData.article_html_ko) {
+                    editorKor.commands.setContent(articleData.article_html_ko);
+                    console.log('✅ 한국어 본문 로드 완료');
+                } else {
+                    console.warn('⚠️ article_html_ko 필드가 비어있습니다.');
                 }
 
-                if (editorEn && articleData.article_en) {
-                    editorEn.commands.setContent(articleData.article_en);
-                    console.log('영어 본문 로드 완료');
+                // article_html_en 필드 사용
+                if (articleData.article_html_en) {
+                    editorEn.commands.setContent(articleData.article_html_en);
+                    console.log('✅ 영어 본문 로드 완료');
+                } else {
+                    console.warn('⚠️ article_html_en 필드가 비어있습니다.');
                 }
             } else {
-                console.warn('본문 데이터가 없습니다.');
+                console.warn('⚠️ articles 테이블에 데이터가 없습니다.');
             }
 
             updateProgress('완료!', 100);
 
             setTimeout(() => {
                 hideProgress();
+                document.getElementById('edit-url-input').classList.add('hidden');
+                document.getElementById('editor-form').classList.remove('hidden');
                 document.getElementById('form-title').textContent = '게시글 수정';
                 document.getElementById('publish-btn-text').textContent = '수정 완료';
                 document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
@@ -899,10 +887,11 @@
 
         } catch (error) {
             hideProgress();
-            console.error('로드 오류:', error);
+            console.error('❌ 로드 오류:', error);
             alert('게시글을 불러올 수 없습니다: ' + error.message);
         }
     });
+
 
 
 
