@@ -809,7 +809,8 @@
         showProgress('게시글 불러오는 중...', 0);
 
         try {
-            updateProgress('데이터 조회 중...', 30);
+            // 1. content_items에서 메타데이터 조회
+            updateProgress('메타데이터 조회 중...', 30);
             const { data, error } = await supabaseClient
                 .from('content_items')
                 .select('*')
@@ -818,22 +819,34 @@
 
             if (error) throw error;
 
+            if (!data) {
+                throw new Error('게시글을 찾을 수 없습니다.');
+            }
+
+            // 2. articles에서 본문 내용 조회
             updateProgress('본문 조회 중...', 60);
-            const { data: articleData } = await supabaseClient
+            const { data: articleData, error: articleError } = await supabaseClient
                 .from('articles')
                 .select('*')
                 .eq('id', articleId)
                 .single();
 
-            // Populate form
+            if (articleError) {
+                console.warn('본문 조회 오류:', articleError);
+                // 본문이 없어도 메타데이터는 로드
+            }
+
+            // 3. 폼에 데이터 채우기
+            updateProgress('데이터 로딩 중...', 80);
+
             document.getElementById('edit-article-id').value = data.id;
             document.getElementById('category').value = data.source_type;
-            document.getElementById('title-kor').value = data.title_kor;
-            document.getElementById('title-en').value = data.title_en;
-            document.getElementById('desc-kor').value = data.desc_kor;
-            document.getElementById('desc-en').value = data.desc_en;
-            document.getElementById('subcategory').value = data.category;
-            document.getElementById('author').value = data.author;
+            document.getElementById('title-kor').value = data.title_kor || '';
+            document.getElementById('title-en').value = data.title_en || '';
+            document.getElementById('desc-kor').value = data.desc_kor || '';
+            document.getElementById('desc-en').value = data.desc_en || '';
+            document.getElementById('subcategory').value = data.category || '';
+            document.getElementById('author').value = data.author || '';
             document.getElementById('thumbnail-url').value = data.image || '';
             document.getElementById('cultural-badge').value = data.cultural_badge || '';
             document.getElementById('tags').value = data.tags ? data.tags.join(', ') : '';
@@ -842,12 +855,27 @@
             uploadedThumbnailUrl = data.image;
             currentThumbnailFileName = `${articleId}.webp`;
 
+            // 4. 에디터에 본문 로드
             if (articleData) {
-                editorKor.commands.setContent(articleData.article_kor);
-                editorEn.commands.setContent(articleData.article_en);
+                if (articleData.article_kor) {
+                    editorKor.commands.setContent(articleData.article_kor);
+                } else {
+                    editorKor.commands.setContent('<p>한국어 내용을 입력하세요...</p>');
+                }
+
+                if (articleData.article_en) {
+                    editorEn.commands.setContent(articleData.article_en);
+                } else {
+                    editorEn.commands.setContent('<p>Enter English content...</p>');
+                }
+            } else {
+                // 본문이 없는 경우 기본 내용
+                editorKor.commands.setContent('<p>한국어 내용을 입력하세요...</p>');
+                editorEn.commands.setContent('<p>Enter English content...</p>');
             }
 
             updateProgress('완료!', 100);
+
             setTimeout(() => {
                 hideProgress();
                 document.getElementById('edit-url-input').classList.add('hidden');
@@ -856,13 +884,16 @@
                 document.getElementById('publish-btn-text').textContent = '수정 완료';
                 document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
                 currentArticleId = articleId;
+                isEditMode = true;
             }, 500);
 
         } catch (error) {
             hideProgress();
+            console.error('로드 오류:', error);
             alert('게시글을 불러올 수 없습니다: ' + error.message);
         }
     });
+
 
     // ============================================
     // Publish/Update Article
