@@ -276,8 +276,9 @@
 
     // Configuration
     const SUPABASE_URL = 'https://ipcibnhhegkhdwyxeqjs.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwY2libmhoZWdraGR3eXhlcWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzMyNzYsImV4cCI6MjA3NjMwOTI3Nn0.LKjw1dqgjs39shvGpxcfFPutA7p1yR9eOb4zhomSBS8';
-    const IMGBB_API_KEY = '4a0d69744fa47d8de59028ec369b7abc';
+    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+    const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
+
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
