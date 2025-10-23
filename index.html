@@ -12,145 +12,70 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-    /* ============================================
-       Progressive Image Loading Styles
-       ============================================ */
-
-    /* Hero Image Container */
-    .hero-image-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .hero-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0;
-        transition: opacity 0.6s ease-in-out;
-    }
-
-    .hero-image.loaded {
-        opacity: 1;
-    }
-
-    /* Loading Shimmer Animation */
-    .hero-image-container::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            90deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0.2) 50%,
-            rgba(255,255,255,0) 100%
-        );
-        background-size: 200% 100%;
-        animation: shimmer 2s infinite;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .hero-image.loaded ~ .hero-image-container::before,
-    .hero-image-container:has(.hero-image.loaded)::before {
-        display: none;
-    }
-
-    @keyframes shimmer {
-        0% {
-            transform: translateX(-100%);
+        * {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         }
-        100% {
-            transform: translateX(100%);
+        .font-serif, .font-serif * {
+            font-family: 'Noto Serif KR', Georgia, serif !important;
         }
-    }
 
-    /* Story Card Images */
-    .story-image-container {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 4/3;
-        overflow: hidden;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-
-    .story-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: opacity 0.4s ease-in-out, transform 0.3s ease;
-    }
-
-    .story-image.lazy {
-        opacity: 0;
-    }
-
-    .story-image.loading {
-        opacity: 0.3;
-    }
-
-    .story-image.loaded {
-        opacity: 1;
-    }
-
-    .story-card:hover .story-image.loaded {
-        transform: scale(1.05);
-    }
-
-    /* Story Image Shimmer */
-    .story-image-container::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            90deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0.4) 50%,
-            rgba(255,255,255,0) 100%
-        );
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .story-image.loaded ~ .story-image-container::before,
-    .story-image-container:has(.story-image.loaded)::before {
-        display: none;
-    }
-
-    /* Skeleton Fallback (Optional) */
-    .skeleton {
-        background: linear-gradient(
-            90deg,
-            #f0f0f0 25%,
-            #e0e0e0 50%,
-            #f0f0f0 75%
-        );
-        background-size: 200% 100%;
-        animation: skeleton-loading 1.5s infinite;
-    }
-
-    @keyframes skeleton-loading {
-        0% {
-            background-position: 200% 0;
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
         }
-        100% {
-            background-position: -200% 0;
-        }
-    }
 
-    /* Error State */
-    .story-image[src*="data:image/svg"],
-    .hero-image[src*="data:image/svg"] {
-        opacity: 0.5;
-        filter: grayscale(1);
-    }
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+            background-size: 800px 104px;
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .image-container img.loaded {
+            opacity: 1;
+        }
+
+        .hero-image {
+            background-size: cover;
+            background-position: center;
+            min-height: 70vh;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-content {
+            word-break: keep-all;
+            text-wrap: balance;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
-
 </head>
 <body class="bg-white">
 
@@ -301,237 +226,597 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    /**
-     * @fileoverview FBC Creators Main Page with Progressive WebP Loading
-     */
-
+<script type="module">
     // ============================================
-    // Configuration & Initialization
+    // Supabase Configuration
     // ============================================
     const SUPABASE_URL = window.ENV.SUPABASE_URL;
     const SUPABASE_ANON_KEY = window.ENV.SUPABASE_ANON_KEY;
+
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let currentLang = 'ko';
-    let featuredContent = null;
-    let allContent = [];
+    // ============================================
+    // State Management
+    // ============================================
+    const state = {
+        currentLang: 'en',
+        currentDistrict: 'dsm00001',
+        currentHeroIndex: 0,
+        heroInterval: null,
+        heroSlides: [],
+        autoSelectEnabled: true,
+        data: {
+            allContent: [],
+            districtMeta: [
+                { district_id: "dsm00001", name_kor: "성수동", name_en: "Seongsu-dong", title_kor: "성수동", title_en: "Seongsu-dong", desc_kor: "트렌디한 카페와 힙한 패션", desc_en: "Trendy cafes and hip fashion", latitude: 37.5447, longitude: 127.0557 },
+                { district_id: "dsm00002", name_kor: "한남동", name_en: "Hannam-dong", title_kor: "한남동", title_en: "Hannam-dong", desc_kor: "럭셔리 브랜드와 고급 문화", desc_en: "Luxury brands and upscale culture", latitude: 37.5347, longitude: 127.0024 },
+                { district_id: "dsm00003", name_kor: "홍대", name_en: "Hongdae", title_kor: "홍대", title_en: "Hongdae", desc_kor: "예술과 젊음의 거리", desc_en: "Street of art and youth", latitude: 37.5563, longitude: 126.9236 },
+                { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong", title_kor: "명동", title_en: "Myeongdong", desc_kor: "K-뷰티와 쇼핑의 중심", desc_en: "K-beauty and shopping hub", latitude: 37.5636, longitude: 126.9826 }
+            ],
+            heroIds: [],
+            todayStoriesIds: [],
+            mustReadIds: []
+        }
+    };
 
     // ============================================
-    // Language Management
+    // Utility Functions
     // ============================================
-    function switchLanguage(lang) {
-        currentLang = lang;
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === lang);
-        });
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return state.currentLang === 'kor'
+            ? date.toLocaleDateString('ko-KR', options)
+            : date.toLocaleDateString('en-US', options);
+    };
 
-        if (featuredContent) {
-            renderHero(featuredContent.hero);
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    };
+
+    const getContentById = (id) => state.data.allContent.find(item => item.id === id);
+    const getDistrictMeta = (districtId) => state.data.districtMeta.find(d => d.district_id === districtId);
+
+    function createImageWithSkeleton(src, alt, classes = '') {
+        return `
+            <div class="image-container w-full h-full">
+                <div class="skeleton w-full h-full absolute inset-0"></div>
+                <img src="${src}"
+                     alt="${alt}"
+                     class="${classes}"
+                     loading="lazy"
+                     onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
+                     onerror="this.src='https://placehold.co/800x600/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
+            </div>
+        `;
+    }
+
+    const createSkeletonCard = () => `
+        <div class="animate-pulse">
+            <div class="h-64 bg-gray-200 rounded-sm mb-3"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded w-full"></div>
+        </div>
+    `;
+
+    // ============================================
+    // Session Management
+    // ============================================
+    function loadSession() {
+        const stored = sessionStorage;
+
+        if (stored.getItem('fbc_language')) {
+            state.currentLang = stored.getItem('fbc_language');
+            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
+        } else {
+            const browserLang = navigator.language || navigator.userLanguage;
+            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
+            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
         }
 
-        document.querySelectorAll('.story-card').forEach(card => {
-            const storyId = card.dataset.storyId;
-            const story = allContent.find(s => s.id === storyId);
-            if (story) {
-                const title = card.querySelector('.story-title');
-                const desc = card.querySelector('.story-description');
-                if (title) title.textContent = lang === 'ko' ? story.title_kor : story.title_en;
-                if (desc) desc.textContent = lang === 'ko' ? story.desc_kor : story.desc_en;
-            }
-        });
+        if (stored.getItem('autoSelectEnabled')) {
+            state.autoSelectEnabled = stored.getItem('autoSelectEnabled') === 'true';
+        }
 
-        updateUIText(lang);
+        if (stored.getItem('currentDistrict')) {
+            state.currentDistrict = stored.getItem('currentDistrict');
+        }
     }
 
-    function updateUIText(lang) {
-        const texts = {
-            ko: {
-                todayStories: "오늘의 이야기",
-                mustRead: "꼭 읽어야 할",
-                readMore: "자세히 보기",
-                subscribe: "구독하기",
-                subscribeDesc: "FBC의 최신 소식을 받아보세요",
-                emailPlaceholder: "이메일 주소"
-            },
-            en: {
-                todayStories: "Today's Stories",
-                mustRead: "Must Read",
-                readMore: "Read More",
-                subscribe: "Subscribe",
-                subscribeDesc: "Get the latest from FBC",
-                emailPlaceholder: "Email address"
-            }
-        };
-
-        const t = texts[lang];
-
-        const todayTitle = document.querySelector('#today-stories .section-title');
-        const mustReadTitle = document.querySelector('#must-read .section-title');
-        const subscribeTitle = document.querySelector('#newsletter .section-title');
-        const subscribeDesc = document.querySelector('#newsletter .section-description');
-        const emailInput = document.querySelector('#newsletter input[type="email"]');
-        const subscribeBtn = document.querySelector('#newsletter button');
-
-        if (todayTitle) todayTitle.textContent = t.todayStories;
-        if (mustReadTitle) mustReadTitle.textContent = t.mustRead;
-        if (subscribeTitle) subscribeTitle.textContent = t.subscribe;
-        if (subscribeDesc) subscribeDesc.textContent = t.subscribeDesc;
-        if (emailInput) emailInput.placeholder = t.emailPlaceholder;
-        if (subscribeBtn) subscribeBtn.textContent = t.subscribe;
+    function saveSession() {
+        // ✅ fbc_language 키 사용
+        sessionStorage.setItem('fbc_language', state.currentLang);
+        sessionStorage.setItem('autoSelectEnabled', state.autoSelectEnabled);
+        sessionStorage.setItem('currentDistrict', state.currentDistrict);
     }
 
     // ============================================
-    // Category Display
+    // Show Skeletons
     // ============================================
-    function getCategoryDisplay(source) {
-        const categories = {
-            fashion: { ko: '패션', en: 'Fashion' },
-            beauty: { ko: '뷰티', en: 'Beauty' },
-            life: { ko: '라이프', en: 'Life' },
-            districts: { ko: '지역', en: 'Districts' }
-        };
-        return categories[source]?.[currentLang] || source;
+    function showSkeletons() {
+        document.getElementById('fashion-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+        document.getElementById('beauty-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+        document.getElementById('today-stories').innerHTML = '<div class="md:col-span-12 h-96 bg-gray-200 rounded-sm animate-pulse"></div>';
+        document.getElementById('best-stories').innerHTML = Array(15).fill('<div class="swiper-slide" style="width: 256px;"><div class="h-48 bg-gray-200 rounded-sm animate-pulse mb-3"></div><div class="h-3 bg-gray-200 rounded w-full animate-pulse"></div></div>').join('');
+        document.getElementById('must-read').innerHTML = Array(4).fill(createSkeletonCard()).join('');
+        document.getElementById('latest-stories').innerHTML = Array(3).fill('<div class="flex gap-4 animate-pulse"><div class="w-32 h-32 bg-gray-200 rounded-sm"></div><div class="flex-1"><div class="h-3 bg-gray-200 rounded mb-2"></div><div class="h-4 bg-gray-200 rounded mb-2"></div><div class="h-2 bg-gray-200 rounded w-1/2"></div></div></div>').join('');
     }
 
     // ============================================
-    // Render Functions with Progressive Loading
+    // Load Data from Supabase
     // ============================================
+    async function loadData() {
+        try {
+            const { data: contentItems, error: contentError } = await supabaseClient
+                .from('content_items')
+                .select('*')
+                .order('date', { ascending: false });
 
-    /**
-     * Render Hero Section with Progressive WebP Loading
-     */
-    function renderHero(story) {
-        const heroSection = document.getElementById('hero-section');
-        const category = getCategoryDisplay(story.source);
+            if (contentError) throw contentError;
 
-        heroSection.innerHTML = `
-            <div class="hero-card-wrapper">
-                <div class="hero-card">
-                    <div class="hero-image-container">
-                        <img
-                            src="${story.image}"
-                            alt="${story.title_en}"
-                            class="hero-image"
-                            loading="eager"
-                            decoding="async"
-                            onload="this.classList.add('loaded')"
-                            onerror="this.onerror=null; this.classList.add('loaded'); this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect fill=%22%23ddd%22 width=%22800%22 height=%22600%22/%3E%3C/svg%3E';"
-                        >
-                    </div>
+            state.data.allContent = contentItems || [];
+            state.data.heroIds = state.data.allContent.slice(0, 5).map(a => a.id);
+            state.data.todayStoriesIds = state.data.allContent.slice(5, 10).map(a => a.id);
+            state.data.mustReadIds = state.data.allContent.slice(10, 14).map(a => a.id);
 
-                    <div class="hero-overlay">
-                        <div class="hero-content">
-                            ${story.cultural_badge ? `<div class="cultural-badge">${story.cultural_badge}</div>` : ''}
-                            <div class="hero-category">${category}</div>
-                            <h1 class="hero-title">${currentLang === 'ko' ? story.title_kor : story.title_en}</h1>
-                            <p class="hero-description">${currentLang === 'ko' ? story.desc_kor : story.desc_en}</p>
-                            <a href="article/index.html?category=${story.source}&id=${story.id}" class="hero-cta">
-                                ${currentLang === 'ko' ? '자세히 보기' : 'Read More'}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * Render Story Card with Lazy Loading
-     */
-    function renderStoryCard(story) {
-        const category = getCategoryDisplay(story.source);
-
-        return `
-            <div class="story-card" data-story-id="${story.id}">
-                <a href="article/index.html?category=${story.source}&id=${story.id}" class="story-link">
-                    <div class="story-image-container">
-                        <img
-                            data-src="${story.image}"
-                            alt="${story.title_en}"
-                            class="story-image lazy"
-                            loading="lazy"
-                            decoding="async"
-                        >
-                    </div>
-                    <div class="story-content">
-                        ${story.cultural_badge ? `<div class="cultural-badge-small">${story.cultural_badge}</div>` : ''}
-                        <div class="story-category">${category}</div>
-                        <h3 class="story-title">${currentLang === 'ko' ? story.title_kor : story.title_en}</h3>
-                        <p class="story-description">${currentLang === 'ko' ? story.desc_kor : story.desc_en}</p>
-                    </div>
-                </a>
-            </div>
-        `;
-    }
-
-    /**
-     * Render Stories Section
-     */
-    function renderStories(stories, containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        container.innerHTML = stories.map(story => renderStoryCard(story)).join('');
-
-        // Initialize lazy loading after render
-        setTimeout(() => initLazyLoading(), 100);
+            await initializePage();
+        } catch (error) {
+            console.error('Error loading data:', error);
+            alert('Failed to load data. Please refresh the page.');
+        }
     }
 
     // ============================================
-    // Lazy Loading with Intersection Observer
+    // Hero Functions
     // ============================================
-    function initLazyLoading() {
-        const lazyImages = document.querySelectorAll('img.lazy');
+    function initializeHeroSlides() {
+        state.heroSlides = state.data.heroIds
+            .map(id => getContentById(id))
+            .filter(Boolean);
 
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.classList.remove('lazy');
-                            img.classList.add('loading');
+        if (state.heroSlides.length === 0) return;
 
-                            img.onload = () => {
-                                img.classList.remove('loading');
-                                img.classList.add('loaded');
-                            };
+        const container = document.getElementById('hero-slides-container');
+        container.innerHTML = state.heroSlides.map((hero, index) => {
+            const heroImage = hero.image_origin_url || hero.image;
+            return `
+                <div class="hero-slide ${index === 0 ? 'active' : ''}"
+                     style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${heroImage}')` : 'none'}"
+                     data-index="${index}"
+                     data-image="${heroImage}"
+                     data-id="${hero.id}"></div>
+            `;
+        }).join('');
 
-                            img.onerror = () => {
-                                img.classList.remove('loading');
-                                img.classList.add('loaded');
-                                img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23e0e0e0%22 width=%22400%22 height=%22300%22/%3E%3C/svg%3E';
-                            };
+        const indicators = document.getElementById('hero-indicators');
+        indicators.innerHTML = state.heroSlides.map((_, index) => `
+            <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
+        `).join('');
 
-                            observer.unobserve(img);
-                        }
-                    }
-                });
-            }, {
-                rootMargin: '100px',
-                threshold: 0.01
-            });
-
-            lazyImages.forEach(img => imageObserver.observe(img));
-        } else {
-            // Fallback for older browsers
-            lazyImages.forEach(img => {
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    img.classList.add('loaded');
+        document.querySelectorAll('[data-index]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = parseInt(el.dataset.index);
+                if (!isNaN(index)) {
+                    clearInterval(state.heroInterval);
+                    goToSlide(index);
+                    startHeroRotation();
                 }
             });
+        });
+
+        document.getElementById('hero-section').addEventListener('click', () => {
+            const hero = state.heroSlides[state.currentHeroIndex];
+            window.location.href = `article/index.html?category=${hero.source_type}&id=${hero.id}`;
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('.hero-slide').forEach((slide, index) => {
+                if (index === 0) return;
+                const img = new Image();
+                img.onload = () => {
+                    slide.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${slide.dataset.image}')`;
+                };
+                img.src = slide.dataset.image;
+            });
+        }, 500);
+    }
+
+    function goToSlide(index) {
+        const slides = document.querySelectorAll('.hero-slide');
+        const indicators = document.querySelectorAll('#hero-indicators > div');
+
+        slides[state.currentHeroIndex].classList.remove('active');
+        indicators[state.currentHeroIndex].classList.remove('bg-white');
+        indicators[state.currentHeroIndex].classList.add('bg-white/50');
+
+        state.currentHeroIndex = index;
+
+        slides[state.currentHeroIndex].classList.add('active');
+        indicators[state.currentHeroIndex].classList.add('bg-white');
+        indicators[state.currentHeroIndex].classList.remove('bg-white/50');
+
+        renderHero();
+    }
+
+    function nextSlide() {
+        goToSlide((state.currentHeroIndex + 1) % state.heroSlides.length);
+    }
+
+    function startHeroRotation() {
+        state.heroInterval = setInterval(nextSlide, 5000);
+    }
+
+    function renderHero() {
+        const hero = state.heroSlides[state.currentHeroIndex];
+        document.getElementById('hero-title').textContent = state.currentLang === 'kor' ? hero.title_kor : hero.title_en;
+        document.getElementById('hero-subtitle').textContent = formatDate(hero.date);
+    }
+
+    // ============================================
+    // Render Functions
+    // ============================================
+    function renderLocationSection() {
+        const district = getDistrictMeta(state.currentDistrict);
+        if (!district) return;
+
+        document.getElementById('location-title').textContent = state.currentLang === 'kor' ? district.title_kor : district.title_en;
+        document.getElementById('location-desc').textContent = state.currentLang === 'kor' ? district.desc_kor : district.desc_en;
+    }
+
+    async function renderFashionSection() {
+        const district = getDistrictMeta(state.currentDistrict);
+        const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
+        document.getElementById('fashion-location-title').textContent = `Fashion for ${districtName}`;
+
+        const districtItems = state.data.allContent.filter(item =>
+            item.source_type === 'fashion' && item.district_id === state.currentDistrict
+        );
+        const generalItems = state.data.allContent.filter(item =>
+            item.source_type === 'fashion' && !item.district_id
+        );
+        const items = [...districtItems, ...generalItems].slice(0, 4);
+
+        document.getElementById('fashion-grid').innerHTML = items.map(item => {
+            return `
+                <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
+                    <article class="transition-transform hover:-translate-y-1">
+                        <div class="relative overflow-hidden mb-3 h-64 bg-gray-100 rounded-sm">
+                            ${item.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
+                            ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        </div>
+                        <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                        <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
+                    </article>
+                </a>
+            `;
+        }).join('');
+    }
+
+    async function renderBeautySection() {
+        const district = getDistrictMeta(state.currentDistrict);
+        const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
+        document.getElementById('beauty-location-title').textContent = `Beauty for ${districtName}`;
+
+        const districtItems = state.data.allContent.filter(item =>
+            item.source_type === 'beauty' && item.district_id === state.currentDistrict
+        );
+        const generalItems = state.data.allContent.filter(item =>
+            item.source_type === 'beauty' && !item.district_id
+        );
+        const items = [...districtItems, ...generalItems].slice(0, 4);
+
+        document.getElementById('beauty-grid').innerHTML = items.map(item => {
+            return `
+                <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
+                    <article class="transition-transform hover:-translate-y-1">
+                        <div class="relative overflow-hidden mb-3 h-64 bg-gray-100 rounded-sm">
+                            ${item.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
+                            ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        </div>
+                        <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                        <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
+                    </article>
+                </a>
+            `;
+        }).join('');
+    }
+
+    async function renderTodayStories() {
+        const stories = state.data.todayStoriesIds.map(id => getContentById(id)).filter(Boolean);
+        if (stories.length === 0) return;
+
+        const featured = stories[0];
+        const small = stories.slice(1);
+
+        const getDistrictName = (districtId) => {
+            if (!districtId) return null;
+            const district = getDistrictMeta(districtId);
+            return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
+        };
+
+        document.getElementById('today-stories').innerHTML = `
+            <div class="md:col-span-5">
+                <a href="article/index.html?category=${featured.source_type}&id=${featured.id}" class="block group">
+                    <article class="h-full">
+                        <div class="relative overflow-hidden mb-4 h-96 bg-gray-100 rounded-sm">
+                            ${featured.district_id ? `<span class="absolute bottom-3 left-3 bg-white/95 px-3 py-1 text-xs font-semibold rounded">${getDistrictName(featured.district_id)}</span>` : ''}
+                            ${featured.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${featured.cultural_badge}</span>` : ''}
+                            ${createImageWithSkeleton(featured.image, featured.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2 uppercase tracking-wide">${featured.category}</div>
+                        <h3 class="text-2xl font-bold leading-tight">${state.currentLang === 'kor' ? featured.title_kor : featured.title_en}</h3>
+                    </article>
+                </a>
+            </div>
+            <div class="md:col-span-7 grid grid-cols-2 gap-4">
+                ${small.map(story => `
+                    <a href="article/index.html?category=${story.source_type}&id=${story.id}" class="block group">
+                        <article>
+                            <div class="relative overflow-hidden mb-3 h-48 bg-gray-100 rounded-sm">
+                                ${story.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(story.district_id)}</span>` : ''}
+                                ${story.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${story.cultural_badge}</span>` : ''}
+                                ${createImageWithSkeleton(story.image, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                            </div>
+                            <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
+                            <h4 class="text-sm font-bold leading-tight">${state.currentLang === 'kor' ? story.title_kor : story.title_en}</h4>
+                        </article>
+                    </a>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    async function renderBestStories() {
+        const stories = [...state.data.allContent].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 15);
+
+        const getDistrictName = (districtId) => {
+            if (!districtId) return null;
+            const district = getDistrictMeta(districtId);
+            return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
+        };
+
+        document.getElementById('best-stories').innerHTML = stories.map(story => `
+            <div class="swiper-slide" style="width: 256px;">
+                <a href="article/index.html?category=${story.source_type}&id=${story.id}" class="block group">
+                    <article>
+                        <div class="relative overflow-hidden mb-3 h-48 bg-gray-100 rounded-sm">
+                            ${story.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(story.district_id)}</span>` : ''}
+                            ${story.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${story.cultural_badge}</span>` : ''}
+                            ${createImageWithSkeleton(story.image, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                        </div>
+                        <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
+                        <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? story.title_kor : story.title_en}</h4>
+                    </article>
+                </a>
+            </div>
+        `).join('');
+
+        new Swiper('.best-stories-swiper', {
+            slidesPerView: 'auto',
+            spaceBetween: 24,
+            freeMode: { enabled: true, momentum: true },
+            grabCursor: true
+        });
+    }
+
+    async function renderMustRead() {
+        const stories = state.data.mustReadIds.map(id => getContentById(id)).filter(Boolean);
+
+        const getDistrictName = (districtId) => {
+            if (!districtId) return null;
+            const district = getDistrictMeta(districtId);
+            return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
+        };
+
+        document.getElementById('must-read').innerHTML = stories.map(item => `
+            <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
+                <article>
+                    <div class="relative overflow-hidden mb-3 h-56 bg-gray-100 rounded-sm">
+                        ${item.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(item.district_id)}</span>` : ''}
+                        ${item.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
+                        ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                    </div>
+                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                    <h4 class="text-base font-bold leading-tight mb-2">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
+                    <p class="text-xs text-gray-600">${state.currentLang === 'kor' ? item.desc_kor : item.desc_en}</p>
+                </article>
+            </a>
+        `).join('');
+    }
+
+    async function renderLatestStories() {
+        const latest = state.data.allContent.slice(0, 3);
+
+        document.getElementById('latest-stories').innerHTML = latest.map(item => `
+            <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="flex gap-4 group">
+                <div class="w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-100 rounded-sm">
+                    ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
+                </div>
+                <div class="flex-1">
+                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
+                    <h4 class="text-sm font-bold leading-tight mb-2">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
+                    <p class="text-xs text-gray-600">${formatDate(item.date)}</p>
+                </div>
+            </a>
+        `).join('');
+    }
+
+    function renderLocationModal() {
+        const currentSelection = state.autoSelectEnabled ? 'auto' : state.currentDistrict;
+
+        document.getElementById('location-options').innerHTML = `
+            <button class="w-full text-left p-4 border-2 rounded transition ${currentSelection === 'auto' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}" data-location="auto">
+                <div class="font-bold ${currentSelection === 'auto' ? 'text-blue-700' : ''}">🎯 Auto Detect</div>
+                <div class="text-sm text-gray-600">Find nearest district automatically</div>
+            </button>
+            ${state.data.districtMeta.map(district => `
+                <button class="w-full text-left p-4 border rounded transition ${currentSelection === district.district_id ? 'border-2 border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}" data-location="${district.district_id}">
+                    <div class="font-bold ${currentSelection === district.district_id ? 'text-blue-700' : ''}">📍 ${state.currentLang === 'kor' ? district.name_kor : district.name_en}</div>
+                    <div class="text-sm text-gray-600">${state.currentLang === 'kor' ? district.desc_kor : district.desc_en}</div>
+                </button>
+            `).join('')}
+        `;
+
+        document.querySelectorAll('[data-location]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const location = btn.dataset.location;
+                if (location === 'auto') {
+                    state.autoSelectEnabled = true;
+                    saveSession();
+                    autoDetectLocation();
+                } else {
+                    state.autoSelectEnabled = false;
+                    state.currentDistrict = location;
+                    saveSession();
+                    renderLocationSection();
+                    renderFashionSection();
+                    renderBeautySection();
+                }
+                document.getElementById('location-modal').classList.add('hidden');
+            });
+        });
+    }
+
+    function autoDetectLocation() {
+        if (!navigator.geolocation) return;
+
+        navigator.geolocation.getCurrentPosition((position) => {
+            const { latitude, longitude } = position.coords;
+
+            let closestDistrict = state.data.districtMeta[0];
+            let minDistance = Infinity;
+
+            state.data.districtMeta.forEach(district => {
+                const distance = calculateDistance(latitude, longitude, district.latitude, district.longitude);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestDistrict = district;
+                }
+            });
+
+            if (state.currentDistrict !== closestDistrict.district_id) {
+                state.currentDistrict = closestDistrict.district_id;
+                saveSession();
+                renderLocationSection();
+                renderFashionSection();
+                renderBeautySection();
+            }
+        });
+    }
+
+    // ============================================
+    // Event Handlers
+    // ============================================
+    function setupEventListeners() {
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            state.currentLang = state.currentLang === 'kor' ? 'en' : 'kor';
+            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
+            saveSession();
+
+            renderHero();
+            renderLocationSection();
+            renderFashionSection();
+            renderBeautySection();
+            renderTodayStories();
+            renderBestStories();
+            renderMustRead();
+            renderLatestStories();
+            renderLocationModal();
+        });
+
+        document.getElementById('change-location').addEventListener('click', () => {
+            renderLocationModal();
+            document.getElementById('location-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-location-modal').addEventListener('click', () => {
+            document.getElementById('location-modal').classList.add('hidden');
+        });
+
+        document.getElementById('location-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'location-modal') {
+                document.getElementById('location-modal').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('newsletter-submit').addEventListener('click', () => {
+            const email = document.getElementById('newsletter-email').value;
+            if (email && email.includes('@')) {
+                alert(state.currentLang === 'kor' ? '구독해 주셔서 감사합니다!' : 'Thank you for subscribing!');
+                document.getElementById('newsletter-email').value = '';
+            } else {
+                alert(state.currentLang === 'kor' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email address.');
+            }
+        });
+
+        document.querySelector('a[href="#newsletter-section"]').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('newsletter-section').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    // ============================================
+    // Initialize Page (Sequential Loading)
+    // ============================================
+    async function initializePage() {
+        // 1. Load session & text content
+        loadSession();
+        renderLocationSection();
+
+        // 2. Show skeletons
+        showSkeletons();
+
+        // 3. Load Hero
+        initializeHeroSlides();
+        startHeroRotation();
+        renderHero();
+        await delay(150);
+
+        // 4. Load Fashion images
+        await renderFashionSection();
+        await delay(150);
+
+        // 5. Load Beauty images
+        await renderBeautySection();
+        await delay(150);
+
+        // 6. Load Today's Stories images
+        await renderTodayStories();
+        await delay(150);
+
+        // 7. Load Best Stories images
+        await renderBestStories();
+        await delay(150);
+
+        // 8. Load Must Read images
+        await renderMustRead();
+        await delay(150);
+
+        // 9. Load Latest Stories images
+        await renderLatestStories();
+
+        // 10. Setup rest
+        renderLocationModal();
+        setupEventListeners();
+
+        if (state.autoSelectEnabled) {
+            setTimeout(autoDetectLocation, 100);
         }
     }
 
+    // Start
+    loadData();
 </script>
-
-
 </body>
 </html>
