@@ -12,104 +12,180 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-        }
-        .font-serif, .font-serif * {
-            font-family: 'Noto Serif KR', Georgia, serif !important;
-        }
+    * {
+        font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+    .font-serif, .font-serif * {
+        font-family: 'Noto Serif KR', Georgia, serif !important;
+    }
 
-        @keyframes shimmer {
-            0% { background-position: -468px 0; }
-            100% { background-position: 468px 0; }
+    /* Shimmer 애니메이션 */
+    @keyframes shimmer {
+        0% {
+            background-position: -468px 0;
+            transform: translateX(-100%);
         }
-
-        .skeleton {
-            animation: shimmer 1.2s ease-in-out infinite;
-            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
-            background-size: 800px 104px;
+        100% {
+            background-position: 468px 0;
+            transform: translateX(100%);
         }
+    }
 
-        .image-container {
-            position: relative;
-            overflow: hidden;
-        }
+    /* Skeleton 로딩 */
+    .skeleton {
+        animation: shimmer 1.2s ease-in-out infinite;
+        background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+        background-size: 800px 104px;
+    }
 
-        .image-container img {
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
+    /* 일반 이미지 컨테이너 */
+    .image-container {
+        position: relative;
+        overflow: hidden;
+    }
 
-        .image-container img.loaded {
-            opacity: 1;
-        }
+    .image-container img {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
 
-        /* 기존 CSS에 추가 */
-        .hero-image-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+    .image-container img.loaded {
+        opacity: 1;
+    }
 
-        .hero-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
+    /* Hero 이미지 컨테이너 - Progressive WebP */
+    .hero-image-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
 
-        .hero-image.loaded {
-            opacity: 1;
-        }
+    /* Hero 이미지 기본 스타일 */
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+    }
 
-        /* 로딩 애니메이션 */
-        .hero-image-container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                90deg,
-                rgba(255,255,255,0) 0%,
-                rgba(255,255,255,0.3) 50%,
-                rgba(255,255,255,0) 100%
-            );
-            animation: shimmer 2s infinite;
-        }
+    .hero-image.loaded {
+        opacity: 1;
+    }
 
-        .hero-image.loaded + .hero-image-container::before {
-            display: none;
-        }
+    /* Progressive WebP - Blur 효과 */
+    .hero-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(20px);
+        transform: scale(1.1);
+        transition: opacity 0.8s ease-in-out;
+    }
 
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
+    .hero-placeholder.fade-out {
+        opacity: 0;
+    }
 
+    /* 로딩 Shimmer 효과 */
+    .hero-image-container::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.3) 50%,
+            rgba(255,255,255,0) 100%
+        );
+        animation: shimmer 2s infinite;
+        z-index: 1;
+    }
+
+    .hero-image-container.loaded::before {
+        display: none;
+    }
+
+    /* Hero 슬라이드 */
+    .hero-slide {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+
+    .hero-slide.active {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    /* Hero 텍스트 컨텐츠 */
+    .hero-content {
+        word-break: keep-all;
+        text-wrap: balance;
+    }
+
+    /* WebP 지원 체크용 */
+    .no-webp .hero-image-container {
+        background: linear-gradient(135deg, #434343 0%, #000000 100%);
+    }
+
+    /* 부드러운 스크롤 */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Hero 인디케이터 */
+    .hero-indicator {
+        width: 3rem;
+        height: 0.25rem;
+        background: rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+    }
+
+    .hero-indicator.active {
+        background: rgba(255, 255, 255, 1);
+        width: 4rem;
+    }
+
+    .hero-indicator:hover {
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    /* 반응형 Hero 높이 */
+    @media (max-width: 768px) {
         .hero-slide {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+            min-height: 60vh;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .hero-slide {
+            min-height: 80vh;
+        }
+    }
+
+    /* 접근성 - Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+        .hero-slide,
+        .hero-image,
+        .hero-placeholder {
+            transition: none;
         }
 
-        .hero-slide.active {
-            opacity: 1;
+        .hero-image-container::before {
+            animation: none;
         }
-
-        .hero-content {
-            word-break: keep-all;
-            text-wrap: balance;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+    }
     </style>
 </head>
 <body class="bg-white">
@@ -272,6 +348,159 @@
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ============================================
+    // Progressive WebP Image Loader
+    // ============================================
+    class ProgressiveImageLoader {
+        constructor() {
+            this.loadedImages = new Map();
+            this.observers = new Map();
+            this.webpSupport = null;
+        }
+
+        // WebP 지원 여부 확인
+        async supportsWebP() {
+            if (this.webpSupport !== null) return this.webpSupport;
+
+            return new Promise((resolve) => {
+                const webP = new Image();
+                webP.onload = webP.onerror = () => {
+                    this.webpSupport = (webP.height === 2);
+                    resolve(this.webpSupport);
+                };
+                webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+            });
+        }
+
+        // Progressive WebP 로딩
+        async loadProgressiveImage(imageUrl, container, options = {}) {
+            const {
+                placeholderClass = 'hero-placeholder',
+                transitionDuration = 800,
+                onLoad = null,
+                priority = false,
+                alt = ''
+            } = options;
+
+            const supportsWebP = await this.supportsWebP();
+
+            // 저화질 플레이스홀더 URL 생성
+            const lowQualityUrl = this.getLowQualityUrl(imageUrl);
+            const highQualityUrl = supportsWebP ? imageUrl : this.getFallbackUrl(imageUrl);
+
+            // 컨테이너 클래스 추가
+            if (!supportsWebP) {
+                document.documentElement.classList.add('no-webp');
+            }
+
+            // 저화질 이미지 먼저 로드
+            const placeholder = document.createElement('img');
+            placeholder.src = lowQualityUrl;
+            placeholder.className = placeholderClass;
+            placeholder.alt = alt;
+            placeholder.loading = 'eager';
+            container.appendChild(placeholder);
+
+            // 고화질 이미지 로드
+            const highQualityImg = new Image();
+
+            return new Promise((resolve, reject) => {
+                highQualityImg.onload = () => {
+                    const finalImg = document.createElement('img');
+                    finalImg.src = highQualityUrl;
+                    finalImg.alt = alt;
+                    finalImg.className = 'hero-image';
+
+                    container.appendChild(finalImg);
+                    container.classList.add('loaded');
+
+                    // Fade in 효과
+                    requestAnimationFrame(() => {
+                        finalImg.classList.add('loaded');
+                        placeholder.classList.add('fade-out');
+
+                        setTimeout(() => {
+                            placeholder.remove();
+                            if (onLoad) onLoad(finalImg);
+                            resolve(finalImg);
+                        }, transitionDuration);
+                    });
+                };
+
+                highQualityImg.onerror = (error) => {
+                    console.error('Failed to load image:', highQualityUrl);
+                    // Fallback: 플레이스홀더를 그대로 사용
+                    placeholder.classList.remove(placeholderClass);
+                    placeholder.style.filter = 'blur(0)';
+                    reject(error);
+                };
+
+                // Priority가 높으면 즉시 로드, 아니면 Intersection Observer 사용
+                if (priority) {
+                    highQualityImg.src = highQualityUrl;
+                } else {
+                    this.lazyLoad(highQualityImg, highQualityUrl, container);
+                }
+            });
+        }
+
+        // Lazy loading with Intersection Observer
+        lazyLoad(img, src, container) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        img.src = src;
+                        observer.unobserve(container);
+                    }
+                });
+            }, {
+                rootMargin: '100px',
+                threshold: 0.01
+            });
+
+            observer.observe(container);
+            this.observers.set(container, observer);
+        }
+
+        // 저화질 URL 생성 (Supabase transform 사용)
+        getLowQualityUrl(url) {
+            if (url.includes('supabase')) {
+                const urlObj = new URL(url);
+                urlObj.searchParams.set('width', '50');
+                urlObj.searchParams.set('quality', '20');
+                urlObj.searchParams.set('format', 'webp');
+                return urlObj.toString();
+            }
+            return url;
+        }
+
+        // WebP 미지원 시 fallback URL
+        getFallbackUrl(url) {
+            if (url.endsWith('.webp')) {
+                return url.replace('.webp', '.jpg');
+            }
+            return url;
+        }
+
+        // 프리로드
+        preloadImage(url) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = url;
+            document.head.appendChild(link);
+        }
+
+        // 모든 observer 정리
+        cleanup() {
+            this.observers.forEach(observer => observer.disconnect());
+            this.observers.clear();
+        }
+    }
+
+    // Progressive Image Loader 인스턴스 생성
+    const imageLoader = new ProgressiveImageLoader();
+
+    // ============================================
     // State Management
     // ============================================
     const state = {
@@ -287,603 +516,228 @@
                 { district_id: "dsm00001", name_kor: "성수동", name_en: "Seongsu-dong", title_kor: "성수동", title_en: "Seongsu-dong", desc_kor: "트렌디한 카페와 힙한 패션", desc_en: "Trendy cafes and hip fashion", latitude: 37.5447, longitude: 127.0557 },
                 { district_id: "dsm00002", name_kor: "한남동", name_en: "Hannam-dong", title_kor: "한남동", title_en: "Hannam-dong", desc_kor: "럭셔리 브랜드와 고급 문화", desc_en: "Luxury brands and upscale culture", latitude: 37.5347, longitude: 127.0024 },
                 { district_id: "dsm00003", name_kor: "홍대", name_en: "Hongdae", title_kor: "홍대", title_en: "Hongdae", desc_kor: "예술과 젊음의 거리", desc_en: "Street of art and youth", latitude: 37.5563, longitude: 126.9236 },
-                { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong", title_kor: "명동", title_en: "Myeongdong", desc_kor: "K-뷰티와 쇼핑의 중심", desc_en: "K-beauty and shopping hub", latitude: 37.5636, longitude: 126.9826 }
-            ],
-            heroIds: [],
-            todayStoriesIds: [],
-            mustReadIds: []
+                { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong", title_kor: "명동", title_en: "Myeongdong", desc_kor: "뷰티와 쇼핑의 중심", desc_en: "Center of beauty and shopping", latitude: 37.5636, longitude: 126.9836 }
+            ]
         }
     };
 
     // ============================================
-    // Utility Functions
+    // Hero Section with Progressive WebP
     // ============================================
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    async function renderHeroSection() {
+        const heroSlider = document.getElementById('hero-slider');
+        const heroIndicators = document.getElementById('hero-indicators');
 
-    const formatDate = (dateStr) => {
-        const date = new Date(dateStr);
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return state.currentLang === 'kor'
-            ? date.toLocaleDateString('ko-KR', options)
-            : date.toLocaleDateString('en-US', options);
-    };
-
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    };
-
-    const getContentById = (id) => state.data.allContent.find(item => item.id === id);
-    const getDistrictMeta = (districtId) => state.data.districtMeta.find(d => d.district_id === districtId);
-
-    function createImageWithSkeleton(src, alt, classes = '') {
-        return `
-            <div class="image-container w-full h-full">
-                <div class="skeleton w-full h-full absolute inset-0"></div>
-                <img src="${src}"
-                     alt="${alt}"
-                     class="${classes}"
-                     loading="lazy"
-                     onload="this.classList.add('loaded'); this.previousElementSibling?.remove();"
-                     onerror="this.src='https://placehold.co/800x600/e5e5e5/666666?text=FBC'; this.classList.add('loaded'); this.previousElementSibling?.remove();">
-            </div>
-        `;
-    }
-
-    const createSkeletonCard = () => `
-        <div class="animate-pulse">
-            <div class="h-64 bg-gray-200 rounded-sm mb-3"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
-            <div class="h-4 bg-gray-200 rounded w-full"></div>
-        </div>
-    `;
-
-    // ============================================
-    // Session Management
-    // ============================================
-    function loadSession() {
-        const stored = sessionStorage;
-
-        if (stored.getItem('fbc_language')) {
-            state.currentLang = stored.getItem('fbc_language');
-            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
-        } else {
-            const browserLang = navigator.language || navigator.userLanguage;
-            state.currentLang = browserLang.toLowerCase().includes('ko') ? 'kor' : 'en';
-            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
+        if (!heroSlider || !heroIndicators) {
+            console.warn('Hero elements not found');
+            return;
         }
 
-        if (stored.getItem('autoSelectEnabled')) {
-            state.autoSelectEnabled = stored.getItem('autoSelectEnabled') === 'true';
+        heroSlider.innerHTML = '';
+        heroIndicators.innerHTML = '';
+
+        // 첫 번째 이미지 프리로드
+        if (state.heroSlides.length > 0 && state.heroSlides[0].img) {
+            imageLoader.preloadImage(state.heroSlides[0].img);
         }
 
-        if (stored.getItem('currentDistrict')) {
-            state.currentDistrict = stored.getItem('currentDistrict');
-        }
-    }
+        for (let index = 0; index < state.heroSlides.length; index++) {
+            const slide = state.heroSlides[index];
 
-    function saveSession() {
-        // ✅ fbc_language 키 사용
-        sessionStorage.setItem('fbc_language', state.currentLang);
-        sessionStorage.setItem('autoSelectEnabled', state.autoSelectEnabled);
-        sessionStorage.setItem('currentDistrict', state.currentDistrict);
-    }
+            // Hero Slide 생성
+            const slideDiv = document.createElement('div');
+            slideDiv.className = `hero-slide ${index === 0 ? 'active' : ''}`;
+            slideDiv.setAttribute('data-slide-index', index);
 
-    // ============================================
-    // Show Skeletons
-    // ============================================
-    function showSkeletons() {
-        document.getElementById('fashion-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
-        document.getElementById('beauty-grid').innerHTML = Array(4).fill(createSkeletonCard()).join('');
-        document.getElementById('today-stories').innerHTML = '<div class="md:col-span-12 h-96 bg-gray-200 rounded-sm animate-pulse"></div>';
-        document.getElementById('best-stories').innerHTML = Array(15).fill('<div class="swiper-slide" style="width: 256px;"><div class="h-48 bg-gray-200 rounded-sm animate-pulse mb-3"></div><div class="h-3 bg-gray-200 rounded w-full animate-pulse"></div></div>').join('');
-        document.getElementById('must-read').innerHTML = Array(4).fill(createSkeletonCard()).join('');
-        document.getElementById('latest-stories').innerHTML = Array(3).fill('<div class="flex gap-4 animate-pulse"><div class="w-32 h-32 bg-gray-200 rounded-sm"></div><div class="flex-1"><div class="h-3 bg-gray-200 rounded mb-2"></div><div class="h-4 bg-gray-200 rounded mb-2"></div><div class="h-2 bg-gray-200 rounded w-1/2"></div></div></div>').join('');
-    }
+            // 이미지 컨테이너
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'hero-image-container';
 
-    // ============================================
-    // Load Data from Supabase
-    // ============================================
-    async function loadData() {
-        try {
-            const { data: contentItems, error: contentError } = await supabaseClient
-                .from('content_items')
-                .select('*')
-                .order('date', { ascending: false });
-
-            if (contentError) throw contentError;
-
-            state.data.allContent = contentItems || [];
-            state.data.heroIds = state.data.allContent.slice(0, 5).map(a => a.id);
-            state.data.todayStoriesIds = state.data.allContent.slice(5, 10).map(a => a.id);
-            state.data.mustReadIds = state.data.allContent.slice(10, 14).map(a => a.id);
-
-            await initializePage();
-        } catch (error) {
-            console.error('Error loading data:', error);
-            alert('Failed to load data. Please refresh the page.');
-        }
-    }
-
-    // ============================================
-    // Hero Functions
-    // ============================================
-    function initializeHeroSlides() {
-        state.heroSlides = state.data.heroIds
-            .map(id => getContentById(id))
-            .filter(Boolean);
-
-        if (state.heroSlides.length === 0) return;
-
-        const container = document.getElementById('hero-slides-container');
-        container.innerHTML = state.heroSlides.map((hero, index) => {
-            const heroImage = hero.image_origin_url || hero.image;
-            return `
-                <div class="hero-slide ${index === 0 ? 'active' : ''}"
-                     style="background-image: ${index === 0 ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${heroImage}')` : 'none'}"
-                     data-index="${index}"
-                     data-image="${heroImage}"
-                     data-id="${hero.id}"></div>
-            `;
-        }).join('');
-
-        const indicators = document.getElementById('hero-indicators');
-        indicators.innerHTML = state.heroSlides.map((_, index) => `
-            <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>
-        `).join('');
-
-        document.querySelectorAll('[data-index]').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const index = parseInt(el.dataset.index);
-                if (!isNaN(index)) {
-                    clearInterval(state.heroInterval);
-                    goToSlide(index);
-                    startHeroRotation();
+            // Progressive WebP 이미지 로드
+            imageLoader.loadProgressiveImage(slide.img, imageContainer, {
+                alt: state.currentLang === 'ko' ? slide.title_kor : slide.title_en,
+                priority: index === 0, // 첫 번째 슬라이드는 우선 로드
+                transitionDuration: 800,
+                onLoad: (img) => {
+                    console.log(`Hero image ${index + 1} loaded:`, slide.img);
                 }
+            }).catch(error => {
+                console.error(`Failed to load hero image ${index + 1}:`, error);
             });
-        });
 
-        document.getElementById('hero-section').addEventListener('click', () => {
-            const hero = state.heroSlides[state.currentHeroIndex];
-            window.location.href = `article/index.html?category=${hero.source_type}&id=${hero.id}`;
-        });
+            // 오버레이 및 텍스트
+            const overlay = document.createElement('div');
+            overlay.className = 'absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60';
+            overlay.innerHTML = `
+                <div class="absolute inset-0 flex items-center justify-center text-center px-4">
+                    <div class="text-white max-w-4xl hero-content">
+                        <h2 class="text-4xl md:text-6xl font-serif font-bold mb-4 drop-shadow-lg"
+                            data-ko="${slide.title_kor}"
+                            data-en="${slide.title_en}">
+                            ${state.currentLang === 'ko' ? slide.title_kor : slide.title_en}
+                        </h2>
+                        <p class="text-lg md:text-xl mb-8 font-light drop-shadow-md"
+                           data-ko="${slide.subtitle_kor || ''}"
+                           data-en="${slide.subtitle_en || ''}">
+                            ${state.currentLang === 'ko' ? (slide.subtitle_kor || '') : (slide.subtitle_en || '')}
+                        </p>
+                        <a href="article/index.html?id=${slide.article_id}"
+                           class="inline-block px-8 py-3 bg-white text-black hover:bg-gray-100 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
+                            READ MORE
+                        </a>
+                    </div>
+                </div>
+            `;
 
-        setTimeout(() => {
-            document.querySelectorAll('.hero-slide').forEach((slide, index) => {
-                if (index === 0) return;
-                const img = new Image();
-                img.onload = () => {
-                    slide.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${slide.dataset.image}')`;
-                };
-                img.src = slide.dataset.image;
-            });
-        }, 500);
+            slideDiv.appendChild(imageContainer);
+            slideDiv.appendChild(overlay);
+            heroSlider.appendChild(slideDiv);
+
+            // Indicator 생성
+            const indicator = document.createElement('button');
+            indicator.className = `hero-indicator ${index === 0 ? 'active' : ''}`;
+            indicator.setAttribute('aria-label', `Go to slide ${index + 1}`);
+            indicator.onclick = () => changeHeroSlide(index);
+            heroIndicators.appendChild(indicator);
+        }
+
+        // Auto-play 시작
+        startHeroAutoPlay();
     }
 
-    function goToSlide(index) {
+    function changeHeroSlide(index) {
         const slides = document.querySelectorAll('.hero-slide');
-        const indicators = document.querySelectorAll('#hero-indicators > div');
+        const indicators = document.querySelectorAll('.hero-indicator');
 
-        slides[state.currentHeroIndex].classList.remove('active');
-        indicators[state.currentHeroIndex].classList.remove('bg-white');
-        indicators[state.currentHeroIndex].classList.add('bg-white/50');
+        slides.forEach((slide, i) => {
+            if (i === index) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+
+        indicators.forEach((indicator, i) => {
+            if (i === index) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        });
 
         state.currentHeroIndex = index;
-
-        slides[state.currentHeroIndex].classList.add('active');
-        indicators[state.currentHeroIndex].classList.add('bg-white');
-        indicators[state.currentHeroIndex].classList.remove('bg-white/50');
-
-        renderHero();
     }
 
-    function nextSlide() {
-        goToSlide((state.currentHeroIndex + 1) % state.heroSlides.length);
-    }
-
-    function startHeroRotation() {
-        state.heroInterval = setInterval(nextSlide, 5000);
-    }
-
-    // renderHero 함수 수정
-    function renderHero(story) {
-        const heroSection = document.getElementById('hero-section');
-        const category = getCategoryDisplay(story.source);
-
-        heroSection.innerHTML = `
-            <div class="hero-card-wrapper">
-                <div class="hero-card">
-                    <!-- 프로그레시브 이미지 -->
-                    <div class="hero-image-container">
-                        <img
-                            src="${story.image}"
-                            alt="${story.title_en}"
-                            class="hero-image"
-                            loading="eager"
-                            decoding="async"
-                            onload="this.classList.add('loaded')"
-                            onerror="this.src='/assets/placeholder.jpg'"
-                        >
-                    </div>
-
-                    <div class="hero-overlay">
-                        <div class="hero-content">
-                            ${story.cultural_badge ? `<div class="cultural-badge">${story.cultural_badge}</div>` : ''}
-                            <div class="hero-category">${category}</div>
-                            <h1 class="hero-title">${currentLang === 'ko' ? story.title_kor : story.title_en}</h1>
-                            <p class="hero-description">${currentLang === 'ko' ? story.desc_kor : story.desc_en}</p>
-                            <a href="article/index.html?category=${story.source}&id=${story.id}" class="hero-cta">
-                                ${currentLang === 'ko' ? '자세히 보기' : 'Read More'}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-
-    // ============================================
-    // Render Functions
-    // ============================================
-    function renderLocationSection() {
-        const district = getDistrictMeta(state.currentDistrict);
-        if (!district) return;
-
-        document.getElementById('location-title').textContent = state.currentLang === 'kor' ? district.title_kor : district.title_en;
-        document.getElementById('location-desc').textContent = state.currentLang === 'kor' ? district.desc_kor : district.desc_en;
-    }
-
-    async function renderFashionSection() {
-        const district = getDistrictMeta(state.currentDistrict);
-        const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
-        document.getElementById('fashion-location-title').textContent = `Fashion for ${districtName}`;
-
-        const districtItems = state.data.allContent.filter(item =>
-            item.source_type === 'fashion' && item.district_id === state.currentDistrict
-        );
-        const generalItems = state.data.allContent.filter(item =>
-            item.source_type === 'fashion' && !item.district_id
-        );
-        const items = [...districtItems, ...generalItems].slice(0, 4);
-
-        document.getElementById('fashion-grid').innerHTML = items.map(item => {
-            return `
-                <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
-                    <article class="transition-transform hover:-translate-y-1">
-                        <div class="relative overflow-hidden mb-3 h-64 bg-gray-100 rounded-sm">
-                            ${item.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                        </div>
-                        <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
-                        <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
-                    </article>
-                </a>
-            `;
-        }).join('');
-    }
-
-    async function renderBeautySection() {
-        const district = getDistrictMeta(state.currentDistrict);
-        const districtName = district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : 'Seongsu';
-        document.getElementById('beauty-location-title').textContent = `Beauty for ${districtName}`;
-
-        const districtItems = state.data.allContent.filter(item =>
-            item.source_type === 'beauty' && item.district_id === state.currentDistrict
-        );
-        const generalItems = state.data.allContent.filter(item =>
-            item.source_type === 'beauty' && !item.district_id
-        );
-        const items = [...districtItems, ...generalItems].slice(0, 4);
-
-        document.getElementById('beauty-grid').innerHTML = items.map(item => {
-            return `
-                <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
-                    <article class="transition-transform hover:-translate-y-1">
-                        <div class="relative overflow-hidden mb-3 h-64 bg-gray-100 rounded-sm">
-                            ${item.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                        </div>
-                        <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
-                        <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
-                    </article>
-                </a>
-            `;
-        }).join('');
-    }
-
-    async function renderTodayStories() {
-        const stories = state.data.todayStoriesIds.map(id => getContentById(id)).filter(Boolean);
-        if (stories.length === 0) return;
-
-        const featured = stories[0];
-        const small = stories.slice(1);
-
-        const getDistrictName = (districtId) => {
-            if (!districtId) return null;
-            const district = getDistrictMeta(districtId);
-            return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
-        };
-
-        document.getElementById('today-stories').innerHTML = `
-            <div class="md:col-span-5">
-                <a href="article/index.html?category=${featured.source_type}&id=${featured.id}" class="block group">
-                    <article class="h-full">
-                        <div class="relative overflow-hidden mb-4 h-96 bg-gray-100 rounded-sm">
-                            ${featured.district_id ? `<span class="absolute bottom-3 left-3 bg-white/95 px-3 py-1 text-xs font-semibold rounded">${getDistrictName(featured.district_id)}</span>` : ''}
-                            ${featured.cultural_badge ? `<span class="absolute top-3 left-3 px-2 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${featured.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(featured.image, featured.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                        </div>
-                        <div class="text-xs text-gray-500 mb-2 uppercase tracking-wide">${featured.category}</div>
-                        <h3 class="text-2xl font-bold leading-tight">${state.currentLang === 'kor' ? featured.title_kor : featured.title_en}</h3>
-                    </article>
-                </a>
-            </div>
-            <div class="md:col-span-7 grid grid-cols-2 gap-4">
-                ${small.map(story => `
-                    <a href="article/index.html?category=${story.source_type}&id=${story.id}" class="block group">
-                        <article>
-                            <div class="relative overflow-hidden mb-3 h-48 bg-gray-100 rounded-sm">
-                                ${story.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(story.district_id)}</span>` : ''}
-                                ${story.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${story.cultural_badge}</span>` : ''}
-                                ${createImageWithSkeleton(story.image, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                            </div>
-                            <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
-                            <h4 class="text-sm font-bold leading-tight">${state.currentLang === 'kor' ? story.title_kor : story.title_en}</h4>
-                        </article>
-                    </a>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    async function renderBestStories() {
-        const stories = [...state.data.allContent].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 15);
-
-        const getDistrictName = (districtId) => {
-            if (!districtId) return null;
-            const district = getDistrictMeta(districtId);
-            return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
-        };
-
-        document.getElementById('best-stories').innerHTML = stories.map(story => `
-            <div class="swiper-slide" style="width: 256px;">
-                <a href="article/index.html?category=${story.source_type}&id=${story.id}" class="block group">
-                    <article>
-                        <div class="relative overflow-hidden mb-3 h-48 bg-gray-100 rounded-sm">
-                            ${story.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(story.district_id)}</span>` : ''}
-                            ${story.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${story.cultural_badge}</span>` : ''}
-                            ${createImageWithSkeleton(story.image, story.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                        </div>
-                        <div class="text-xs text-gray-500 mb-1 uppercase">${story.category}</div>
-                        <h4 class="text-base font-bold leading-tight">${state.currentLang === 'kor' ? story.title_kor : story.title_en}</h4>
-                    </article>
-                </a>
-            </div>
-        `).join('');
-
-        new Swiper('.best-stories-swiper', {
-            slidesPerView: 'auto',
-            spaceBetween: 24,
-            freeMode: { enabled: true, momentum: true },
-            grabCursor: true
-        });
-    }
-
-    async function renderMustRead() {
-        const stories = state.data.mustReadIds.map(id => getContentById(id)).filter(Boolean);
-
-        const getDistrictName = (districtId) => {
-            if (!districtId) return null;
-            const district = getDistrictMeta(districtId);
-            return district ? (state.currentLang === 'kor' ? district.name_kor : district.name_en) : null;
-        };
-
-        document.getElementById('must-read').innerHTML = stories.map(item => `
-            <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="block group">
-                <article>
-                    <div class="relative overflow-hidden mb-3 h-56 bg-gray-100 rounded-sm">
-                        ${item.district_id ? `<span class="absolute bottom-2 left-2 bg-white/95 px-2 py-1 text-[10px] font-semibold rounded">${getDistrictName(item.district_id)}</span>` : ''}
-                        ${item.cultural_badge ? `<span class="absolute top-2 left-2 px-2 py-1 text-[9px] font-semibold bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-full">${item.cultural_badge}</span>` : ''}
-                        ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                    </div>
-                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
-                    <h4 class="text-base font-bold leading-tight mb-2">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
-                    <p class="text-xs text-gray-600">${state.currentLang === 'kor' ? item.desc_kor : item.desc_en}</p>
-                </article>
-            </a>
-        `).join('');
-    }
-
-    async function renderLatestStories() {
-        const latest = state.data.allContent.slice(0, 3);
-
-        document.getElementById('latest-stories').innerHTML = latest.map(item => `
-            <a href="article/index.html?category=${item.source_type}&id=${item.id}" class="flex gap-4 group">
-                <div class="w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-100 rounded-sm">
-                    ${createImageWithSkeleton(item.image, item.title_en, 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')}
-                </div>
-                <div class="flex-1">
-                    <div class="text-xs text-gray-500 mb-1 uppercase">${item.category}</div>
-                    <h4 class="text-sm font-bold leading-tight mb-2">${state.currentLang === 'kor' ? item.title_kor : item.title_en}</h4>
-                    <p class="text-xs text-gray-600">${formatDate(item.date)}</p>
-                </div>
-            </a>
-        `).join('');
-    }
-
-    function renderLocationModal() {
-        const currentSelection = state.autoSelectEnabled ? 'auto' : state.currentDistrict;
-
-        document.getElementById('location-options').innerHTML = `
-            <button class="w-full text-left p-4 border-2 rounded transition ${currentSelection === 'auto' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}" data-location="auto">
-                <div class="font-bold ${currentSelection === 'auto' ? 'text-blue-700' : ''}">🎯 Auto Detect</div>
-                <div class="text-sm text-gray-600">Find nearest district automatically</div>
-            </button>
-            ${state.data.districtMeta.map(district => `
-                <button class="w-full text-left p-4 border rounded transition ${currentSelection === district.district_id ? 'border-2 border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}" data-location="${district.district_id}">
-                    <div class="font-bold ${currentSelection === district.district_id ? 'text-blue-700' : ''}">📍 ${state.currentLang === 'kor' ? district.name_kor : district.name_en}</div>
-                    <div class="text-sm text-gray-600">${state.currentLang === 'kor' ? district.desc_kor : district.desc_en}</div>
-                </button>
-            `).join('')}
-        `;
-
-        document.querySelectorAll('[data-location]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const location = btn.dataset.location;
-                if (location === 'auto') {
-                    state.autoSelectEnabled = true;
-                    saveSession();
-                    autoDetectLocation();
-                } else {
-                    state.autoSelectEnabled = false;
-                    state.currentDistrict = location;
-                    saveSession();
-                    renderLocationSection();
-                    renderFashionSection();
-                    renderBeautySection();
-                }
-                document.getElementById('location-modal').classList.add('hidden');
-            });
-        });
-    }
-
-    function autoDetectLocation() {
-        if (!navigator.geolocation) return;
-
-        navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-
-            let closestDistrict = state.data.districtMeta[0];
-            let minDistance = Infinity;
-
-            state.data.districtMeta.forEach(district => {
-                const distance = calculateDistance(latitude, longitude, district.latitude, district.longitude);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestDistrict = district;
-                }
-            });
-
-            if (state.currentDistrict !== closestDistrict.district_id) {
-                state.currentDistrict = closestDistrict.district_id;
-                saveSession();
-                renderLocationSection();
-                renderFashionSection();
-                renderBeautySection();
-            }
-        });
-    }
-
-    // ============================================
-    // Event Handlers
-    // ============================================
-    function setupEventListeners() {
-        document.getElementById('lang-toggle').addEventListener('click', () => {
-            state.currentLang = state.currentLang === 'kor' ? 'en' : 'kor';
-            document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';
-            saveSession();
-
-            renderHero();
-            renderLocationSection();
-            renderFashionSection();
-            renderBeautySection();
-            renderTodayStories();
-            renderBestStories();
-            renderMustRead();
-            renderLatestStories();
-            renderLocationModal();
-        });
-
-        document.getElementById('change-location').addEventListener('click', () => {
-            renderLocationModal();
-            document.getElementById('location-modal').classList.remove('hidden');
-        });
-
-        document.getElementById('close-location-modal').addEventListener('click', () => {
-            document.getElementById('location-modal').classList.add('hidden');
-        });
-
-        document.getElementById('location-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'location-modal') {
-                document.getElementById('location-modal').classList.add('hidden');
-            }
-        });
-
-        document.getElementById('newsletter-submit').addEventListener('click', () => {
-            const email = document.getElementById('newsletter-email').value;
-            if (email && email.includes('@')) {
-                alert(state.currentLang === 'kor' ? '구독해 주셔서 감사합니다!' : 'Thank you for subscribing!');
-                document.getElementById('newsletter-email').value = '';
-            } else {
-                alert(state.currentLang === 'kor' ? '유효한 이메일 주소를 입력해주세요.' : 'Please enter a valid email address.');
-            }
-        });
-
-        document.querySelector('a[href="#newsletter-section"]').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('newsletter-section').scrollIntoView({ behavior: 'smooth' });
-        });
-    }
-
-    // ============================================
-    // Initialize Page (Sequential Loading)
-    // ============================================
-    async function initializePage() {
-        // 1. Load session & text content
-        loadSession();
-        renderLocationSection();
-
-        // 2. Show skeletons
-        showSkeletons();
-
-        // 3. Load Hero
-        initializeHeroSlides();
-        startHeroRotation();
-        renderHero();
-        await delay(150);
-
-        // 4. Load Fashion images
-        await renderFashionSection();
-        await delay(150);
-
-        // 5. Load Beauty images
-        await renderBeautySection();
-        await delay(150);
-
-        // 6. Load Today's Stories images
-        await renderTodayStories();
-        await delay(150);
-
-        // 7. Load Best Stories images
-        await renderBestStories();
-        await delay(150);
-
-        // 8. Load Must Read images
-        await renderMustRead();
-        await delay(150);
-
-        // 9. Load Latest Stories images
-        await renderLatestStories();
-
-        // 10. Setup rest
-        renderLocationModal();
-        setupEventListeners();
-
-        if (state.autoSelectEnabled) {
-            setTimeout(autoDetectLocation, 100);
+    function startHeroAutoPlay() {
+        stopHeroAutoPlay();
+        if (state.heroSlides.length > 1) {
+            state.heroInterval = setInterval(() => {
+                const nextIndex = (state.currentHeroIndex + 1) % state.heroSlides.length;
+                changeHeroSlide(nextIndex);
+            }, 5000);
         }
     }
 
-    // Start
-    loadData();
+    function stopHeroAutoPlay() {
+        if (state.heroInterval) {
+            clearInterval(state.heroInterval);
+            state.heroInterval = null;
+        }
+    }
+
+    // Hero 호버 시 auto-play 일시정지
+    document.addEventListener('DOMContentLoaded', () => {
+        const heroSlider = document.getElementById('hero-slider');
+        if (heroSlider) {
+            heroSlider.addEventListener('mouseenter', stopHeroAutoPlay);
+            heroSlider.addEventListener('mouseleave', startHeroAutoPlay);
+        }
+    });
+
+    // ============================================
+    // Data Loading
+    // ============================================
+    async function loadAllData() {
+        try {
+            const [articlesResponse, pinnedResponse] = await Promise.all([
+                supabaseClient.from('article').select('*'),
+                supabaseClient.from('pinned').select('*').single()
+            ]);
+
+            if (articlesResponse.error) throw articlesResponse.error;
+            if (pinnedResponse.error) throw pinnedResponse.error;
+
+            state.data.allContent = articlesResponse.data;
+
+            // Hero 슬라이드 데이터 구성
+            if (pinnedResponse.data && pinnedResponse.data.hero) {
+                state.heroSlides = pinnedResponse.data.hero.map(heroId => {
+                    const article = state.data.allContent.find(a => a.article_id === heroId);
+                    return article || null;
+                }).filter(Boolean);
+            }
+
+            console.log('Loaded hero slides:', state.heroSlides.length);
+            await renderHeroSection();
+            renderAllSections();
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    }
+
+    // ============================================
+    // Language Toggle
+    // ============================================
+    function updateLanguage() {
+        document.querySelectorAll('[data-ko][data-en]').forEach(el => {
+            el.textContent = state.currentLang === 'ko' ? el.dataset.ko : el.dataset.en;
+        });
+
+        const langButton = document.getElementById('lang-text');
+        if (langButton) {
+            langButton.textContent = state.currentLang === 'ko' ? 'English' : '한국어';
+        }
+    }
+
+    document.getElementById('lang-toggle')?.addEventListener('click', () => {
+        state.currentLang = state.currentLang === 'ko' ? 'en' : 'ko';
+        updateLanguage();
+    });
+
+    // ============================================
+    // Other Sections Rendering
+    // ============================================
+    function renderAllSections() {
+        console.log('Rendering all sections...');
+        // 여기에 다른 섹션 렌더링 코드 추가
+    }
+
+    // ============================================
+    // Performance Monitoring
+    // ============================================
+    if (window.performance && window.performance.measure) {
+        window.addEventListener('load', () => {
+            const perfData = window.performance.timing;
+            const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+            console.log('Page load time:', pageLoadTime + 'ms');
+        });
+    }
+
+    // ============================================
+    // Cleanup on Page Unload
+    // ============================================
+    window.addEventListener('beforeunload', () => {
+        stopHeroAutoPlay();
+        imageLoader.cleanup();
+    });
+
+    // ============================================
+    // Initialize
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAllData();
+    });
 </script>
+
 </body>
 </html>
