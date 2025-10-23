@@ -789,7 +789,7 @@
     });
 
     // ============================================
-    // Load Article from URL
+    // Load Article from URL (수정)
     // ============================================
     document.getElementById('load-article-btn').addEventListener('click', async () => {
         const url = document.getElementById('article-url').value.trim();
@@ -833,12 +833,24 @@
 
             if (articleError) {
                 console.warn('본문 조회 오류:', articleError);
-                // 본문이 없어도 메타데이터는 로드
             }
 
-            // 3. 폼에 데이터 채우기
             updateProgress('데이터 로딩 중...', 80);
 
+            // 3. 먼저 화면 전환 (에디터가 보여야 함)
+            document.getElementById('edit-url-input').classList.add('hidden');
+            document.getElementById('editor-form').classList.remove('hidden');
+
+            // 4. 에디터 초기화 확인 (없으면 생성)
+            if (!editorKor || !editorEn) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                if (!editorKor || !editorEn) {
+                    initializeEditors();
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            }
+
+            // 5. 폼에 데이터 채우기
             document.getElementById('edit-article-id').value = data.id;
             document.getElementById('category').value = data.source_type;
             document.getElementById('title-kor').value = data.title_kor || '';
@@ -855,33 +867,32 @@
             uploadedThumbnailUrl = data.image;
             currentThumbnailFileName = `${articleId}.webp`;
 
-            // 4. 에디터에 본문 로드
+            // 6. 에디터에 본문 로드 (약간의 딜레이)
+            await new Promise(resolve => setTimeout(resolve, 100));
+
             if (articleData) {
-                if (articleData.article_kor) {
+                console.log('본문 데이터:', articleData);
+
+                if (editorKor && articleData.article_kor) {
                     editorKor.commands.setContent(articleData.article_kor);
-                } else {
-                    editorKor.commands.setContent('<p>한국어 내용을 입력하세요...</p>');
+                    console.log('한국어 본문 로드 완료');
                 }
 
-                if (articleData.article_en) {
+                if (editorEn && articleData.article_en) {
                     editorEn.commands.setContent(articleData.article_en);
-                } else {
-                    editorEn.commands.setContent('<p>Enter English content...</p>');
+                    console.log('영어 본문 로드 완료');
                 }
             } else {
-                // 본문이 없는 경우 기본 내용
-                editorKor.commands.setContent('<p>한국어 내용을 입력하세요...</p>');
-                editorEn.commands.setContent('<p>Enter English content...</p>');
+                console.warn('본문 데이터가 없습니다.');
             }
 
             updateProgress('완료!', 100);
 
             setTimeout(() => {
                 hideProgress();
-                document.getElementById('edit-url-input').classList.add('hidden');
-                document.getElementById('editor-form').classList.remove('hidden');
                 document.getElementById('form-title').textContent = '게시글 수정';
                 document.getElementById('publish-btn-text').textContent = '수정 완료';
+                document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
                 currentArticleId = articleId;
                 isEditMode = true;
             }, 500);
@@ -892,6 +903,7 @@
             alert('게시글을 불러올 수 없습니다: ' + error.message);
         }
     });
+
 
 
     // ============================================
