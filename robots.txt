@@ -30,3 +30,5 @@ Allow: /
 
 User-agent: Daumoa
 Allow: /
+
+Sitemap: https://fbc-pink.vercel.app/sitemap.xml
