@@ -453,7 +453,7 @@
             `<div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full cursor-pointer transition-all ${index === 0 ? 'bg-white' : 'bg-white/50'}" data-index="${index}"></div>`
         ).join('');
 
-        document.querySelectorAll('[data-index]').forEach(el => {
+        document.querySelectorAll('#hero-indicators [data-index]').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const index = parseInt(el.dataset.index);
