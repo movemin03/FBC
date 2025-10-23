@@ -310,12 +310,11 @@
     `;
 
     // ============================================
-    // Session Management (✅ fbc_language로 통일)
+    // Session Management
     // ============================================
     function loadSession() {
         const stored = sessionStorage;
 
-        // ✅ fbc_language 키 사용
         if (stored.getItem('fbc_language')) {
             state.currentLang = stored.getItem('fbc_language');
             document.getElementById('lang-text').textContent = state.currentLang === 'kor' ? '한국어' : 'English';

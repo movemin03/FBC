@@ -31,4 +31,4 @@ Allow: /
 User-agent: Daumoa
 Allow: /
 
-Sitemap: https://fbc-pink.vercel.app/sitemap.xml
+Sitemap: https://fbc-pink.vercel.app/sitemap-main.xml, https://fbc-pink.vercel.app/sitemap-life.xml, sitemap-fashion.xml, sitemap-districts.xml, https://fbc-pink.vercel.app/sitemap-beauty.xml
