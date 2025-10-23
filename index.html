@@ -44,13 +44,48 @@
             opacity: 1;
         }
 
-        .hero-image {
-            background-size: cover;
-            background-position: center;
-            min-height: 70vh;
+        /* 기존 CSS에 추가 */
+        .hero-image-container {
             position: relative;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .hero-image.loaded {
+            opacity: 1;
+        }
+
+        /* 로딩 애니메이션 */
+        .hero-image-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.3) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        .hero-image.loaded + .hero-image-container::before {
+            display: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .hero-slide {
@@ -457,11 +492,43 @@
         state.heroInterval = setInterval(nextSlide, 5000);
     }
 
-    function renderHero() {
-        const hero = state.heroSlides[state.currentHeroIndex];
-        document.getElementById('hero-title').textContent = state.currentLang === 'kor' ? hero.title_kor : hero.title_en;
-        document.getElementById('hero-subtitle').textContent = formatDate(hero.date);
+    // renderHero 함수 수정
+    function renderHero(story) {
+        const heroSection = document.getElementById('hero-section');
+        const category = getCategoryDisplay(story.source);
+
+        heroSection.innerHTML = `
+            <div class="hero-card-wrapper">
+                <div class="hero-card">
+                    <!-- 프로그레시브 이미지 -->
+                    <div class="hero-image-container">
+                        <img
+                            src="${story.image}"
+                            alt="${story.title_en}"
+                            class="hero-image"
+                            loading="eager"
+                            decoding="async"
+                            onload="this.classList.add('loaded')"
+                            onerror="this.src='/assets/placeholder.jpg'"
+                        >
+                    </div>
+
+                    <div class="hero-overlay">
+                        <div class="hero-content">
+                            ${story.cultural_badge ? `<div class="cultural-badge">${story.cultural_badge}</div>` : ''}
+                            <div class="hero-category">${category}</div>
+                            <h1 class="hero-title">${currentLang === 'ko' ? story.title_kor : story.title_en}</h1>
+                            <p class="hero-description">${currentLang === 'ko' ? story.desc_kor : story.desc_en}</p>
+                            <a href="article/index.html?category=${story.source}&id=${story.id}" class="hero-cta">
+                                ${currentLang === 'ko' ? '자세히 보기' : 'Read More'}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
+
 
     // ============================================
     // Render Functions
