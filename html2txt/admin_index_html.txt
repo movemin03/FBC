@@ -1,9 +1,0 @@
-FBC Admin - Login
-FBC
-Admin Portal
-Email
-Password
-로그인
-or
-Magic Link로 로그인
-← 메인으로 돌아가기
