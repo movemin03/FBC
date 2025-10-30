@@ -7,6 +7,10 @@
     <script src="../config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Font Awesome Kit -->
+    <script src="https://kit.fontawesome.com/d0f28f3633.js" crossorigin="anonymous"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -38,12 +42,26 @@
             background: #f3f4f6;
             padding: 2px 6px;
             border-radius: 3px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', monospace !important;
             font-size: 0.9em;
         }
         .ProseMirror mark {
-            background: #fef08a;
             padding: 2px 0;
+        }
+        .ProseMirror blockquote {
+            border-left: 4px solid #333;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+        .ProseMirror ul,
+        .ProseMirror ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+        .ProseMirror li {
+            margin: 0.25em 0;
         }
         .ProseMirror img {
             max-width: 500px;
@@ -59,6 +77,55 @@
         .ProseMirror .text-left { text-align: left; }
         .ProseMirror .text-center { text-align: center; }
         .ProseMirror .text-right { text-align: right; }
+
+        /* Color picker wrapper */
+        .color-picker-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .color-picker-wrapper input[type="color"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Color palette popup */
+        .color-palette {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            width: 140px;
+        }
+
+        .color-palette.active {
+            display: grid;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            border-color: #333;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -256,17 +323,12 @@
         <!-- Action Buttons -->
         <div class="bg-white border border-gray-200 rounded-lg p-6">
             <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <!-- 삭제 버튼 (붉은색) -->
                 <button id="delete-article-btn" class="w-full sm:w-auto px-8 py-3 bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold">
                     게시글 삭제
                 </button>
-
-                <!-- 초기화 버튼 (회색) -->
                 <button id="reset-form-btn" class="w-full sm:w-auto px-8 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 transition font-semibold">
                     폼 초기화
                 </button>
-
-                <!-- 발행하기 버튼 (검정) -->
                 <button id="publish-btn" class="w-full sm:w-auto px-8 py-3 bg-black text-white rounded hover:bg-gray-800 transition font-semibold">
                     <span id="publish-btn-text">발행하기</span>
                 </button>
@@ -284,6 +346,8 @@
     import Highlight from 'https://esm.sh/@tiptap/extension-highlight@2.1.13';
     import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.1.13';
     import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder@2.1.13';
+    import TextStyle from 'https://esm.sh/@tiptap/extension-text-style@2.1.13';
+    import Color from 'https://esm.sh/@tiptap/extension-color@2.1.13';
 
     // ============================================
     // Supabase Configuration
@@ -312,31 +376,23 @@
         { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong" }
     ];
 
-    const icons = {
-        bold: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>',
-        italic: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>',
-        underline: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>',
-        strike: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4H9a3 3 0 0 0-2.83 4"></path><path d="M14 12a4 4 0 0 1 0 8H6"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>',
-        code: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
-        h1: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path></svg>',
-        h2: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path><path d="M21 18h-4"></path></svg>',
-        bulletList: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>',
-        orderedList: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line></svg>',
-        link: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path></svg>',
-        image: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
-        alignLeft: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
-        alignCenter: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
-        alignRight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
-        highlight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11L12 14L22 4"></path></svg>'
-    };
+    // Color palettes
+    const textColors = [
+        '#000000', '#333333', '#666666', '#999999', '#CCCCCC',
+        '#FF0000', '#FF6B6B', '#FFA500', '#FFD700', '#FFFF00',
+        '#00FF00', '#4CAF50', '#00CED1', '#1E90FF', '#0000FF',
+        '#800080', '#FF1493', '#FF69B4', '#8B4513', '#FFFFFF'
+    ];
+
+    const highlightColors = [
+        '#FFFF00', '#FFE4B5', '#FFB6C1', '#E6E6FA', '#B0E0E6',
+        '#98FB98', '#FFA07A', '#DDA0DD', '#F0E68C', '#FFE4E1',
+        '#E0FFFF', '#FAFAD2', '#D3D3D3', '#F5DEB3', '#FFC0CB'
+    ];
 
     // ============================================
     // Image Processing Functions
     // ============================================
-
-    /**
-     * Resize image to max 720px width (keep aspect ratio)
-     */
     async function resizeImage(file, maxWidth = 720) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -347,7 +403,6 @@
                     let width = img.width;
                     let height = img.height;
 
-                    // Resize if width > 720px
                     if (width > maxWidth) {
                         height = (height * maxWidth) / width;
                         width = maxWidth;
@@ -359,7 +414,6 @@
                     const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Convert to Base64 WebP
                     const base64 = canvas.toDataURL('image/webp', 0.85);
                     resolve(base64);
                 };
@@ -369,9 +423,6 @@
         });
     }
 
-    /**
-     * Convert thumbnail to sRGB WebP (40KB limit)
-     */
     async function convertToSRGBWebP(file, maxSizeKB = 40) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -409,9 +460,6 @@
         });
     }
 
-    /**
-     * Upload image to Supabase Storage
-     */
     async function uploadImageToSupabase(blob, fileName) {
         try {
             const storagePath = `contents/${fileName}`;
@@ -436,9 +484,6 @@
         }
     }
 
-    /**
-     * Convert Base64 to Blob
-     */
     function base64ToBlob(base64) {
         const parts = base64.split(';base64,');
         const contentType = parts[0].split(':')[1];
@@ -453,9 +498,6 @@
         return new Blob([uInt8Array], { type: contentType });
     }
 
-    /**
-     * Delete image from Supabase Storage
-     */
     async function deleteImageFromSupabase(fileName) {
         try {
             const storagePath = `contents/${fileName}`;
@@ -473,7 +515,7 @@
     }
 
     // ============================================
-    // Article ID Generator (Supabase 기반)
+    // Article ID Generator
     // ============================================
     async function generateArticleId(category) {
         const prefix = {
@@ -570,27 +612,64 @@
     });
 
     // ============================================
-    // Editor Toolbar with Base64 Image Upload
+    // Color Palette Helper
+    // ============================================
+    function createColorPalette(colors, onSelect) {
+        const palette = document.createElement('div');
+        palette.className = 'color-palette';
+
+        colors.forEach(color => {
+            const option = document.createElement('div');
+            option.className = 'color-option';
+            option.style.backgroundColor = color;
+            option.title = color;
+            option.onclick = (e) => {
+                e.stopPropagation();
+                onSelect(color);
+                palette.classList.remove('active');
+            };
+            palette.appendChild(option);
+        });
+
+        return palette;
+    }
+
+    // ============================================
+    // Editor Toolbar
     // ============================================
     function createToolbar(editor, toolbarId) {
         const toolbar = document.getElementById(toolbarId);
         const buttons = [
-            { name: 'Bold', icon: icons.bold, command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
-            { name: 'Italic', icon: icons.italic, command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
-            { name: 'Underline', icon: icons.underline, command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
-            { name: 'Strike', icon: icons.strike, command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
-            { name: 'Code', icon: icons.code, command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
-            { name: 'H1', icon: icons.h1, command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
-            { name: 'H2', icon: icons.h2, command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
-            { name: 'Bullet List', icon: icons.bulletList, command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
-            { name: 'Ordered List', icon: icons.orderedList, command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
-            { name: 'Link', icon: icons.link, command: () => {
-                const url = prompt('Enter URL:');
-                if (url) editor.chain().focus().setLink({ href: url }).run();
-            }, isActive: () => editor.isActive('link') },
+            { name: 'Bold', icon: 'fa-solid fa-bold', command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
+            { name: 'Italic', icon: 'fa-solid fa-italic', command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
+            { name: 'Underline', icon: 'fa-solid fa-underline', command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
+            { name: 'Strike', icon: 'fa-solid fa-strikethrough', command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
+            { name: 'Code', icon: 'fa-solid fa-code', command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
+            { name: 'Blockquote', icon: 'fa-solid fa-quote-left', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: () => editor.isActive('blockquote') },
+            { name: 'H1', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
+            { name: 'H2', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
+            { name: 'H3', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
+            { name: 'Bullet List', icon: 'fa-solid fa-list-ul', command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
+            { name: 'Ordered List', icon: 'fa-solid fa-list-ol', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
+            {
+                name: 'Link',
+                icon: 'fa-solid fa-link',
+                command: () => {
+                    const previousUrl = editor.getAttributes('link').href;
+                    const url = prompt('링크 URL을 입력하세요:', previousUrl || '');
+
+                    if (url === null) return;
+                    if (url === '') {
+                        editor.chain().focus().extendMarkRange('link').unsetLink().run();
+                        return;
+                    }
+                    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+                },
+                isActive: () => editor.isActive('link')
+            },
             {
                 name: 'Image',
-                icon: icons.image,
+                icon: 'fa-solid fa-image',
                 command: async () => {
                     const input = document.createElement('input');
                     input.type = 'file';
@@ -609,16 +688,15 @@
                     input.click();
                 }
             },
-            { name: 'Align Left', icon: icons.alignLeft, command: () => editor.chain().focus().setTextAlign('left').run() },
-            { name: 'Align Center', icon: icons.alignCenter, command: () => editor.chain().focus().setTextAlign('center').run() },
-            { name: 'Align Right', icon: icons.alignRight, command: () => editor.chain().focus().setTextAlign('right').run() },
-            { name: 'Highlight', icon: icons.highlight, command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') }
+            { name: 'Align Left', icon: 'fa-solid fa-align-left', command: () => editor.chain().focus().setTextAlign('left').run() },
+            { name: 'Align Center', icon: 'fa-solid fa-align-center', command: () => editor.chain().focus().setTextAlign('center').run() },
+            { name: 'Align Right', icon: 'fa-solid fa-align-right', command: () => editor.chain().focus().setTextAlign('right').run() }
         ];
 
         buttons.forEach(btn => {
             const button = document.createElement('button');
             button.className = 'p-2 hover:bg-gray-200 rounded transition';
-            button.innerHTML = btn.icon;
+            button.innerHTML = `<i class="${btn.icon}"></i>`;
             button.title = btn.name;
             button.onclick = (e) => {
                 e.preventDefault();
@@ -629,11 +707,65 @@
                 editor.on('selectionUpdate', () => {
                     button.classList.toggle('bg-blue-100', btn.isActive());
                 });
+                editor.on('transaction', () => {
+                    button.classList.toggle('bg-blue-100', btn.isActive());
+                });
             }
 
             toolbar.appendChild(button);
         });
+
+        // Highlight with color palette
+        const highlightWrapper = document.createElement('div');
+        highlightWrapper.className = 'color-picker-wrapper p-2 hover:bg-gray-200 rounded transition cursor-pointer';
+        highlightWrapper.title = 'Highlight Color';
+
+        const highlightIcon = document.createElement('i');
+        highlightIcon.className = 'fa-solid fa-highlighter';
+        highlightWrapper.appendChild(highlightIcon);
+
+        const highlightPalette = createColorPalette(highlightColors, (color) => {
+            editor.chain().focus().toggleHighlight({ color }).run();
+        });
+        highlightWrapper.appendChild(highlightPalette);
+
+        highlightWrapper.onclick = (e) => {
+            e.stopPropagation();
+            highlightPalette.classList.toggle('active');
+            document.addEventListener('click', function closeHighlight() {
+                highlightPalette.classList.remove('active');
+                document.removeEventListener('click', closeHighlight);
+            });
+        };
+
+        toolbar.appendChild(highlightWrapper);
+
+        // Text color with palette
+        const colorPickerWrapper = document.createElement('div');
+        colorPickerWrapper.className = 'color-picker-wrapper p-2 hover:bg-gray-200 rounded transition cursor-pointer';
+        colorPickerWrapper.title = 'Text Color';
+
+        const colorIcon = document.createElement('i');
+        colorIcon.className = 'fa-solid fa-palette';
+        colorPickerWrapper.appendChild(colorIcon);
+
+        const colorPalette = createColorPalette(textColors, (color) => {
+            editor.chain().focus().setColor(color).run();
+        });
+        colorPickerWrapper.appendChild(colorPalette);
+
+        colorPickerWrapper.onclick = (e) => {
+            e.stopPropagation();
+            colorPalette.classList.toggle('active');
+            document.addEventListener('click', function closeColor() {
+                colorPalette.classList.remove('active');
+                document.removeEventListener('click', closeColor);
+            });
+        };
+
+        toolbar.appendChild(colorPickerWrapper);
     }
+
     // ============================================
     // Editor Initialization
     // ============================================
@@ -659,10 +791,19 @@
             extensions: [
                 StarterKit,
                 CustomImage,
-                Link,
+                Link.configure({
+                    openOnClick: false,
+                    HTMLAttributes: {
+                        class: 'text-blue-500 underline',
+                    },
+                }),
                 Underline,
-                Highlight,
+                Highlight.configure({
+                    multicolor: true
+                }),
                 TextAlign.configure({ types: ['heading', 'paragraph'] }),
+                TextStyle,
+                Color,
                 Placeholder.configure({
                     placeholder: '한국어 내용을 입력하세요...'
                 })
@@ -675,10 +816,19 @@
             extensions: [
                 StarterKit,
                 CustomImage,
-                Link,
+                Link.configure({
+                    openOnClick: false,
+                    HTMLAttributes: {
+                        class: 'text-blue-500 underline',
+                    },
+                }),
                 Underline,
-                Highlight,
+                Highlight.configure({
+                    multicolor: true
+                }),
                 TextAlign.configure({ types: ['heading', 'paragraph'] }),
+                TextStyle,
+                Color,
                 Placeholder.configure({
                     placeholder: 'Enter English content...'
                 })
@@ -810,7 +960,6 @@
                 document.getElementById('editor-form').classList.remove('hidden');
                 document.getElementById('form-title').textContent = '게시글 수정';
                 document.getElementById('publish-btn-text').textContent = '수정 완료';
-                document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
                 currentArticleId = articleId;
                 isEditMode = true;
             }, 500);
@@ -879,7 +1028,6 @@
 
             updateProgress('이미지 업로드 중...', 20);
 
-            // Upload Base64 images in editor content
             const korHtml = editorKor.getHTML();
             const enHtml = editorEn.getHTML();
 
@@ -1000,7 +1148,6 @@
                 await deleteImageFromSupabase(currentThumbnailFileName);
             }
 
-            // Delete article images (fs00001-1.webp, fs00001-2.webp, etc.)
             for (let i = 1; i <= 50; i++) {
                 await deleteImageFromSupabase(`${articleId}-${i}.webp`);
             }
@@ -1088,8 +1235,6 @@
     });
 
 </script>
-
-
 
 </body>
 </html>
