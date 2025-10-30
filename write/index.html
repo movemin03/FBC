@@ -7,8 +7,8 @@
     <script src="../config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Font Awesome Kit (개인 Kit ID) -->
+
+    <!-- Font Awesome Kit -->
     <script src="https://kit.fontawesome.com/d0f28f3633.js" crossorigin="anonymous"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +46,6 @@
             font-size: 0.9em;
         }
         .ProseMirror mark {
-            background: #fef08a;
             padding: 2px 0;
         }
         .ProseMirror blockquote {
@@ -55,6 +54,14 @@
             margin: 20px 0;
             font-style: italic;
             color: #555;
+        }
+        .ProseMirror ul,
+        .ProseMirror ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+        .ProseMirror li {
+            margin: 0.25em 0;
         }
         .ProseMirror img {
             max-width: 500px;
@@ -70,19 +77,55 @@
         .ProseMirror .text-left { text-align: left; }
         .ProseMirror .text-center { text-align: center; }
         .ProseMirror .text-right { text-align: right; }
-        
-        /* Color picker 버튼 스타일 */
+
+        /* Color picker wrapper */
         .color-picker-wrapper {
             position: relative;
             display: inline-block;
         }
-        
+
         .color-picker-wrapper input[type="color"] {
             position: absolute;
             opacity: 0;
             width: 100%;
             height: 100%;
             cursor: pointer;
+        }
+
+        /* Color palette popup */
+        .color-palette {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            width: 160px;
+        }
+
+        .color-palette.active {
+            display: grid;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            border-color: #333;
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -281,17 +324,12 @@
         <!-- Action Buttons -->
         <div class="bg-white border border-gray-200 rounded-lg p-6">
             <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <!-- 삭제 버튼 (붉은색) -->
                 <button id="delete-article-btn" class="w-full sm:w-auto px-8 py-3 bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold">
                     게시글 삭제
                 </button>
-
-                <!-- 초기화 버튼 (회색) -->
                 <button id="reset-form-btn" class="w-full sm:w-auto px-8 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 transition font-semibold">
                     폼 초기화
                 </button>
-
-                <!-- 발행하기 버튼 (검정) -->
                 <button id="publish-btn" class="w-full sm:w-auto px-8 py-3 bg-black text-white rounded hover:bg-gray-800 transition font-semibold">
                     <span id="publish-btn-text">발행하기</span>
                 </button>
@@ -339,13 +377,23 @@
         { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong" }
     ];
 
+    // Color palettes
+    const textColors = [
+        '#000000', '#333333', '#666666', '#999999', '#CCCCCC',
+        '#FF0000', '#FF6B6B', '#FFA500', '#FFD700', '#FFFF00',
+        '#00FF00', '#4CAF50', '#00CED1', '#1E90FF', '#0000FF',
+        '#800080', '#FF1493', '#FF69B4', '#8B4513', '#FFFFFF'
+    ];
+
+    const highlightColors = [
+        '#FFFF00', '#FFE4B5', '#FFB6C1', '#E6E6FA', '#B0E0E6',
+        '#98FB98', '#FFA07A', '#DDA0DD', '#F0E68C', '#FFE4E1',
+        '#E0FFFF', '#FAFAD2', '#D3D3D3', '#F5DEB3', '#FFC0CB'
+    ];
+
     // ============================================
     // Image Processing Functions
     // ============================================
-
-    /**
-     * Resize image to max 720px width (keep aspect ratio)
-     */
     async function resizeImage(file, maxWidth = 720) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -356,7 +404,6 @@
                     let width = img.width;
                     let height = img.height;
 
-                    // Resize if width > 720px
                     if (width > maxWidth) {
                         height = (height * maxWidth) / width;
                         width = maxWidth;
@@ -368,7 +415,6 @@
                     const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Convert to Base64 WebP
                     const base64 = canvas.toDataURL('image/webp', 0.85);
                     resolve(base64);
                 };
@@ -378,9 +424,6 @@
         });
     }
 
-    /**
-     * Convert thumbnail to sRGB WebP (40KB limit)
-     */
     async function convertToSRGBWebP(file, maxSizeKB = 40) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -418,9 +461,6 @@
         });
     }
 
-    /**
-     * Upload image to Supabase Storage
-     */
     async function uploadImageToSupabase(blob, fileName) {
         try {
             const storagePath = `contents/${fileName}`;
@@ -445,9 +485,6 @@
         }
     }
 
-    /**
-     * Convert Base64 to Blob
-     */
     function base64ToBlob(base64) {
         const parts = base64.split(';base64,');
         const contentType = parts[0].split(':')[1];
@@ -462,9 +499,6 @@
         return new Blob([uInt8Array], { type: contentType });
     }
 
-    /**
-     * Delete image from Supabase Storage
-     */
     async function deleteImageFromSupabase(fileName) {
         try {
             const storagePath = `contents/${fileName}`;
@@ -482,7 +516,7 @@
     }
 
     // ============================================
-    // Article ID Generator (Supabase 기반)
+    // Article ID Generator
     // ============================================
     async function generateArticleId(category) {
         const prefix = {
@@ -579,7 +613,30 @@
     });
 
     // ============================================
-    // Editor Toolbar with Font Awesome Icons
+    // Color Palette Helper
+    // ============================================
+    function createColorPalette(colors, onSelect) {
+        const palette = document.createElement('div');
+        palette.className = 'color-palette';
+
+        colors.forEach(color => {
+            const option = document.createElement('div');
+            option.className = 'color-option';
+            option.style.backgroundColor = color;
+            option.title = color;
+            option.onclick = (e) => {
+                e.stopPropagation();
+                onSelect(color);
+                palette.classList.remove('active');
+            };
+            palette.appendChild(option);
+        });
+
+        return palette;
+    }
+
+    // ============================================
+    // Editor Toolbar
     // ============================================
     function createToolbar(editor, toolbarId) {
         const toolbar = document.getElementById(toolbarId);
@@ -595,21 +652,21 @@
             { name: 'H3', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
             { name: 'Bullet List', icon: 'fa-solid fa-list-ul', command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
             { name: 'Ordered List', icon: 'fa-solid fa-list-ol', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
-            { 
-                name: 'Link', 
-                icon: 'fa-solid fa-link', 
+            {
+                name: 'Link',
+                icon: 'fa-solid fa-link',
                 command: () => {
                     const previousUrl = editor.getAttributes('link').href;
                     const url = prompt('링크 URL을 입력하세요:', previousUrl || '');
-                    
+
                     if (url === null) return;
                     if (url === '') {
                         editor.chain().focus().extendMarkRange('link').unsetLink().run();
                         return;
                     }
                     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-                }, 
-                isActive: () => editor.isActive('link') 
+                },
+                isActive: () => editor.isActive('link')
             },
             {
                 name: 'Image',
@@ -634,8 +691,7 @@
             },
             { name: 'Align Left', icon: 'fa-solid fa-align-left', command: () => editor.chain().focus().setTextAlign('left').run() },
             { name: 'Align Center', icon: 'fa-solid fa-align-center', command: () => editor.chain().focus().setTextAlign('center').run() },
-            { name: 'Align Right', icon: 'fa-solid fa-align-right', command: () => editor.chain().focus().setTextAlign('right').run() },
-            { name: 'Highlight', icon: 'fa-solid fa-highlighter', command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') }
+            { name: 'Align Right', icon: 'fa-solid fa-align-right', command: () => editor.chain().focus().setTextAlign('right').run() }
         ];
 
         buttons.forEach(btn => {
@@ -660,23 +716,54 @@
             toolbar.appendChild(button);
         });
 
-        // 글자 색상 선택 버튼 추가
+        // Highlight with color palette
+        const highlightWrapper = document.createElement('div');
+        highlightWrapper.className = 'color-picker-wrapper p-2 hover:bg-gray-200 rounded transition cursor-pointer';
+        highlightWrapper.title = 'Highlight Color';
+
+        const highlightIcon = document.createElement('i');
+        highlightIcon.className = 'fa-solid fa-highlighter';
+        highlightWrapper.appendChild(highlightIcon);
+
+        const highlightPalette = createColorPalette(highlightColors, (color) => {
+            editor.chain().focus().toggleHighlight({ color }).run();
+        });
+        highlightWrapper.appendChild(highlightPalette);
+
+        highlightWrapper.onclick = (e) => {
+            e.stopPropagation();
+            highlightPalette.classList.toggle('active');
+            document.addEventListener('click', function closeHighlight() {
+                highlightPalette.classList.remove('active');
+                document.removeEventListener('click', closeHighlight);
+            });
+        };
+
+        toolbar.appendChild(highlightWrapper);
+
+        // Text color with palette
         const colorPickerWrapper = document.createElement('div');
         colorPickerWrapper.className = 'color-picker-wrapper p-2 hover:bg-gray-200 rounded transition cursor-pointer';
         colorPickerWrapper.title = 'Text Color';
-        
+
         const colorIcon = document.createElement('i');
         colorIcon.className = 'fa-solid fa-palette';
-        
-        const colorInput = document.createElement('input');
-        colorInput.type = 'color';
-        colorInput.value = '#000000';
-        colorInput.onchange = (e) => {
-            editor.chain().focus().setColor(e.target.value).run();
-        };
-        
         colorPickerWrapper.appendChild(colorIcon);
-        colorPickerWrapper.appendChild(colorInput);
+
+        const colorPalette = createColorPalette(textColors, (color) => {
+            editor.chain().focus().setColor(color).run();
+        });
+        colorPickerWrapper.appendChild(colorPalette);
+
+        colorPickerWrapper.onclick = (e) => {
+            e.stopPropagation();
+            colorPalette.classList.toggle('active');
+            document.addEventListener('click', function closeColor() {
+                colorPalette.classList.remove('active');
+                document.removeEventListener('click', closeColor);
+            });
+        };
+
         toolbar.appendChild(colorPickerWrapper);
     }
 
@@ -712,7 +799,9 @@
                     },
                 }),
                 Underline,
-                Highlight,
+                Highlight.configure({
+                    multicolor: true
+                }),
                 TextAlign.configure({ types: ['heading', 'paragraph'] }),
                 TextStyle,
                 Color,
@@ -735,7 +824,9 @@
                     },
                 }),
                 Underline,
-                Highlight,
+                Highlight.configure({
+                    multicolor: true
+                }),
                 TextAlign.configure({ types: ['heading', 'paragraph'] }),
                 TextStyle,
                 Color,
