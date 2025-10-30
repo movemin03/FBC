@@ -221,7 +221,7 @@
         // Load Data
         async function loadData() {
             try {
-                const response = await fetch('../data/about.json');
+                const response = await fetch('../extra/data/about.json');
                 state.aboutData = await response.json();
             } catch (error) {
                 console.error('Error loading about data:', error);
