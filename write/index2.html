@@ -591,8 +591,8 @@
             { name: 'Code', icon: 'fa-solid fa-code', command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
             { name: 'Blockquote', icon: 'fa-solid fa-quote-left', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: () => editor.isActive('blockquote') },
             { name: 'H1', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
-            { name: 'H2', icon: 'fa-solid fa-h2', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
-            { name: 'H3', icon: 'fa-solid fa-h3', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
+            { name: 'H2', icon: 'fa-solid fa-font', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
+            { name: 'H3', icon: 'fa-solid fa-text-height', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
             { name: 'Bullet List', icon: 'fa-solid fa-list-ul', command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
             { name: 'Ordered List', icon: 'fa-solid fa-list-ol', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
             { 
