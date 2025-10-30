@@ -7,10 +7,6 @@
     <script src="../config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Font Awesome Kit (개인 Kit ID) -->
-    <script src="https://kit.fontawesome.com/d0f28f3633.js" crossorigin="anonymous"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -42,19 +38,12 @@
             background: #f3f4f6;
             padding: 2px 6px;
             border-radius: 3px;
-            font-family: 'Courier New', monospace !important;
+            font-family: 'Courier New', monospace;
             font-size: 0.9em;
         }
         .ProseMirror mark {
             background: #fef08a;
             padding: 2px 0;
-        }
-        .ProseMirror blockquote {
-            border-left: 4px solid #333;
-            padding-left: 20px;
-            margin: 20px 0;
-            font-style: italic;
-            color: #555;
         }
         .ProseMirror img {
             max-width: 500px;
@@ -70,20 +59,6 @@
         .ProseMirror .text-left { text-align: left; }
         .ProseMirror .text-center { text-align: center; }
         .ProseMirror .text-right { text-align: right; }
-        
-        /* Color picker 버튼 스타일 */
-        .color-picker-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .color-picker-wrapper input[type="color"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -309,8 +284,6 @@
     import Highlight from 'https://esm.sh/@tiptap/extension-highlight@2.1.13';
     import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.1.13';
     import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder@2.1.13';
-    import TextStyle from 'https://esm.sh/@tiptap/extension-text-style@2.1.13';
-    import Color from 'https://esm.sh/@tiptap/extension-color@2.1.13';
 
     // ============================================
     // Supabase Configuration
@@ -338,6 +311,24 @@
         { district_id: "dsm00003", name_kor: "홍대", name_en: "Hongdae" },
         { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong" }
     ];
+
+    const icons = {
+        bold: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>',
+        italic: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>',
+        underline: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>',
+        strike: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4H9a3 3 0 0 0-2.83 4"></path><path d="M14 12a4 4 0 0 1 0 8H6"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>',
+        code: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+        h1: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path></svg>',
+        h2: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path><path d="M21 18h-4"></path></svg>',
+        bulletList: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>',
+        orderedList: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line></svg>',
+        link: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path></svg>',
+        image: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+        alignLeft: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
+        alignCenter: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
+        alignRight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
+        highlight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11L12 14L22 4"></path></svg>'
+    };
 
     // ============================================
     // Image Processing Functions
@@ -579,41 +570,27 @@
     });
 
     // ============================================
-    // Editor Toolbar with Font Awesome Icons
+    // Editor Toolbar with Base64 Image Upload
     // ============================================
     function createToolbar(editor, toolbarId) {
         const toolbar = document.getElementById(toolbarId);
         const buttons = [
-            { name: 'Bold', icon: 'fa-solid fa-bold', command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
-            { name: 'Italic', icon: 'fa-solid fa-italic', command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
-            { name: 'Underline', icon: 'fa-solid fa-underline', command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
-            { name: 'Strike', icon: 'fa-solid fa-strikethrough', command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
-            { name: 'Code', icon: 'fa-solid fa-code', command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
-            { name: 'Blockquote', icon: 'fa-solid fa-quote-left', command: () => editor.chain().focus().toggleBlockquote().run(), isActive: () => editor.isActive('blockquote') },
-            { name: 'H1', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
-            { name: 'H2', icon: 'fa-solid fa-font', command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
-            { name: 'H3', icon: 'fa-solid fa-text-height', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
-            { name: 'Bullet List', icon: 'fa-solid fa-list-ul', command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
-            { name: 'Ordered List', icon: 'fa-solid fa-list-ol', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
-            { 
-                name: 'Link', 
-                icon: 'fa-solid fa-link', 
-                command: () => {
-                    const previousUrl = editor.getAttributes('link').href;
-                    const url = prompt('링크 URL을 입력하세요:', previousUrl || '');
-                    
-                    if (url === null) return;
-                    if (url === '') {
-                        editor.chain().focus().extendMarkRange('link').unsetLink().run();
-                        return;
-                    }
-                    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-                }, 
-                isActive: () => editor.isActive('link') 
-            },
+            { name: 'Bold', icon: icons.bold, command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
+            { name: 'Italic', icon: icons.italic, command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
+            { name: 'Underline', icon: icons.underline, command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
+            { name: 'Strike', icon: icons.strike, command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
+            { name: 'Code', icon: icons.code, command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
+            { name: 'H1', icon: icons.h1, command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
+            { name: 'H2', icon: icons.h2, command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
+            { name: 'Bullet List', icon: icons.bulletList, command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
+            { name: 'Ordered List', icon: icons.orderedList, command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
+            { name: 'Link', icon: icons.link, command: () => {
+                const url = prompt('Enter URL:');
+                if (url) editor.chain().focus().setLink({ href: url }).run();
+            }, isActive: () => editor.isActive('link') },
             {
                 name: 'Image',
-                icon: 'fa-solid fa-image',
+                icon: icons.image,
                 command: async () => {
                     const input = document.createElement('input');
                     input.type = 'file';
@@ -632,16 +609,16 @@
                     input.click();
                 }
             },
-            { name: 'Align Left', icon: 'fa-solid fa-align-left', command: () => editor.chain().focus().setTextAlign('left').run() },
-            { name: 'Align Center', icon: 'fa-solid fa-align-center', command: () => editor.chain().focus().setTextAlign('center').run() },
-            { name: 'Align Right', icon: 'fa-solid fa-align-right', command: () => editor.chain().focus().setTextAlign('right').run() },
-            { name: 'Highlight', icon: 'fa-solid fa-highlighter', command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') }
+            { name: 'Align Left', icon: icons.alignLeft, command: () => editor.chain().focus().setTextAlign('left').run() },
+            { name: 'Align Center', icon: icons.alignCenter, command: () => editor.chain().focus().setTextAlign('center').run() },
+            { name: 'Align Right', icon: icons.alignRight, command: () => editor.chain().focus().setTextAlign('right').run() },
+            { name: 'Highlight', icon: icons.highlight, command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') }
         ];
 
         buttons.forEach(btn => {
             const button = document.createElement('button');
             button.className = 'p-2 hover:bg-gray-200 rounded transition';
-            button.innerHTML = `<i class="${btn.icon}"></i>`;
+            button.innerHTML = btn.icon;
             button.title = btn.name;
             button.onclick = (e) => {
                 e.preventDefault();
@@ -652,34 +629,11 @@
                 editor.on('selectionUpdate', () => {
                     button.classList.toggle('bg-blue-100', btn.isActive());
                 });
-                editor.on('transaction', () => {
-                    button.classList.toggle('bg-blue-100', btn.isActive());
-                });
             }
 
             toolbar.appendChild(button);
         });
-
-        // 글자 색상 선택 버튼 추가
-        const colorPickerWrapper = document.createElement('div');
-        colorPickerWrapper.className = 'color-picker-wrapper p-2 hover:bg-gray-200 rounded transition cursor-pointer';
-        colorPickerWrapper.title = 'Text Color';
-        
-        const colorIcon = document.createElement('i');
-        colorIcon.className = 'fa-solid fa-palette';
-        
-        const colorInput = document.createElement('input');
-        colorInput.type = 'color';
-        colorInput.value = '#000000';
-        colorInput.onchange = (e) => {
-            editor.chain().focus().setColor(e.target.value).run();
-        };
-        
-        colorPickerWrapper.appendChild(colorIcon);
-        colorPickerWrapper.appendChild(colorInput);
-        toolbar.appendChild(colorPickerWrapper);
     }
-
     // ============================================
     // Editor Initialization
     // ============================================
@@ -705,17 +659,10 @@
             extensions: [
                 StarterKit,
                 CustomImage,
-                Link.configure({
-                    openOnClick: false,
-                    HTMLAttributes: {
-                        class: 'text-blue-500 underline',
-                    },
-                }),
+                Link,
                 Underline,
                 Highlight,
                 TextAlign.configure({ types: ['heading', 'paragraph'] }),
-                TextStyle,
-                Color,
                 Placeholder.configure({
                     placeholder: '한국어 내용을 입력하세요...'
                 })
@@ -728,17 +675,10 @@
             extensions: [
                 StarterKit,
                 CustomImage,
-                Link.configure({
-                    openOnClick: false,
-                    HTMLAttributes: {
-                        class: 'text-blue-500 underline',
-                    },
-                }),
+                Link,
                 Underline,
                 Highlight,
                 TextAlign.configure({ types: ['heading', 'paragraph'] }),
-                TextStyle,
-                Color,
                 Placeholder.configure({
                     placeholder: 'Enter English content...'
                 })
@@ -870,6 +810,7 @@
                 document.getElementById('editor-form').classList.remove('hidden');
                 document.getElementById('form-title').textContent = '게시글 수정';
                 document.getElementById('publish-btn-text').textContent = '수정 완료';
+                document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
                 currentArticleId = articleId;
                 isEditMode = true;
             }, 500);
@@ -938,6 +879,7 @@
 
             updateProgress('이미지 업로드 중...', 20);
 
+            // Upload Base64 images in editor content
             const korHtml = editorKor.getHTML();
             const enHtml = editorEn.getHTML();
 
@@ -1058,6 +1000,7 @@
                 await deleteImageFromSupabase(currentThumbnailFileName);
             }
 
+            // Delete article images (fs00001-1.webp, fs00001-2.webp, etc.)
             for (let i = 1; i <= 50; i++) {
                 await deleteImageFromSupabase(`${articleId}-${i}.webp`);
             }
@@ -1145,6 +1088,8 @@
     });
 
 </script>
+
+
 
 </body>
 </html>
