@@ -7,10 +7,10 @@
     <script src="../config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    
     <!-- Font Awesome Kit -->
     <script src="https://kit.fontawesome.com/d0f28f3633.js" crossorigin="anonymous"></script>
-
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -77,13 +77,13 @@
         .ProseMirror .text-left { text-align: left; }
         .ProseMirror .text-center { text-align: center; }
         .ProseMirror .text-right { text-align: right; }
-
+        
         /* Color picker wrapper */
         .color-picker-wrapper {
             position: relative;
             display: inline-block;
         }
-
+        
         .color-picker-wrapper input[type="color"] {
             position: absolute;
             opacity: 0;
@@ -91,7 +91,7 @@
             height: 100%;
             cursor: pointer;
         }
-
+        
         /* Color palette popup */
         .color-palette {
             position: absolute;
@@ -107,13 +107,13 @@
             display: none;
             grid-template-columns: repeat(5, 1fr);
             gap: 4px;
-            width: 160px;
+            width: 140px;
         }
-
+        
         .color-palette.active {
             display: grid;
         }
-
+        
         .color-option {
             width: 24px;
             height: 24px;
@@ -121,8 +121,12 @@
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
         }
-
+        
         .color-option:hover {
             border-color: #333;
             transform: scale(1.1);
@@ -615,10 +619,26 @@
     // ============================================
     // Color Palette Helper
     // ============================================
-    function createColorPalette(colors, onSelect) {
+    function createColorPalette(colors, onSelect, includeNone = false) {
         const palette = document.createElement('div');
         palette.className = 'color-palette';
-
+        
+        // "없음" 옵션 추가
+        if (includeNone) {
+            const noneOption = document.createElement('div');
+            noneOption.className = 'color-option';
+            noneOption.style.backgroundColor = '#fff';
+            noneOption.style.border = '2px solid #ddd';
+            noneOption.title = '제거';
+            noneOption.innerHTML = '<i class="fa-solid fa-xmark" style="color: #666; font-size: 14px;"></i>';
+            noneOption.onclick = (e) => {
+                e.stopPropagation();
+                onSelect(null);
+                palette.classList.remove('active');
+            };
+            palette.appendChild(noneOption);
+        }
+        
         colors.forEach(color => {
             const option = document.createElement('div');
             option.className = 'color-option';
@@ -631,7 +651,7 @@
             };
             palette.appendChild(option);
         });
-
+        
         return palette;
     }
 
@@ -652,21 +672,21 @@
             { name: 'H3', icon: 'fa-solid fa-heading', command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive('heading', { level: 3 }) },
             { name: 'Bullet List', icon: 'fa-solid fa-list-ul', command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
             { name: 'Ordered List', icon: 'fa-solid fa-list-ol', command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
-            {
-                name: 'Link',
-                icon: 'fa-solid fa-link',
+            { 
+                name: 'Link', 
+                icon: 'fa-solid fa-link', 
                 command: () => {
                     const previousUrl = editor.getAttributes('link').href;
                     const url = prompt('링크 URL을 입력하세요:', previousUrl || '');
-
+                    
                     if (url === null) return;
                     if (url === '') {
                         editor.chain().focus().extendMarkRange('link').unsetLink().run();
                         return;
                     }
                     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-                },
-                isActive: () => editor.isActive('link')
+                }, 
+                isActive: () => editor.isActive('link') 
             },
             {
                 name: 'Image',
@@ -726,8 +746,12 @@
         highlightWrapper.appendChild(highlightIcon);
 
         const highlightPalette = createColorPalette(highlightColors, (color) => {
-            editor.chain().focus().toggleHighlight({ color }).run();
-        });
+            if (color === null) {
+                editor.chain().focus().unsetHighlight().run();
+            } else {
+                editor.chain().focus().toggleHighlight({ color }).run();
+            }
+        }, true);
         highlightWrapper.appendChild(highlightPalette);
 
         highlightWrapper.onclick = (e) => {
@@ -751,8 +775,12 @@
         colorPickerWrapper.appendChild(colorIcon);
 
         const colorPalette = createColorPalette(textColors, (color) => {
-            editor.chain().focus().setColor(color).run();
-        });
+            if (color === null) {
+                editor.chain().focus().unsetColor().run();
+            } else {
+                editor.chain().focus().setColor(color).run();
+            }
+        }, true);
         colorPickerWrapper.appendChild(colorPalette);
 
         colorPickerWrapper.onclick = (e) => {
