@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBC Magazine - Content Editor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #fafbfc;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            background: white;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .btn-small {
+            padding: 10px 16px;
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-small:hover {
+            background-color: #efefef;
+            border-color: #d0d0d0;
+        }
+
+        /* 메인 에디터 */
+        .editor-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .editor-wrapper {
+            padding: 32px;
+        }
+
+        .editor-section h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        /* 에디터 탭 */
+        .editor-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab-button {
+            padding: 14px 28px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.2s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .tab-button.active {
+            color: #1a1a1a;
+            border-bottom-color: #4a90e2;
+        }
+
+        .tab-button:hover {
+            color: #555;
+        }
+
+        /* 툴바 개선 */
+        .editor-toolbar {
+            background-color: #f9fafb;
+            border: 1px solid #e8eaed;
+            border-radius: 6px;
+            padding: 14px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 8px;
+            padding-right: 16px;
+            border-right: 1px solid #e8eaed;
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        /* 툴바 버튼 */
+        .toolbar-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 8px 10px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            transition: all 0.2s ease;
+            min-width: 44px;
+            height: 44px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        .toolbar-btn.active {
+            background-color: #e3f2fd;
+            color: #4a90e2;
+            border-color: #4a90e2;
+        }
+
+        .toolbar-btn i {
+            font-size: 16px;
+            display: block;
+        }
+
+        .toolbar-btn span {
+            font-size: 10px;
+            line-height: 1.2;
+            max-width: 40px;
+        }
+
+        /* 색상 선택 */
+        .color-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .color-picker input[type="color"] {
+            cursor: pointer;
+            width: 40px;
+            height: 28px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 2px;
+        }
+
+        .color-picker span {
+            font-size: 10px;
+            color: #999;
+        }
+
+        /* 드롭다운 */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 100;
+            min-width: 200px;
+            margin-top: 6px;
+            display: none;
+            pointer-events: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            color: #555;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .dropdown-item.selected {
+            background-color: #e3f2fd;
+            color: #4a90e2;
+            font-weight: 600;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #f0f0f0;
+            margin: 4px 0;
+        }
+
+        /* 에디터 본체 */
+        .editor-content {
+            border: 1px solid #e8eaed;
+            border-radius: 6px;
+            padding: 20px 24px;
+            background: white;
+            min-height: 500px;
+            font-size: 15px;
+            line-height: 1.8;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .editor-content:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.08);
+        }
+
+        /* 에디터 내용 스타일 */
+        .editor-content p {
+            margin: 0.8em 0;
+        }
+
+        .editor-content h1 {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 1em 0 0.5em 0;
+        }
+
+        .editor-content h2 {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin: 0.9em 0 0.45em 0;
+        }
+
+        .editor-content h3 {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin: 0.8em 0 0.4em 0;
+        }
+
+        /* 리스트: 마커는 왼쪽에 고정 */
+        .editor-content ul,
+        .editor-content ol {
+            margin: 0.8em 0;
+            padding-left: 2em;
+            list-style-position: outside;
+        }
+
+        .editor-content li {
+            margin: 0.4em 0;
+            text-align: left !important;
+        }
+
+        .editor-content blockquote {
+            border-left: 4px solid #e0e0e0;
+            margin: 0.8em 0;
+            padding-left: 1.2em;
+            color: #777;
+        }
+
+        .editor-content code {
+            background-color: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .editor-content pre {
+            background-color: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 0.8em 0;
+        }
+
+        .editor-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 0.8em 0;
+        }
+
+        /* 글자 수 표시 */
+        .char-count {
+            text-align: right;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .editor-tabs-wrapper {
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar-group {
+                padding-right: 12px;
+                gap: 6px;
+            }
+
+            .editor-toolbar {
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .toolbar-btn {
+                min-width: 40px;
+                height: 40px;
+                padding: 6px 8px;
+            }
+
+            .editor-content {
+                padding: 16px;
+                min-height: 400px;
+            }
+
+            .editor-wrapper {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FBC Magazine - 에디터</h1>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-wrapper">
+                <div class="editor-section">
+                    <div class="editor-tabs-wrapper">
+                        <div class="editor-tabs">
+                            <button class="tab-button active" data-tab="ko">한국어</button>
+                            <button class="tab-button" data-tab="en">English</button>
+                        </div>
+                    </div>
+
+                    <!-- 한국어 에디터 -->
+                    <div id="editorKo" class="editor-tab-content" data-lang="ko">
+                        <div class="editor-toolbar">
+                            <!-- 텍스트 포맷팅 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-bold-ko" title="굵게">
+                                    <i class="fas fa-bold"></i>
+                                    <span>굵게</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-italic-ko" title="기울임">
+                                    <i class="fas fa-italic"></i>
+                                    <span>기울임</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-underline-ko" title="밑줄">
+                                    <i class="fas fa-underline"></i>
+                                    <span>밑줄</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-strike-ko" title="취소선">
+                                    <i class="fas fa-strikethrough"></i>
+                                    <span>취소</span>
+                                </button>
+                            </div>
+
+                            <!-- 색상 -->
+                            <div class="toolbar-group">
+                                <div class="color-picker">
+                                    <input type="color" id="text-color-ko" value="#000000" title="텍스트 색상">
+                                    <span>글색</span>
+                                </div>
+                                <div class="color-picker">
+                                    <input type="color" id="bg-color-ko" value="#ffffff" title="배경 색상">
+                                    <span>배경</span>
+                                </div>
+                            </div>
+
+                            <!-- 정렬 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-align-left-ko" title="좌측 정렬">
+                                    <i class="fas fa-align-left"></i>
+                                    <span>좌측</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-align-center-ko" title="중앙 정렬">
+                                    <i class="fas fa-align-center"></i>
+                                    <span>중앙</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-align-right-ko" title="우측 정렬">
+                                    <i class="fas fa-align-right"></i>
+                                    <span>우측</span>
+                                </button>
+                            </div>
+
+                            <!-- 리스트 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-bullet-ko" title="글머리 목록">
+                                    <i class="fas fa-list-ul"></i>
+                                    <span>목록</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-number-ko" title="번호 목록">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>번호</span>
+                                </button>
+                            </div>
+
+                            <!-- 들여쓰기 -->
+                            <div class="toolbar-group">
+                                <div class="dropdown">
+                                    <button class="toolbar-btn" id="btn-indent-ko">
+                                        <i class="fas fa-indent"></i>
+                                        <span>들여쓰</span>
+                                    </button>
+                                    <div class="dropdown-menu" id="indent-menu-ko">
+                                        <div class="dropdown-item" data-indent="1">레벨 1 (1단 / 20px)</div>
+                                        <div class="dropdown-item" data-indent="2">레벨 2 (2단 / 40px)</div>
+                                        <div class="dropdown-item" data-indent="3">레벨 3 (3단 / 60px)</div>
+                                        <div class="dropdown-item" data-indent="4">레벨 4 (4단 / 80px)</div>
+                                        <div class="dropdown-item" data-indent="5">레벨 5 (5단 / 100px)</div>
+                                        <div class="dropdown-item" data-indent="6">레벨 6 (6단 / 120px)</div>
+                                        <div class="dropdown-divider"></div>
+                                        <div class="dropdown-item" data-indent="0">들여쓰기 제거</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 제목 -->
+                            <div class="toolbar-group">
+                                <div class="dropdown">
+                                    <button class="toolbar-btn" id="btn-heading-ko">
+                                        <i class="fas fa-heading"></i>
+                                        <span>제목</span>
+                                    </button>
+                                    <div class="dropdown-menu" id="heading-menu-ko">
+                                        <div class="dropdown-item" data-heading="1">제목 1 (가장 큼)</div>
+                                        <div class="dropdown-item" data-heading="2">제목 2</div>
+                                        <div class="dropdown-item" data-heading="3">제목 3 (작음)</div>
+                                        <div class="dropdown-divider"></div>
+                                        <div class="dropdown-item" data-heading="p">본문 (기본)</div>
+                                    </div>
+                                </div>
+                                <button class="toolbar-btn" id="btn-quote-ko" title="인용구 (다시 누르면 취소)">
+                                    <i class="fas fa-quote-left"></i>
+                                    <span>인용</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-code-ko" title="코드 (다시 누르면 취소)">
+                                    <i class="fas fa-code"></i>
+                                    <span>코드</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-hr-ko" title="구분선">
+                                    <i class="fas fa-minus"></i>
+                                    <span>선</span>
+                                </button>
+                            </div>
+
+                            <!-- 링크 & 이미지 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-image-ko" title="이미지">
+                                    <i class="fas fa-image"></i>
+                                    <span>이미지</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-link-ko" title="링크 (다시 누르면 취소)">
+                                    <i class="fas fa-link"></i>
+                                    <span>링크</span>
+                                </button>
+                            </div>
+
+                            <!-- 실행 취소 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-undo-ko" title="실행 취소">
+                                    <i class="fas fa-undo"></i>
+                                    <span>취소</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-redo-ko" title="재실행">
+                                    <i class="fas fa-redo"></i>
+                                    <span>재실행</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="editor-content" id="content-ko" contenteditable="true"></div>
+                        <div class="char-count">
+                            <span id="char-count-ko">글자 수: 0</span>
+                        </div>
+                    </div>
+
+                    <!-- 영어 에디터 -->
+                    <div id="editorEn" class="editor-tab-content" data-lang="en" style="display: none;">
+                        <div class="editor-toolbar">
+                            <!-- 텍스트 포맷팅 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-bold-en" title="Bold">
+                                    <i class="fas fa-bold"></i>
+                                    <span>Bold</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-italic-en" title="Italic">
+                                    <i class="fas fa-italic"></i>
+                                    <span>Italic</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-underline-en" title="Underline">
+                                    <i class="fas fa-underline"></i>
+                                    <span>Under</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-strike-en" title="Strikethrough">
+                                    <i class="fas fa-strikethrough"></i>
+                                    <span>Strike</span>
+                                </button>
+                            </div>
+
+                            <!-- 색상 -->
+                            <div class="toolbar-group">
+                                <div class="color-picker">
+                                    <input type="color" id="text-color-en" value="#000000" title="Text Color">
+                                    <span>Text</span>
+                                </div>
+                                <div class="color-picker">
+                                    <input type="color" id="bg-color-en" value="#ffffff" title="Background">
+                                    <span>BG</span>
+                                </div>
+                            </div>
+
+                            <!-- 정렬 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-align-left-en" title="Left">
+                                    <i class="fas fa-align-left"></i>
+                                    <span>Left</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-align-center-en" title="Center">
+                                    <i class="fas fa-align-center"></i>
+                                    <span>Center</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-align-right-en" title="Right">
+                                    <i class="fas fa-align-right"></i>
+                                    <span>Right</span>
+                                </button>
+                            </div>
+
+                            <!-- 리스트 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-bullet-en" title="List">
+                                    <i class="fas fa-list-ul"></i>
+                                    <span>List</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-number-en" title="Numbers">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>Numbers</span>
+                                </button>
+                            </div>
+
+                            <!-- 들여쓰기 -->
+                            <div class="toolbar-group">
+                                <div class="dropdown">
+                                    <button class="toolbar-btn" id="btn-indent-en">
+                                        <i class="fas fa-indent"></i>
+                                        <span>Indent</span>
+                                    </button>
+                                    <div class="dropdown-menu" id="indent-menu-en">
+                                        <div class="dropdown-item" data-indent="1">Level 1 (20px)</div>
+                                        <div class="dropdown-item" data-indent="2">Level 2 (40px)</div>
+                                        <div class="dropdown-item" data-indent="3">Level 3 (60px)</div>
+                                        <div class="dropdown-item" data-indent="4">Level 4 (80px)</div>
+                                        <div class="dropdown-item" data-indent="5">Level 5 (100px)</div>
+                                        <div class="dropdown-item" data-indent="6">Level 6 (120px)</div>
+                                        <div class="dropdown-divider"></div>
+                                        <div class="dropdown-item" data-indent="0">Remove Indent</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 제목 -->
+                            <div class="toolbar-group">
+                                <div class="dropdown">
+                                    <button class="toolbar-btn" id="btn-heading-en">
+                                        <i class="fas fa-heading"></i>
+                                        <span>Heading</span>
+                                    </button>
+                                    <div class="dropdown-menu" id="heading-menu-en">
+                                        <div class="dropdown-item" data-heading="1">Heading 1 (Largest)</div>
+                                        <div class="dropdown-item" data-heading="2">Heading 2</div>
+                                        <div class="dropdown-item" data-heading="3">Heading 3 (Small)</div>
+                                        <div class="dropdown-divider"></div>
+                                        <div class="dropdown-item" data-heading="p">Paragraph (Default)</div>
+                                    </div>
+                                </div>
+                                <button class="toolbar-btn" id="btn-quote-en" title="Quote (Click again to cancel)">
+                                    <i class="fas fa-quote-left"></i>
+                                    <span>Quote</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-code-en" title="Code (Click again to cancel)">
+                                    <i class="fas fa-code"></i>
+                                    <span>Code</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-hr-en" title="Line">
+                                    <i class="fas fa-minus"></i>
+                                    <span>Line</span>
+                                </button>
+                            </div>
+
+                            <!-- 링크 & 이미지 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-image-en" title="Image">
+                                    <i class="fas fa-image"></i>
+                                    <span>Image</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-link-en" title="Link (Click again to cancel)">
+                                    <i class="fas fa-link"></i>
+                                    <span>Link</span>
+                                </button>
+                            </div>
+
+                            <!-- 실행 취소 -->
+                            <div class="toolbar-group">
+                                <button class="toolbar-btn" id="btn-undo-en" title="Undo">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Undo</span>
+                                </button>
+                                <button class="toolbar-btn" id="btn-redo-en" title="Redo">
+                                    <i class="fas fa-redo"></i>
+                                    <span>Redo</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="editor-content" id="content-en" contenteditable="true"></div>
+                        <div class="char-count">
+                            <span id="char-count-en">Character count: 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class EditorManager {
+            constructor() {
+                this.currentLang = 'ko';
+                this.savedSelection = null;
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                // 탭 전환
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+
+                // 글자 수 카운트
+                ['ko', 'en'].forEach(lang => {
+                    document.getElementById(`content-${lang}`).addEventListener('input', () => {
+                        this.updateCharCount(lang);
+                    });
+                });
+
+                // 드롭다운
+                this.setupDropdowns('ko');
+                this.setupDropdowns('en');
+
+                // 포맷팅 버튼
+                this.setupFormattingButtons('ko');
+                this.setupFormattingButtons('en');
+            }
+
+            switchTab(lang) {
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${lang}"]`).classList.add('active');
+
+                document.querySelectorAll('.editor-tab-content').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.getElementById(`editor${lang.toUpperCase()}`).style.display = 'block';
+
+                this.currentLang = lang;
+            }
+
+            updateCharCount(lang) {
+                const editor = document.getElementById(`content-${lang}`);
+                const count = editor.textContent.length;
+                const label = lang === 'ko' ? '글자 수' : 'Character count';
+                document.getElementById(`char-count-${lang}`).textContent = `${label}: ${count}`;
+            }
+
+            // 선택 영역 저장
+            saveSelection() {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    this.savedSelection = selection.getRangeAt(0);
+                    return true;
+                }
+                return false;
+            }
+
+            // 선택 영역 복원
+            restoreSelection() {
+                if (this.savedSelection) {
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(this.savedSelection);
+                }
+            }
+
+            setupDropdowns(lang) {
+                // 제목
+                const headingBtn = document.getElementById(`btn-heading-${lang}`);
+                const headingMenu = document.getElementById(`heading-menu-${lang}`);
+
+                headingBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.saveSelection();
+                    headingMenu.classList.toggle('show');
+                });
+
+                headingMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const heading = item.dataset.heading;
+                        this.restoreSelection();
+                        
+                        // "본문 (기본)" 또는 "Paragraph (Default)" 선택 시 p로 변환
+                        if (heading === 'p') {
+                            document.execCommand('formatBlock', false, '<p>');
+                        } else {
+                            document.execCommand('formatBlock', false, `<h${heading}>`);
+                        }
+                        
+                        headingMenu.classList.remove('show');
+                    });
+                });
+
+                // 들여쓰기
+                const indentBtn = document.getElementById(`btn-indent-${lang}`);
+                const indentMenu = document.getElementById(`indent-menu-${lang}`);
+
+                indentBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.saveSelection();
+                    indentMenu.classList.toggle('show');
+                });
+
+                indentMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const level = parseInt(item.dataset.indent);
+                        this.restoreSelection();
+                        this.applyIndent(level);
+                        indentMenu.classList.remove('show');
+                    });
+                });
+
+                // 외부 클릭으로 드롭다운 닫기
+                document.addEventListener('click', (e) => {
+                    if (!headingBtn.contains(e.target) && !headingMenu.contains(e.target)) {
+                        headingMenu.classList.remove('show');
+                    }
+                    if (!indentBtn.contains(e.target) && !indentMenu.contains(e.target)) {
+                        indentMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            setupFormattingButtons(lang) {
+                const suffix = lang === 'en' ? '-en' : '-ko';
+
+                // 텍스트 포맷팅
+                document.getElementById(`btn-bold${suffix}`).addEventListener('click', () => {
+                    document.execCommand('bold');
+                });
+
+                document.getElementById(`btn-italic${suffix}`).addEventListener('click', () => {
+                    document.execCommand('italic');
+                });
+
+                document.getElementById(`btn-underline${suffix}`).addEventListener('click', () => {
+                    document.execCommand('underline');
+                });
+
+                document.getElementById(`btn-strike${suffix}`).addEventListener('click', () => {
+                    document.execCommand('strikethrough');
+                });
+
+                // 색상
+                document.getElementById(`text-color${suffix}`).addEventListener('change', (e) => {
+                    document.execCommand('foreColor', false, e.target.value);
+                });
+
+                document.getElementById(`bg-color${suffix}`).addEventListener('change', (e) => {
+                    document.execCommand('backColor', false, e.target.value);
+                });
+
+                // 정렬
+                document.getElementById(`btn-align-left${suffix}`).addEventListener('click', () => {
+                    document.execCommand('justifyLeft');
+                });
+
+                document.getElementById(`btn-align-center${suffix}`).addEventListener('click', () => {
+                    document.execCommand('justifyCenter');
+                });
+
+                document.getElementById(`btn-align-right${suffix}`).addEventListener('click', () => {
+                    document.execCommand('justifyRight');
+                });
+
+                // 리스트
+                document.getElementById(`btn-bullet${suffix}`).addEventListener('click', () => {
+                    document.execCommand('insertUnorderedList');
+                });
+
+                document.getElementById(`btn-number${suffix}`).addEventListener('click', () => {
+                    document.execCommand('insertOrderedList');
+                });
+
+                // 인용 - 토글
+                document.getElementById(`btn-quote${suffix}`).addEventListener('click', () => {
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return;
+
+                    const range = selection.getRangeAt(0);
+                    let container = range.commonAncestorContainer;
+
+                    if (container.nodeType === 3) {
+                        container = container.parentNode;
+                    }
+
+                    if (container.closest('blockquote')) {
+                        document.execCommand('formatBlock', false, '<p>');
+                    } else {
+                        document.execCommand('formatBlock', false, '<blockquote>');
+                    }
+                });
+
+                // 코드 - 토글
+                document.getElementById(`btn-code${suffix}`).addEventListener('click', () => {
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return;
+
+                    const range = selection.getRangeAt(0);
+                    let container = range.commonAncestorContainer;
+
+                    if (container.nodeType === 3) {
+                        container = container.parentNode;
+                    }
+
+                    if (container.closest('pre')) {
+                        document.execCommand('formatBlock', false, '<p>');
+                    } else {
+                        document.execCommand('formatBlock', false, '<pre>');
+                    }
+                });
+
+                // 수평선
+                document.getElementById(`btn-hr${suffix}`).addEventListener('click', () => {
+                    document.execCommand('insertHorizontalRule');
+                });
+
+                // 이미지
+                document.getElementById(`btn-image${suffix}`).addEventListener('click', () => {
+                    const url = prompt('이미지 URL을 입력하세요:');
+                    if (url) {
+                        document.execCommand('insertImage', false, url);
+                    }
+                });
+
+                // 링크 - 토글
+                document.getElementById(`btn-link${suffix}`).addEventListener('click', () => {
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return;
+
+                    const range = selection.getRangeAt(0);
+                    let container = range.commonAncestorContainer;
+
+                    if (container.nodeType === 3) {
+                        container = container.parentNode;
+                    }
+
+                    if (container.closest('a')) {
+                        document.execCommand('unlink');
+                    } else {
+                        const url = prompt('링크 URL을 입력하세요:');
+                        if (url) {
+                            document.execCommand('createLink', false, url);
+                        }
+                    }
+                });
+
+                // 취소/재실행
+                document.getElementById(`btn-undo${suffix}`).addEventListener('click', () => {
+                    document.execCommand('undo');
+                });
+
+                document.getElementById(`btn-redo${suffix}`).addEventListener('click', () => {
+                    document.execCommand('redo');
+                });
+            }
+
+            // 들여쓰기: 리스트 항목은 제외하고 단락/제목에만 적용
+            applyIndent(level) {
+                const selection = window.getSelection();
+                
+                if (!selection.rangeCount) return;
+                
+                const range = selection.getRangeAt(0);
+                let container = range.commonAncestorContainer;
+                
+                if (container.nodeType === 3) {
+                    container = container.parentNode;
+                }
+
+                // 리스트 항목이면 무시
+                if (container.closest('li') || container.closest('ul') || container.closest('ol')) {
+                    return;
+                }
+
+                // 현재 블록 요소 찾기 (p, h1-6, blockquote, pre)
+                let blockElement = container.closest('p, h1, h2, h3, h4, h5, h6, blockquote, pre');
+
+                if (!blockElement) {
+                    // 없으면 현재 라인의 부모 찾기
+                    let closestBlock = container.parentNode;
+                    while (closestBlock && !['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE'].includes(closestBlock.tagName)) {
+                        closestBlock = closestBlock.parentNode;
+                    }
+                    blockElement = closestBlock;
+                }
+
+                if (!blockElement) return;
+
+                const unitMargin = 20; // 1단계 = 20px
+                
+                if (level === 0) {
+                    blockElement.style.marginLeft = '0';
+                } else {
+                    blockElement.style.marginLeft = (level * unitMargin) + 'px';
+                }
+            }
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            new EditorManager();
+        });
+    </script>
+</body>
+</html>
