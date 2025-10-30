@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBC Content Editor</title>
+    <script src="../config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            word-break: keep-all;
+        }
+        .font-serif, .font-serif * {
+            font-family: 'Noto Serif KR', Georgia, serif !important;
+        }
+
+        .ProseMirror {
+            padding: 20px;
+            min-height: 400px;
+            outline: none;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .ProseMirror p { margin: 0.75em 0; }
+        .ProseMirror h1 { font-size: 2em; font-weight: bold; margin: 1em 0 0.5em; line-height: 1.2; }
+        .ProseMirror h2 { font-size: 1.5em; font-weight: bold; margin: 0.8em 0 0.4em; line-height: 1.3; }
+        .ProseMirror h3 { font-size: 1.25em; font-weight: bold; margin: 0.6em 0 0.3em; line-height: 1.4; }
+        .ProseMirror strong { font-weight: bold; }
+        .ProseMirror em { font-style: italic; }
+        .ProseMirror u { text-decoration: underline; }
+        .ProseMirror s { text-decoration: line-through; }
+        .ProseMirror code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .ProseMirror mark {
+            background: #fef08a;
+            padding: 2px 0;
+        }
+        .ProseMirror img {
+            max-width: 500px;
+            height: auto;
+            border-radius: 4px;
+            margin: 1em 0;
+            display: block;
+        }
+        .ProseMirror a {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+        .ProseMirror .text-left { text-align: left; }
+        .ProseMirror .text-center { text-align: center; }
+        .ProseMirror .text-right { text-align: right; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Upload Progress Modal -->
+<div id="upload-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[9998]"></div>
+<div id="upload-progress" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-xl shadow-2xl z-[9999] min-w-[300px] text-center">
+    <h3 class="text-lg font-bold mb-2">처리 중...</h3>
+    <p id="upload-status" class="text-sm text-gray-600 mb-2">준비 중...</p>
+    <div class="w-full h-2 bg-gray-200 rounded overflow-hidden mt-4">
+        <div id="progress-fill" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+    </div>
+    <p id="upload-detail" class="text-xs text-gray-500 mt-2"></p>
+</div>
+
+<!-- Header -->
+<header class="bg-white border-b sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-3 items-center py-3 border-b">
+            <div class="flex items-center space-x-4 text-xs">
+                <button id="logout-btn" class="px-3 py-1 border border-gray-300 hover:bg-gray-100 transition">
+                    로그아웃
+                </button>
+            </div>
+            <div class="text-center">
+                <a href="../index.html" class="hover:opacity-80 transition">
+                    <h1 class="text-3xl font-serif font-bold tracking-wider">FBC</h1>
+                </a>
+            </div>
+            <div class="flex items-center justify-end space-x-4 text-xs">
+                <span class="text-gray-600">Admin Editor</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="max-w-[1200px] mx-auto px-5 py-10">
+
+    <!-- Mode Selection -->
+    <div id="mode-selection" class="min-h-[80vh] flex items-center justify-center px-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-serif font-bold tracking-wider mb-2">FBC</h1>
+                <p class="text-sm text-gray-600 tracking-widest uppercase">Content Editor</p>
+            </div>
+            <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-8">
+                <h2 class="text-xl font-semibold text-center mb-6">작업 선택</h2>
+                <p class="text-sm text-gray-600 text-center mb-8">어떤 작업을 하시겠습니까?</p>
+                <div class="space-y-4">
+                    <button id="btn-edit-mode" class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition">
+                        기존 게시글 수정
+                    </button>
+                    <button id="btn-create-mode" class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition">
+                        새로운 글 발행
+                    </button>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="../index.html" class="text-sm text-gray-600 hover:text-black transition">
+                    ← 메인으로 돌아가기
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Mode: URL Input -->
+    <div id="edit-url-input" class="hidden min-h-[80vh] flex items-center justify-center px-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-serif font-bold tracking-wider mb-2">FBC</h1>
+                <p class="text-sm text-gray-600 tracking-widest uppercase">Edit Article</p>
+            </div>
+            <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-8">
+                <h2 class="text-xl font-semibold mb-2">게시글 URL 입력</h2>
+                <p class="text-sm text-gray-600 mb-6">수정할 게시글의 URL을 입력해주세요.</p>
+                <div class="space-y-6">
+                    <div>
+                        <label for="article-url" class="block text-sm font-medium text-gray-700 mb-2">게시글 URL</label>
+                        <input type="text" id="article-url" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition text-sm" placeholder="http://localhost:8000/article/index.html?category=fashion&id=fs00001">
+                    </div>
+                    <button id="load-article-btn" class="w-full bg-black text-white py-3 rounded font-semibold hover:bg-gray-800 transition">
+                        불러오기
+                    </button>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button id="back-to-mode-select" class="text-sm text-gray-600 hover:text-black transition">
+                    ← 작업 선택으로 돌아가기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Form -->
+    <div id="editor-form" class="hidden">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold" id="form-title">새 콘텐츠 발행</h1>
+            <button id="cancel-edit-btn" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition">취소</button>
+        </div>
+
+        <input type="hidden" id="edit-article-id" value="">
+        <input type="hidden" id="current-thumbnail-delete-url" value="">
+
+        <!-- Category Selection -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+            <label class="block font-semibold mb-2 text-sm">카테고리 선택 *</label>
+            <select id="category" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" required>
+                <option value="">-- 카테고리를 선택하세요 --</option>
+                <option value="fashion">Fashion</option>
+                <option value="beauty">Beauty</option>
+                <option value="life">Life</option>
+                <option value="districts">Districts</option>
+            </select>
+        </div>
+
+        <!-- Title Inputs -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+            <div class="mb-4">
+                <label class="block font-semibold mb-2 text-sm">제목 (한국어) *</label>
+                <input type="text" id="title-kor" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="한국어 제목" required>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="title-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English title" required>
+                <button id="translate-title-btn" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm whitespace-nowrap">영어 자동채우기</button>
+            </div>
+        </div>
+
+        <!-- Description Inputs -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+            <div class="mb-4">
+                <label class="block font-semibold mb-2 text-sm">설명 (한국어) *</label>
+                <input type="text" id="desc-kor" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="한국어 설명" required>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="desc-en" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="English description" required>
+                <button id="translate-desc-btn" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm whitespace-nowrap">영어 자동채우기</button>
+            </div>
+        </div>
+
+        <!-- Additional Fields -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">카테고리 세부 * (영어/숫자만)</label>
+                    <input type="text" id="subcategory" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="예: Fashion Item" required>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">작성자 * (영어/숫자만)</label>
+                    <input type="text" id="author" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="Author name" required>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block font-semibold mb-2 text-sm">썸네일 이미지 *</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="thumbnail-file" accept="image/*" class="hidden">
+                        <button id="thumbnail-upload-btn" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm">이미지 업로드</button>
+                        <input type="text" id="thumbnail-url" class="flex-1 px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="또는 URL 입력" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">Cultural Badge (선택, 영어/숫자만)</label>
+                    <input type="text" id="cultural-badge" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="예: Industrial Chic">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">태그 (쉼표로 구분, 영어/숫자만)</label>
+                    <input type="text" id="tags" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="tag1, tag2, tag3">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">관련 지역 (선택)</label>
+                    <select id="district-select" class="w-full px-3 py-2.5 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm">
+                        <option value="">-- 지역을 선택하세요 --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Editor (Korean) -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+            <label class="block font-semibold mb-2 text-sm">본문 내용 (한국어) *</label>
+            <div class="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                <div id="toolbar-kor" class="border-b border-gray-200 p-2 flex gap-1 flex-wrap bg-gray-50"></div>
+                <div id="editor-kor"></div>
+            </div>
+        </div>
+
+        <!-- Content Editor (English) -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+            <label class="block font-semibold mb-2 text-sm">본문 내용 (English) *</label>
+            <div class="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                <div id="toolbar-en" class="border-b border-gray-200 p-2 flex gap-1 flex-wrap bg-gray-50"></div>
+                <div id="editor-en"></div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <!-- 삭제 버튼 (붉은색) -->
+                <button id="delete-article-btn" class="w-full sm:w-auto px-8 py-3 bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold">
+                    게시글 삭제
+                </button>
+
+                <!-- 초기화 버튼 (회색) -->
+                <button id="reset-form-btn" class="w-full sm:w-auto px-8 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 transition font-semibold">
+                    폼 초기화
+                </button>
+
+                <!-- 발행하기 버튼 (검정) -->
+                <button id="publish-btn" class="w-full sm:w-auto px-8 py-3 bg-black text-white rounded hover:bg-gray-800 transition font-semibold">
+                    <span id="publish-btn-text">발행하기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="module">
+    import { Editor } from 'https://esm.sh/@tiptap/core@2.1.13';
+    import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.1.13';
+    import TiptapImage from 'https://esm.sh/@tiptap/extension-image@2.1.13';
+    import Link from 'https://esm.sh/@tiptap/extension-link@2.1.13';
+    import Underline from 'https://esm.sh/@tiptap/extension-underline@2.1.13';
+    import Highlight from 'https://esm.sh/@tiptap/extension-highlight@2.1.13';
+    import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.1.13';
+    import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder@2.1.13';
+
+    // ============================================
+    // Supabase Configuration
+    // ============================================
+    const BUCKET_NAME = window.ENV.SUPABASE_BUCKET_NAME;
+    const SUPABASE_URL = window.ENV.SUPABASE_URL;
+    const SUPABASE_SERVICE_KEY = window.ENV.SUPABASE_SERVICE_KEY;
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+    // ============================================
+    // Global Variables
+    // ============================================
+    let editorKor = null;
+    let editorEn = null;
+    let isEditMode = false;
+    let currentArticleId = null;
+    let uploadedThumbnailUrl = null;
+    let currentThumbnailFileName = null;
+
+    const districtMeta = [
+        { district_id: "dsm00001", name_kor: "성수동", name_en: "Seongsu-dong" },
+        { district_id: "dsm00002", name_kor: "한남동", name_en: "Hannam-dong" },
+        { district_id: "dsm00003", name_kor: "홍대", name_en: "Hongdae" },
+        { district_id: "dsm00004", name_kor: "명동", name_en: "Myeongdong" }
+    ];
+
+    const icons = {
+        bold: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>',
+        italic: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>',
+        underline: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>',
+        strike: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4H9a3 3 0 0 0-2.83 4"></path><path d="M14 12a4 4 0 0 1 0 8H6"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>',
+        code: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+        h1: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path></svg>',
+        h2: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8"></path><path d="M4 18V6"></path><path d="M12 18V6"></path><path d="M21 18h-4"></path></svg>',
+        bulletList: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>',
+        orderedList: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line></svg>',
+        link: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path></svg>',
+        image: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+        alignLeft: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
+        alignCenter: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
+        alignRight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line></svg>',
+        highlight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11L12 14L22 4"></path></svg>'
+    };
+
+    // ============================================
+    // Image Processing Functions
+    // ============================================
+
+    /**
+     * Resize image to max 720px width (keep aspect ratio)
+     */
+    async function resizeImage(file, maxWidth = 720) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Resize if width > 720px
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to Base64 WebP
+                    const base64 = canvas.toDataURL('image/webp', 0.85);
+                    resolve(base64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Convert thumbnail to sRGB WebP (40KB limit)
+     */
+    async function convertToSRGBWebP(file, maxSizeKB = 40) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
+                    ctx.drawImage(img, 0, 0);
+
+                    let quality = 0.9;
+                    let blob = null;
+
+                    while (quality > 0.1) {
+                        blob = await new Promise(res =>
+                            canvas.toBlob(res, 'image/webp', quality)
+                        );
+
+                        if (blob.size / 1024 <= maxSizeKB || quality <= 0.1) {
+                            break;
+                        }
+                        quality -= 0.05;
+                    }
+
+                    resolve(blob);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Upload image to Supabase Storage
+     */
+    async function uploadImageToSupabase(blob, fileName) {
+        try {
+            const storagePath = `contents/${fileName}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from(BUCKET_NAME)
+                .upload(storagePath, blob, {
+                    contentType: 'image/webp',
+                    upsert: true
+                });
+
+            if (error) throw error;
+
+            const { data: urlData } = supabaseClient.storage
+                .from(BUCKET_NAME)
+                .getPublicUrl(storagePath);
+
+            return urlData.publicUrl;
+        } catch (error) {
+            console.error('Upload error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Convert Base64 to Blob
+     */
+    function base64ToBlob(base64) {
+        const parts = base64.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+
+        for (let i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        return new Blob([uInt8Array], { type: contentType });
+    }
+
+    /**
+     * Delete image from Supabase Storage
+     */
+    async function deleteImageFromSupabase(fileName) {
+        try {
+            const storagePath = `contents/${fileName}`;
+
+            const { error } = await supabaseClient.storage
+                .from(BUCKET_NAME)
+                .remove([storagePath]);
+
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            console.warn('Image deletion failed:', error);
+            return false;
+        }
+    }
+
+    // ============================================
+    // Article ID Generator (Supabase 기반)
+    // ============================================
+    async function generateArticleId(category) {
+        const prefix = {
+            'fashion': 'fs',
+            'beauty': 'bt',
+            'life': 'lf',
+            'districts': 'ds'
+        }[category] || 'xx';
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('content_items')
+                .select('id')
+                .eq('source_type', category)
+                .order('id', { ascending: false });
+
+            if (error) throw error;
+
+            let maxNumber = 0;
+
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    const match = item.id.match(/^[a-z]{2}(\d{5})$/);
+                    if (match) {
+                        const num = parseInt(match[1], 10);
+                        if (num > maxNumber) {
+                            maxNumber = num;
+                        }
+                    }
+                });
+            }
+
+            const nextNumber = (maxNumber + 1).toString().padStart(5, '0');
+
+            if (nextNumber > 99999) {
+                throw new Error(`${category} 카테고리의 ID가 한계에 도달했습니다.`);
+            }
+
+            return `${prefix}${nextNumber}`;
+
+        } catch (error) {
+            console.error('ID 생성 오류:', error);
+            const randomNum = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+            return `${prefix}${randomNum}`;
+        }
+    }
+
+    // ============================================
+    // Thumbnail Upload Handler
+    // ============================================
+    document.getElementById('thumbnail-upload-btn').addEventListener('click', () => {
+        document.getElementById('thumbnail-file').click();
+    });
+
+    document.getElementById('thumbnail-file').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        let articleId = document.getElementById('edit-article-id').value;
+        if (!articleId) {
+            const category = document.getElementById('category').value;
+            if (!category) {
+                alert('먼저 카테고리를 선택해주세요.');
+                e.target.value = '';
+                return;
+            }
+            articleId = await generateArticleId(category);
+            document.getElementById('edit-article-id').value = articleId;
+        }
+
+        showProgress('이미지 처리 중...', 0);
+
+        try {
+            updateProgress('이미지 압축 중...', 30);
+            const webpBlob = await convertToSRGBWebP(file, 40);
+
+            const fileName = `${articleId}.webp`;
+            updateProgress('이미지 업로드 중...', 60);
+            uploadedThumbnailUrl = await uploadImageToSupabase(webpBlob, fileName);
+            currentThumbnailFileName = fileName;
+
+            document.getElementById('thumbnail-url').value = uploadedThumbnailUrl;
+            updateProgress('완료!', 100);
+
+            setTimeout(hideProgress, 500);
+            alert(`이미지 업로드 완료! (${(webpBlob.size / 1024).toFixed(2)} KB)`);
+
+        } catch (error) {
+            hideProgress();
+            alert('이미지 업로드 실패: ' + error.message);
+        }
+
+        e.target.value = '';
+    });
+
+    // ============================================
+    // Editor Toolbar with Base64 Image Upload
+    // ============================================
+    function createToolbar(editor, toolbarId) {
+        const toolbar = document.getElementById(toolbarId);
+        const buttons = [
+            { name: 'Bold', icon: icons.bold, command: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive('bold') },
+            { name: 'Italic', icon: icons.italic, command: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive('italic') },
+            { name: 'Underline', icon: icons.underline, command: () => editor.chain().focus().toggleUnderline().run(), isActive: () => editor.isActive('underline') },
+            { name: 'Strike', icon: icons.strike, command: () => editor.chain().focus().toggleStrike().run(), isActive: () => editor.isActive('strike') },
+            { name: 'Code', icon: icons.code, command: () => editor.chain().focus().toggleCode().run(), isActive: () => editor.isActive('code') },
+            { name: 'H1', icon: icons.h1, command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => editor.isActive('heading', { level: 1 }) },
+            { name: 'H2', icon: icons.h2, command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive('heading', { level: 2 }) },
+            { name: 'Bullet List', icon: icons.bulletList, command: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive('bulletList') },
+            { name: 'Ordered List', icon: icons.orderedList, command: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive('orderedList') },
+            { name: 'Link', icon: icons.link, command: () => {
+                const url = prompt('Enter URL:');
+                if (url) editor.chain().focus().setLink({ href: url }).run();
+            }, isActive: () => editor.isActive('link') },
+            {
+                name: 'Image',
+                icon: icons.image,
+                command: async () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = async (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            try {
+                                const base64 = await resizeImage(file, 720);
+                                editor.chain().focus().setImage({ src: base64 }).run();
+                            } catch (error) {
+                                alert('이미지 처리 실패: ' + error.message);
+                            }
+                        }
+                    };
+                    input.click();
+                }
+            },
+            { name: 'Align Left', icon: icons.alignLeft, command: () => editor.chain().focus().setTextAlign('left').run() },
+            { name: 'Align Center', icon: icons.alignCenter, command: () => editor.chain().focus().setTextAlign('center').run() },
+            { name: 'Align Right', icon: icons.alignRight, command: () => editor.chain().focus().setTextAlign('right').run() },
+            { name: 'Highlight', icon: icons.highlight, command: () => editor.chain().focus().toggleHighlight().run(), isActive: () => editor.isActive('highlight') }
+        ];
+
+        buttons.forEach(btn => {
+            const button = document.createElement('button');
+            button.className = 'p-2 hover:bg-gray-200 rounded transition';
+            button.innerHTML = btn.icon;
+            button.title = btn.name;
+            button.onclick = (e) => {
+                e.preventDefault();
+                btn.command();
+            };
+
+            if (btn.isActive) {
+                editor.on('selectionUpdate', () => {
+                    button.classList.toggle('bg-blue-100', btn.isActive());
+                });
+            }
+
+            toolbar.appendChild(button);
+        });
+    }
+    // ============================================
+    // Editor Initialization
+    // ============================================
+    function initializeEditors() {
+        const CustomImage = TiptapImage.extend({
+            addAttributes() {
+                return {
+                    src: {
+                        default: null,
+                    },
+                    alt: {
+                        default: null,
+                    },
+                    title: {
+                        default: null,
+                    },
+                }
+            },
+        });
+
+        editorKor = new Editor({
+            element: document.getElementById('editor-kor'),
+            extensions: [
+                StarterKit,
+                CustomImage,
+                Link,
+                Underline,
+                Highlight,
+                TextAlign.configure({ types: ['heading', 'paragraph'] }),
+                Placeholder.configure({
+                    placeholder: '한국어 내용을 입력하세요...'
+                })
+            ],
+            content: '<p></p>'
+        });
+
+        editorEn = new Editor({
+            element: document.getElementById('editor-en'),
+            extensions: [
+                StarterKit,
+                CustomImage,
+                Link,
+                Underline,
+                Highlight,
+                TextAlign.configure({ types: ['heading', 'paragraph'] }),
+                Placeholder.configure({
+                    placeholder: 'Enter English content...'
+                })
+            ],
+            content: '<p></p>'
+        });
+
+        createToolbar(editorKor, 'toolbar-kor');
+        createToolbar(editorEn, 'toolbar-en');
+    }
+
+    // ============================================
+    // Load District Options
+    // ============================================
+    function loadDistrictOptions() {
+        const select = document.getElementById('district-select');
+        select.innerHTML = '<option value="">-- 지역을 선택하세요 --</option>';
+
+        districtMeta.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district.district_id;
+            option.textContent = `${district.name_kor} (${district.name_en})`;
+            select.appendChild(option);
+        });
+    }
+
+    // ============================================
+    // Mode Selection
+    // ============================================
+    document.getElementById('btn-edit-mode').addEventListener('click', () => {
+        document.getElementById('mode-selection').classList.add('hidden');
+        document.getElementById('edit-url-input').classList.remove('hidden');
+        isEditMode = true;
+    });
+
+    document.getElementById('btn-create-mode').addEventListener('click', () => {
+        document.getElementById('mode-selection').classList.add('hidden');
+        document.getElementById('editor-form').classList.remove('hidden');
+        document.getElementById('form-title').textContent = '새 콘텐츠 발행';
+        document.getElementById('publish-btn-text').textContent = '발행하기';
+        isEditMode = false;
+    });
+
+    document.getElementById('back-to-mode-select').addEventListener('click', () => {
+        document.getElementById('edit-url-input').classList.add('hidden');
+        document.getElementById('mode-selection').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+        if (confirm('작업을 취소하고 처음으로 돌아가시겠습니까?')) {
+            window.location.reload();
+        }
+    });
+
+    // ============================================
+    // Load Article from URL
+    // ============================================
+    document.getElementById('load-article-btn').addEventListener('click', async () => {
+        const url = document.getElementById('article-url').value.trim();
+        if (!url) {
+            alert('URL을 입력해주세요.');
+            return;
+        }
+
+        const urlParams = new URLSearchParams(new URL(url).search);
+        const articleId = urlParams.get('id');
+
+        if (!articleId) {
+            alert('유효하지 않은 URL입니다. id 파라미터가 필요합니다.');
+            return;
+        }
+
+        showProgress('게시글 불러오는 중...', 0);
+
+        try {
+            updateProgress('메타데이터 조회 중...', 30);
+            const { data, error } = await supabaseClient
+                .from('content_items')
+                .select('*')
+                .eq('id', articleId)
+                .single();
+
+            if (error) throw error;
+            if (!data) throw new Error('게시글을 찾을 수 없습니다.');
+
+            updateProgress('본문 조회 중...', 60);
+            const { data: articleData, error: articleError } = await supabaseClient
+                .from('articles')
+                .select('*')
+                .eq('id', articleId)
+                .single();
+
+            if (articleError) {
+                console.warn('본문 조회 오류:', articleError);
+            }
+
+            updateProgress('데이터 로딩 중...', 80);
+
+            document.getElementById('edit-article-id').value = data.id;
+            document.getElementById('category').value = data.source_type;
+            document.getElementById('title-kor').value = data.title_kor || '';
+            document.getElementById('title-en').value = data.title_en || '';
+            document.getElementById('desc-kor').value = data.desc_kor || '';
+            document.getElementById('desc-en').value = data.desc_en || '';
+            document.getElementById('subcategory').value = data.category || '';
+            document.getElementById('author').value = data.author || '';
+            document.getElementById('thumbnail-url').value = data.image || '';
+            document.getElementById('cultural-badge').value = data.cultural_badge || '';
+            document.getElementById('tags').value = data.tags ? data.tags.join(', ') : '';
+            document.getElementById('district-select').value = data.district_id || '';
+
+            uploadedThumbnailUrl = data.image;
+            currentThumbnailFileName = `${articleId}.webp`;
+
+            if (articleData) {
+                if (articleData.article_html_ko) {
+                    editorKor.commands.setContent(articleData.article_html_ko);
+                }
+                if (articleData.article_html_en) {
+                    editorEn.commands.setContent(articleData.article_html_en);
+                }
+            }
+
+            updateProgress('완료!', 100);
+
+            setTimeout(() => {
+                hideProgress();
+                document.getElementById('edit-url-input').classList.add('hidden');
+                document.getElementById('editor-form').classList.remove('hidden');
+                document.getElementById('form-title').textContent = '게시글 수정';
+                document.getElementById('publish-btn-text').textContent = '수정 완료';
+                document.getElementById('publish-info-text').textContent = '수정 사항이 Supabase에 저장됩니다.';
+                currentArticleId = articleId;
+                isEditMode = true;
+            }, 500);
+
+        } catch (error) {
+            hideProgress();
+            console.error('❌ 로드 오류:', error);
+            alert('게시글을 불러올 수 없습니다: ' + error.message);
+        }
+    });
+
+    // ============================================
+    // Upload Base64 Images to Supabase
+    // ============================================
+    async function uploadBase64Images(htmlContent, articleId) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        const images = doc.querySelectorAll('img[src^="data:"]');
+
+        let imageIndex = 1;
+        const uploadPromises = [];
+
+        for (const img of images) {
+            const base64Src = img.getAttribute('src');
+            const fileName = `${articleId}-${imageIndex}.webp`;
+
+            const uploadPromise = (async () => {
+                try {
+                    const blob = base64ToBlob(base64Src);
+                    const publicUrl = await uploadImageToSupabase(blob, fileName);
+                    img.setAttribute('src', publicUrl);
+                    console.log(`✅ Uploaded: ${fileName}`);
+                } catch (error) {
+                    console.error(`❌ Failed to upload ${fileName}:`, error);
+                }
+            })();
+
+            uploadPromises.push(uploadPromise);
+            imageIndex++;
+        }
+
+        await Promise.all(uploadPromises);
+
+        return doc.body.innerHTML;
+    }
+
+    // ============================================
+    // Publish/Update Article
+    // ============================================
+    document.getElementById('publish-btn').addEventListener('click', async () => {
+        if (!confirm(isEditMode ? '게시글을 수정하시겠습니까?' : '게시글을 발행하시겠습니까?')) return;
+
+        showProgress(isEditMode ? '수정 중...' : '발행 중...', 0);
+
+        try {
+            const category = document.getElementById('category').value;
+            if (!category) {
+                throw new Error('카테고리를 선택해주세요.');
+            }
+
+            const articleId = document.getElementById('edit-article-id').value || await generateArticleId(category);
+
+            if (!document.getElementById('edit-article-id').value) {
+                document.getElementById('edit-article-id').value = articleId;
+            }
+
+            updateProgress('이미지 업로드 중...', 20);
+
+            // Upload Base64 images in editor content
+            const korHtml = editorKor.getHTML();
+            const enHtml = editorEn.getHTML();
+
+            const uploadedKorHtml = await uploadBase64Images(korHtml, articleId);
+            const uploadedEnHtml = await uploadBase64Images(enHtml, articleId);
+
+            updateProgress('데이터 저장 중...', 60);
+
+            const contentData = {
+                id: articleId,
+                source_type: category,
+                category: document.getElementById('subcategory').value,
+                district_id: document.getElementById('district-select').value || null,
+                cultural_badge: document.getElementById('cultural-badge').value || null,
+                author: document.getElementById('author').value,
+                date: new Date().toISOString().split('T')[0],
+                title_kor: document.getElementById('title-kor').value,
+                desc_kor: document.getElementById('desc-kor').value,
+                title_en: document.getElementById('title-en').value,
+                desc_en: document.getElementById('desc-en').value,
+                image: uploadedThumbnailUrl || document.getElementById('thumbnail-url').value,
+                tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
+                views: 0
+            };
+
+            const articleData = {
+                id: articleId,
+                article_html_ko: uploadedKorHtml,
+                article_html_en: uploadedEnHtml
+            };
+
+            await supabaseClient.from('content_items').upsert(contentData, { onConflict: 'id' });
+
+            updateProgress('본문 저장 중...', 80);
+            await supabaseClient.from('articles').upsert(articleData, { onConflict: 'id' });
+
+            updateProgress('완료!', 100);
+            setTimeout(() => {
+                hideProgress();
+                alert(isEditMode ? '게시글이 수정되었습니다!' : '게시글이 발행되었습니다!');
+                window.location.reload();
+            }, 500);
+
+        } catch (error) {
+            hideProgress();
+            alert('저장 중 오류 발생: ' + error.message);
+        }
+    });
+
+    // ============================================
+    // Delete Article Modal
+    // ============================================
+    function showDeleteConfirmModal() {
+        const articleId = document.getElementById('edit-article-id').value;
+        if (!articleId) {
+            alert('삭제할 게시글이 없습니다.');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'delete-confirm-modal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center';
+        modal.innerHTML = `
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+                <h3 class="text-xl font-bold mb-4 text-red-600">게시글 삭제</h3>
+                <p class="text-gray-700 mb-4">
+                    이 작업은 되돌릴 수 없습니다. 삭제하려면 아래 텍스트를 입력하세요:<br>
+                    <strong class="text-red-600">I will delete this content</strong>
+                </p>
+                <input type="text" id="delete-confirm-input"
+                       placeholder="확인 문구를 입력하세요"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-red-500">
+                <div class="flex gap-3 justify-end">
+                    <button onclick="closeDeleteModal()"
+                            class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                        취소
+                    </button>
+                    <button onclick="confirmDeleteArticle()"
+                            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                        삭제
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    }
+
+    window.closeDeleteModal = function() {
+        const modal = document.getElementById('delete-confirm-modal');
+        if (modal) modal.remove();
+    };
+
+    window.confirmDeleteArticle = async function() {
+        const confirmText = document.getElementById('delete-confirm-input').value;
+
+        if (confirmText !== 'I will delete this content') {
+            alert('확인 문구를 정확히 입력해주세요.');
+            return;
+        }
+
+        const articleId = document.getElementById('edit-article-id').value;
+        closeDeleteModal();
+        showProgress('게시글 삭제 중...', 0);
+
+        try {
+            updateProgress('데이터 삭제 중...', 25);
+            await supabaseClient.from('content_items').delete().eq('id', articleId);
+
+            updateProgress('본문 삭제 중...', 50);
+            await supabaseClient.from('articles').delete().eq('id', articleId);
+
+            updateProgress('관련 데이터 삭제 중...', 75);
+            await supabaseClient.from('featured_content').delete().eq('article_id', articleId);
+
+            updateProgress('이미지 삭제 중...', 90);
+            if (currentThumbnailFileName) {
+                await deleteImageFromSupabase(currentThumbnailFileName);
+            }
+
+            // Delete article images (fs00001-1.webp, fs00001-2.webp, etc.)
+            for (let i = 1; i <= 50; i++) {
+                await deleteImageFromSupabase(`${articleId}-${i}.webp`);
+            }
+
+            updateProgress('완료!', 100);
+            setTimeout(() => {
+                hideProgress();
+                alert('게시글이 삭제되었습니다.');
+                window.location.reload();
+            }, 500);
+
+        } catch (error) {
+            hideProgress();
+            alert('삭제 중 오류 발생: ' + error.message);
+        }
+    };
+
+    // ============================================
+    // Reset Form
+    // ============================================
+    function resetForm() {
+        if (!confirm('모든 내용을 초기화하시겠습니까?')) return;
+
+        document.getElementById('edit-article-id').value = '';
+        document.getElementById('category').value = '';
+        document.getElementById('title-kor').value = '';
+        document.getElementById('title-en').value = '';
+        document.getElementById('desc-kor').value = '';
+        document.getElementById('desc-en').value = '';
+        document.getElementById('subcategory').value = '';
+        document.getElementById('author').value = '';
+        document.getElementById('thumbnail-url').value = '';
+        document.getElementById('cultural-badge').value = '';
+        document.getElementById('tags').value = '';
+        document.getElementById('district-select').value = '';
+
+        if (editorKor) editorKor.commands.clearContent();
+        if (editorEn) editorEn.commands.clearContent();
+
+        uploadedThumbnailUrl = null;
+        currentThumbnailFileName = null;
+        isEditMode = false;
+        currentArticleId = null;
+
+        alert('폼이 초기화되었습니다.');
+    }
+
+    document.getElementById('delete-article-btn').addEventListener('click', showDeleteConfirmModal);
+    document.getElementById('reset-form-btn').addEventListener('click', resetForm);
+
+    // ============================================
+    // Progress Modal Functions
+    // ============================================
+    function showProgress(message, percent) {
+        document.getElementById('upload-overlay').classList.remove('hidden');
+        document.getElementById('upload-progress').classList.remove('hidden');
+        updateProgress(message, percent);
+    }
+
+    function updateProgress(message, percent) {
+        document.getElementById('upload-status').textContent = message;
+        document.getElementById('progress-fill').style.width = `${percent}%`;
+        document.getElementById('upload-detail').textContent = `${Math.round(percent)}%`;
+    }
+
+    function hideProgress() {
+        document.getElementById('upload-overlay').classList.add('hidden');
+        document.getElementById('upload-progress').classList.add('hidden');
+    }
+
+    // ============================================
+    // Logout
+    // ============================================
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = '../admin/index.html';
+    });
+
+    // ============================================
+    // Initialize on Load
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDistrictOptions();
+        initializeEditors();
+    });
+
+</script>
+
+
+
+</body>
+</html>
